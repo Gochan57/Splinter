@@ -13,17 +13,19 @@ const styles = StyleSheet.create({
 })
 
 export default class TripItem extends Component {
-    propTypes: {
-        name: React.PropTypes.string
-    }
-
     constructor(props) {
         super(props)
     }
 
-    return (
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={styles.row}>{this.props.name}</Text>
-        </View>
-    )
+    propTypes: {
+        name: React.PropTypes.string
+    }
+
+    render() {
+        return (
+            <View style={{flex: 1}}>
+                <Text style={styles.row}>{this.props.name}</Text>
+            </View>
+        )
+    }
 }
