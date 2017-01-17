@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 import PaymentsPage from './Payment/PaymentsPage'
 import TripsList from './Trip/TripsList'
+import AddTrip from './Trip/AddTrip'
 
 export default class App extends Component {
     constructor(props) {
@@ -13,12 +14,13 @@ export default class App extends Component {
             <View>
                 <Text>HELLO</Text>
                 <TripsList items={tripsList}/>
+                <AddTrip name='Add new Trip'/>
             </View>
         )
     }
 }
 
-const tripsList = [{name: 'Шри Ланка'}, {name: 'Казань'}, {name: 'Марокко'}]
+const tripList = [{name: 'Sri Lanka'}, {name: 'Kazan'}, {name: 'Morocco'}]
 
 // <PaymentsPage name={'Sri Lanka'} payments={payments}/>
 const payments = [
