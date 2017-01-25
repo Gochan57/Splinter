@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StyleSheet, View, Text} from 'react-native'
+import {StyleSheet, View, Text, TouchableHighlight} from 'react-native'
 
 const styles = StyleSheet.create({
     row: {
@@ -18,14 +18,20 @@ export default class TripItem extends Component {
     }
 
     propTypes: {
-        name: React.PropTypes.string
+        name: React.PropTypes.string,
+        onPress: React.PropTypes.func,
     }
 
     render() {
+        const {name, onPress} = this.props
         return (
-            <View style={{flex: 1}}>
-                <Text style={styles.row}>{this.props.name}</Text>
-            </View>
+            <TouchableHighlight onPress={onPress}>
+                <View style={styles.row}>
+                    <Text style={styles.text}>
+                        {name}
+                    </Text>
+                </View>
+            </TouchableHighlight>
         )
     }
 }

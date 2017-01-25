@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
-import {StyleSheet, View, Text} from 'react-native'
-import PaymentsPage from './Payment/PaymentsPage'
-import TripsList from './Trip/TripsList'
-import AddTrip from './Trip/AddTrip'
+import {Navigator, StyleSheet, View, Text} from 'react-native'
+import TripsScene from './Trip/TripsScene'
+import TripItem from './Trip/TripItem'
 
 export default class App extends Component {
     constructor(props) {
@@ -11,16 +10,23 @@ export default class App extends Component {
 
     render(){
         return (
-            <View>
-                <Text>HELLO</Text>
-                <TripsList items={tripsList}/>
-                <AddTrip name='Add new Trip'/>
-            </View>
+            <Navigator
+                initialRoute={{ index: 0, component: TripsScene, passProps: {items: trips} }}
+                renderScene={this._renderScene}
+            />
         )
+    }
+
+    _renderScene = (route, navigator) => {
+        return <route.component navigator={navigator} {...route.passProps}/>
     }
 }
 
-const tripList = [{name: 'Sri Lanka'}, {name: 'Kazan'}, {name: 'Morocco'}]
+const trips = [
+    {name: 'Sri Lanka', id: 1},
+    {name: 'Kazan',  id: 2},
+    {name: 'Morocco',  id: 3}
+]
 
 // <PaymentsPage name={'Sri Lanka'} payments={payments}/>
 const payments = [

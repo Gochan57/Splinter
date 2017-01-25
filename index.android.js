@@ -3,16 +3,15 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+    Navigator
 } from 'react-native';
 import App from './app/components/App'
 
 export default class Splinter extends Component {
   render() {
     return (
-      <View style={styles.container}>
         <App/>
-      </View>
     );
   }
 }

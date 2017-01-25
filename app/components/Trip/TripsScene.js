@@ -1,34 +1,41 @@
 import React, {Component} from 'react'
-import {StyleSheet, View, Text, TouchableHighlight, ListView} from 'react-native'
+import {StyleSheet, View, Text, ListView} from 'react-native'
 import TripItem from './TripItem'
+import AddTrip from './AddTrip'
 
-export default class TripsList extends Component {
+export default class TripsScene extends Component {
     constructor(props) {
         super(props)
     }
 
     propTypes: {
-        items: React.PropTypes.array
+        items: React.PropTypes.array,
     }
 
-    _renderTripItem = (rowData, sectionId, rowId, higlightRow) => {
+    _toPaymentsList = (tripId) => {
+        return () => {this.props.navigator.push({
+            component: TripItem,
+            passProps: {
+                name: tripId
+            }
+        })}
+    }
+
+    _renderTripItem = (rowData) => {
         return (
-            <TouchableHighlight>
-                <View style={styles.row}>
-                    <Text style={styles.text}>
-                        {rowData.name}
-                    </Text>
-                </View>
-            </TouchableHighlight>
+            <TripItem name={rowData.name} onPress={this._toPaymentsList(rowData.id)}/>
         )
     }
 
     render(){
-        // const tripItems = this.props.items.map(item => <TripItem key={item.name} name={item.name}/>)
         const {items} = this.props
+
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        const dataSource = ds.cloneWithRows(items)
+
         return (
             <ListView
-                dataSource={items}
+                dataSource={dataSource}
                 renderRow={this._renderTripItem}
             />
         )
