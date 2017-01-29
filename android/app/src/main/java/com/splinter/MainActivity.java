@@ -1,6 +1,9 @@
 package com.splinter;
 
 import com.facebook.react.ReactActivity;
+import org.pgsqlite.SQLitePluginPackage;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactRootView;
 
 public class MainActivity extends ReactActivity {
 
@@ -12,4 +15,5 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "Splinter";
     }
+
 }
