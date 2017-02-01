@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import {
     AppRegistry,
     StyleSheet,
@@ -8,7 +7,15 @@ import {
     Navigator
 } from 'react-native';
 
+import {initDB} from './app/utils/db'
+
+let SQLite = require('react-native-sqlite-storage');
+
 export default class Splinter extends Component {
+
+    componentWillMount() {
+        initDB(SQLite)
+    }
 
     render() {
         return (
