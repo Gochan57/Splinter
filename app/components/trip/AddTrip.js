@@ -18,10 +18,6 @@ export default class AddTrip extends Component {
         super(props)
     }
 
-    propTypes: {
-        name: React.PropTypes.string
-    }
-
     render() {
         return (
             <View style={{flex: 1}}>

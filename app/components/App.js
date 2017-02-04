@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
-import {Navigator, StyleSheet, View, Text} from 'react-native'
+import {Navigator, StyleSheet, TouchableHighlight, View, Text} from 'react-native'
 import TripsScene from './Trip/TripsScene'
-import TripItem from './Trip/TripItem'
 
 export default class App extends Component {
     constructor(props) {
@@ -13,6 +12,17 @@ export default class App extends Component {
             <Navigator
                 initialRoute={{ index: 0, component: TripsScene, passProps: {items: trips} }}
                 renderScene={this._renderScene}
+                navigationBar={
+                    <Navigator.NavigationBar
+                        routeMapper={{
+                            LeftButton: this._renderLeftButton,
+                            RightButton: this._renderRightButton,
+                            Title: this._renderTitle,
+                        }}
+                        style={styles.navigationBar}
+                    />
+                }
+                sceneStyle={styles.scene}
             />
         )
     }
@@ -20,7 +30,60 @@ export default class App extends Component {
     _renderScene = (route, navigator) => {
         return <route.component navigator={navigator} {...route.passProps}/>
     }
+
+    _renderLeftButton = (route, navigator, index, navState) => {
+        if (route.index === 0) {
+            return null
+        } else {
+            return (
+                <TouchableHighlight onPress={() => navigator.pop()}>
+                    <Text>Back</Text>
+                </TouchableHighlight>
+            );
+        }
+    }
+
+    _renderRightButton = (route, navigator, index, navState) => {
+        const {rightBtnAction, renderRightButton} = route
+        if(rightBtnAction) {
+            const onPress = () => {
+                route.rightBtnAction()
+                navigator.pop()
+            }
+            return (
+                <TouchableHighlight onPress={onPress}>
+                    <Text>Done</Text>
+                </TouchableHighlight>
+            )
+        }
+        if(renderRightButton) {
+            return renderRightButton;
+        }
+        return null;
+    }
+
+    // TODO Разместить по центру по горизонтали
+    _renderTitle = (route, navigator, index, navState) => {
+        return (
+            <Text style={styles.title}>{'Привет'}</Text>
+        )
+    }
 }
+
+const styles = StyleSheet.create({
+    navigationBar: {
+        backgroundColor: 'gainsboro',
+        height: 30
+    },
+    scene: {
+        marginTop: 30
+    },
+    title: {
+        marginTop: 30,
+        marginLeft: 30,
+        justifyContent: 'center',
+    }
+})
 
 const trips = [
     {name: 'Sri Lanka', id: 1},
