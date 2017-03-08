@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, ListView} from 'react-native'
+import {toArrayWithIds} from 'app/utils/utils'
+import {goTo} from 'app/route'
 import TripItem from './TripItem'
 import AddTrip from './AddTrip'
-import {goTo} from 'app/route'
 
 export default class TripsScene extends Component {
     constructor(props) {
@@ -13,11 +14,13 @@ export default class TripsScene extends Component {
     }
 
     propTypes: {
-        items: React.PropTypes.array,
+        items: React.PropTypes.object,
+        navigator: React.propTypes.object,
     }
 
     _toPaymentsList = (tripId) => {
-        const {navigator} = this.props
+        const {items, navigator} = this.props
+        const {title} = this.state
         passProps = {
             name: tripId
         }
@@ -25,7 +28,8 @@ export default class TripsScene extends Component {
             goTo({
                 navigator,
                 component: TripItem,
-                props: passProps
+                props: passProps,
+                title: items[tripId].name
             })
         }
     }
@@ -37,10 +41,11 @@ export default class TripsScene extends Component {
     }
 
     render(){
-        const {items} = this.props
+        const {items, navigator} = this.props
 
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        const dataSource = ds.cloneWithRows(items)
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+        const rows = toArrayWithIds(items)
+        const dataSource = ds.cloneWithRows(rows)
 
         return (
             <View>
@@ -48,7 +53,7 @@ export default class TripsScene extends Component {
                     dataSource={dataSource}
                     renderRow={this._renderTripItem}
                 />
-                <AddTrip/>
+                <AddTrip navigator={navigator}/>
             </View>
         )
     }
@@ -68,8 +73,4 @@ var styles = StyleSheet.create({
     text: {
         flex: 1,
     },
-});
-
-// <View style={{flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-// {tripItems}
-// </View>
+})

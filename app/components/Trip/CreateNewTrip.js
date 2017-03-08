@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TextInput, Text, TouchableHighlight } from 'react-native'
+import { TextInput, TouchableHighlight, View, Text } from 'react-native'
 import { addTrip }from 'app/action/trips'
 
 export default class CreateNewTrip extends Component {

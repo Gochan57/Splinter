@@ -1,5 +1,6 @@
 import TripsScene from '../components/Trip/TripsScene'
 import TripItem from '../components/Trip/TripItem'
+import CreateNewTrip from '../components/Trip/CreateNewTrip'
 
 const scenes = {
     [TripsScene]: {
@@ -7,6 +8,9 @@ const scenes = {
     },
     [TripItem]: {
         title: 'Счета'
+    },
+    [CreateNewTrip]: {
+        title: 'Добавить путешествие'
     }
 }
 
@@ -21,7 +25,7 @@ const scenes = {
  */
 export function goTo(params) {
     const {navigator, component, props, title, rightBtnAction, renderRightButton} = params
-    const _title = title || scenes[component] || 'Add title to routes'
+    const _title = title || scenes[component].title || 'Notitle'
     navigator.push({
         component,
         title: _title,
