@@ -2,10 +2,14 @@ import React, {Component} from 'react'
 import {StyleSheet, View, Text, ListView} from 'react-native'
 import TripItem from './TripItem'
 import AddTrip from './AddTrip'
+import {goTo} from 'app/route'
 
 export default class TripsScene extends Component {
     constructor(props) {
         super(props)
+        this.state = {
+            title: 'Путешествия'
+        }
     }
 
     propTypes: {
@@ -13,12 +17,17 @@ export default class TripsScene extends Component {
     }
 
     _toPaymentsList = (tripId) => {
-        return () => {this.props.navigator.push({
-            component: TripItem,
-            passProps: {
-                name: tripId
-            }
-        })}
+        const {navigator} = this.props
+        passProps = {
+            name: tripId
+        }
+        return () => {
+            goTo({
+                navigator,
+                component: TripItem,
+                props: passProps
+            })
+        }
     }
 
     _renderTripItem = (rowData) => {
@@ -34,10 +43,13 @@ export default class TripsScene extends Component {
         const dataSource = ds.cloneWithRows(items)
 
         return (
-            <ListView
-                dataSource={dataSource}
-                renderRow={this._renderTripItem}
-            />
+            <View>
+                <ListView
+                    dataSource={dataSource}
+                    renderRow={this._renderTripItem}
+                />
+                <AddTrip/>
+            </View>
         )
     }
 }

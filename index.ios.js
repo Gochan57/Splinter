@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import {initDB} from './app/utils/db'
+import App from './app/components/App'
 
 let SQLite = require('react-native-sqlite-storage');
 
@@ -19,7 +20,7 @@ export default class Splinter extends Component {
 
     render() {
         return (
-            <Text>Hello</Text>
+            <App/>
         );
     }
 }
