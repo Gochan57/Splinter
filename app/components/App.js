@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     navigationBar: {
         backgroundColor: 'dimgrey',
         height: 30,
-        marginTop: (config.OS === OS.IOS ? 20 : 10)
+        marginTop: (config.OS === OS.IOS ? 20 : 0)
     },
     scene: {
         marginTop: (config.OS === OS.IOS ? 50 : 30)
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         marginTop: (config.OS === OS.IOS ? -10 : 0)
     },
     title: {
-        marginTop: (config.OS === OS.IOS ? -15 : 0),
+        marginTop: (config.OS === OS.IOS ? -15 : 30),
         marginLeft: 30,
         justifyContent: 'center'
     }
