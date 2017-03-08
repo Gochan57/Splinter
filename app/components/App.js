@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
-import {Navigator, StyleSheet, TouchableHighlight, View, Text} from 'react-native'
+import {Navigator, NavigatorIOS, StyleSheet, TouchableHighlight, View, Text} from 'react-native'
+import {config} from 'app/config'
+import {OS} from 'app/constants'
 import TripsScene from './Trip/TripsScene'
 
 export default class App extends Component {
@@ -10,7 +12,7 @@ export default class App extends Component {
     render(){
         return (
             <Navigator
-                initialRoute={{ index: 0, component: TripsScene, passProps: {items: trips} }}
+                initialRoute={{ index: 0, component: TripsScene, passProps: {items: trips}}}
                 renderScene={this._renderScene}
                 navigationBar={
                     <Navigator.NavigationBar
@@ -36,10 +38,12 @@ export default class App extends Component {
             return null
         } else {
             return (
-                <TouchableHighlight onPress={() => navigator.pop()}>
-                    <Text>Back</Text>
-                </TouchableHighlight>
-            );
+                <View style={styles.leftNavBtn}>
+                    <TouchableHighlight onPress={() => navigator.pop()}>
+                        <Text>Back</Text>
+                    </TouchableHighlight>
+                </View>
+            )
         }
     }
 
@@ -72,16 +76,20 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
     navigationBar: {
-        backgroundColor: 'gainsboro',
-        height: 30
+        backgroundColor: 'dimgrey',
+        height: 30,
+        marginTop: (config.OS === OS.IOS ? 20 : 10)
     },
     scene: {
-        marginTop: 30
+        marginTop: (config.OS === OS.IOS ? 50 : 30)
+    },
+    leftNavBtn: {
+        marginTop: (config.OS === OS.IOS ? -10 : 0)
     },
     title: {
-        marginTop: 30,
+        marginTop: (config.OS === OS.IOS ? -15 : 0),
         marginLeft: 30,
-        justifyContent: 'center',
+        justifyContent: 'center'
     }
 })
 
