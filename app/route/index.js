@@ -2,7 +2,7 @@ import TripsScene from '../components/Trip/TripsScene'
 import TripItem from '../components/Trip/TripItem'
 import CreateNewTrip from '../components/Trip/CreateNewTrip'
 
-const scenes = {
+export const scenes = {
     [TripsScene]: {
         title: 'Путешествия'
     },
@@ -25,10 +25,9 @@ const scenes = {
  */
 export function goTo(params) {
     const {navigator, component, props, title, rightBtnAction, renderRightButton} = params
-    const _title = title || scenes[component].title || 'Notitle'
     navigator.push({
         component,
-        title: _title,
+        title,
         passProps: props,
         rightBtnAction,
         renderRightButton

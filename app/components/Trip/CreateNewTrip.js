@@ -1,8 +1,16 @@
 import React, { Component } from 'react'
-import { TextInput, TouchableHighlight, View, Text } from 'react-native'
-import { addTrip }from 'app/action/trips'
+import { StyleSheet, TextInput, TouchableHighlight, View, Text } from 'react-native'
+import {connect} from 'react-redux'
+import { addTrip } from 'app/action/trips'
+import {goTo} from 'app/route'
+import TripsScene from './TripsScene'
 
-export default class CreateNewTrip extends Component {
+class CreateNewTrip extends Component {
+
+    propTypes: {
+        navigator: React.propTypes.object,
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -10,6 +18,14 @@ export default class CreateNewTrip extends Component {
             members: [],
             inputMember: '',
         }
+    }
+
+    _addTrip = () => {
+        this.props.addTrip(this.state.name)
+        goTo({
+            navigator: this.props.navigator,
+            component: TripsScene,
+        })
     }
 
     render() {
@@ -21,7 +37,7 @@ export default class CreateNewTrip extends Component {
             <View>
                 <View>
                     <Text>Введите наименование</Text>
-                    <TextInput
+                    <TextInput style={styles.input}
                         onChangeText={text => {this.setState({name: text})}}
                         value={name}
                     />
@@ -32,7 +48,7 @@ export default class CreateNewTrip extends Component {
                         onChangeText={text => {this.setState({inputMember: text})}}
                         value={inputMember}
                     />
-                    <TouchableHighlight onPress={addTrip(inputMember)}>
+                    <TouchableHighlight onPress={this._addTrip}>
                         <Text>+</Text>
                     </TouchableHighlight>
                 </View>
@@ -40,3 +56,12 @@ export default class CreateNewTrip extends Component {
         )
     }
 }
+
+const styles = StyleSheet.create({
+    input: {
+        backgroundColor: 'honeydew',
+        height: 30
+    }
+})
+
+export default connect(null, {addTrip})(CreateNewTrip)

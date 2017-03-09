@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, ListView} from 'react-native'
+import {connect} from 'react-redux'
 import {toArrayWithIds} from 'app/utils/utils'
 import {goTo} from 'app/route'
 import TripItem from './TripItem'
 import AddTrip from './AddTrip'
 
-export default class TripsScene extends Component {
+class TripsScene extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -38,6 +39,11 @@ export default class TripsScene extends Component {
         return (
             <TripItem name={rowData.name} onPress={this._toPaymentsList(rowData.id)}/>
         )
+    }
+
+    componentWillUpdate () {
+        console.log('TripsScene will update...')
+        console.log('updated trips:', this.props.items)
     }
 
     render(){
@@ -74,3 +80,10 @@ var styles = StyleSheet.create({
         flex: 1,
     },
 })
+
+const mapStateToProps = (state) => {
+    console.log('trips:', state.trips)
+    return {items: state.trips}
+}
+
+export default connect(mapStateToProps, null)(TripsScene)

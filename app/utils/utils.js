@@ -3,12 +3,8 @@
  *
  * на вход:
  * {
- *  1: {
- *      name: 'George'
- *  },
- *  2: {
- *      name: 'Julia'
- *  }
+ *  1: {name: 'George'},
+ *  2: {name: 'Julia'}
  * }
  *
  * на выходе:
@@ -28,4 +24,17 @@ export function toArrayWithIds (o) {
         }
     }
     return res;
+}
+
+/**
+ * Возвращает ключ с максимальным значением.
+ *
+ * @param o Объект типа
+ * {
+ *  1: {name: 'George'},
+ *  2: {name: 'Julia'}
+ * }
+ */
+export function getMaxId (o) {
+    return Math.max.apply(Math, Object.keys(o))
 }

@@ -1,6 +1,6 @@
-import { combineRedusers } from 'redux'
+import { combineReducers } from 'redux'
 import trips from './trips'
 
-export default combineRedusers({
+export default combineReducers({
     trips
 })

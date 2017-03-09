@@ -1,4 +1,4 @@
-import ADD_TRIP from '../constants'
+import {ADD_TRIP} from '../constants'
 
 export function addTrip(name) {
     return {
