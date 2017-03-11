@@ -8,13 +8,8 @@ import {OS} from 'app/constants'
  * функция app/route/goTo служит для перехода между экранами
  */
 export default class SNavigator extends Component {
-    /**
-     * initialRoute - Начальный экран навигатора, ожидается {index, component, passProps}
-     * scenes - Наименования сцен в формате {[component]: title} (см. app/route/scenes)
-     */
     propTypes: {
-        initialRoute: React.propTypes.object,
-        scenes: React.propTypes.object,
+        initialRoute: React.propTypes.object
     }
 
     render(){
@@ -39,7 +34,7 @@ export default class SNavigator extends Component {
     }
 
     _renderScene = (route, navigator) => {
-        return <route.component navigator={navigator} {...route.passProps}/>
+        return <route.component route={route} navigator={navigator} {...route.passProps}/>
     }
 
     _renderLeftButton = (route, navigator, index, navState) => {
@@ -57,30 +52,31 @@ export default class SNavigator extends Component {
     }
 
     _renderRightButton = (route, navigator, index, navState) => {
-        const {rightBtnAction, renderRightButton} = route
-        if(rightBtnAction) {
-            const onPress = () => {
-                route.rightBtnAction()
-                navigator.pop()
-            }
+        const {renderRightButton, rightBtnOK} = route
+        if(renderRightButton) {
             return (
-                <TouchableHighlight onPress={onPress}>
-                    <Text>Done</Text>
-                </TouchableHighlight>
+                <View style={styles.rightNavBtn}>
+                    {renderRightButton}
+                </View>
             )
         }
-        if(renderRightButton) {
-            return renderRightButton;
+        if(rightBtnOK) {
+            return (
+                <View style={styles.rightNavBtn}>
+                    <TouchableHighlight onPress={route.rightBtnAction}>
+                        <Text>OK</Text>
+                    </TouchableHighlight>
+                </View>
+            )
         }
+
         return null;
     }
 
     // TODO Разместить по центру по горизонтали
     _renderTitle = (route, navigator, index, navState) => {
-        const {scenes} = this.props;
-        const title = route.title || scenes[route.component].title || 'Notitle'
         return (
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.title}>{route.title}</Text>
         )
     }
 }
@@ -97,10 +93,12 @@ const styles = StyleSheet.create({
     leftNavBtn: {
         marginTop: (config.OS === OS.IOS ? -10 : 0)
     },
+    rightNavBtn: {
+        marginTop: (config.OS === OS.IOS ? -10 : 0)
+    },
     title: {
         marginTop: (config.OS === OS.IOS ? -15 : 30),
         marginLeft: 30,
         justifyContent: 'center'
     }
 })
-
