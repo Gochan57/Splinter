@@ -8,13 +8,8 @@ import {OS} from 'app/constants'
  * функция app/route/goTo служит для перехода между экранами
  */
 export default class SNavigator extends Component {
-    /**
-     * initialRoute - Начальный экран навигатора, ожидается {index, component, passProps}
-     * scenes - Наименования сцен в формате {[component]: title} (см. app/route/scenes)
-     */
     propTypes: {
-        initialRoute: React.propTypes.object,
-        scenes: React.propTypes.object,
+        initialRoute: React.propTypes.object
     }
 
     render(){
@@ -77,10 +72,8 @@ export default class SNavigator extends Component {
 
     // TODO Разместить по центру по горизонтали
     _renderTitle = (route, navigator, index, navState) => {
-        const {scenes} = this.props;
-        const title = route.title || scenes[route.component].title || 'Notitle'
         return (
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.title}>{route.title}</Text>
         )
     }
 }
@@ -103,4 +96,3 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     }
 })
-

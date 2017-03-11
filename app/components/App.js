@@ -1,28 +1,27 @@
 import React, {Component} from 'react'
-import {Provider} from 'react-redux'
 import {config} from 'app/config'
 import {OS} from 'app/constants'
-import {scenes} from 'app/route'
-import store from 'app/store'
 import SNavigator from 'app/components/Common/SNavigator'
 import TripsScene from './Trip/TripsScene'
 
 export default class App extends Component {
-
     constructor(props) {
         super(props)
     }
 
     render() {
         return (
-            <Provider store={store}>
-                <SNavigator
-                    initialRoute={{ index: 0, component: TripsScene}}
-                    scenes={scenes}
-                />
-            </Provider>
+            <SNavigator
+                initialRoute={{ index: 0, component: TripsScene, passProps: {items: trips}}}
+            />
         )
     }
+}
+
+const trips = {
+    '1': {name: 'Sri Lanka', id: 1},
+    '2': {name: 'Kazan', id: 2},
+    '3': {name: 'Morocco', id: 3},
 }
 
 const payments = [
@@ -32,4 +31,4 @@ const payments = [
     {date: '02.02.2016', name: 'Fruits', id: '4'},
     {date: '03.02.2016', name: 'Taxi to home', id: '5'},
     {date: '03.02.2016', name: 'Alcohol', id: '6'},
-]
+];
