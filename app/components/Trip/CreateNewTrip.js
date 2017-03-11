@@ -28,6 +28,11 @@ class CreateNewTrip extends Component {
         })
     }
 
+    componentWillMount () {
+        // Задаем действие кнопке OK в navigation bar
+        this.props.route.rightBtnAction = this._addTrip
+    }
+
     render() {
         const {name, members, inputMember} = this.state
         const _members = members.map(member => (
@@ -48,7 +53,7 @@ class CreateNewTrip extends Component {
                         onChangeText={text => {this.setState({inputMember: text})}}
                         value={inputMember}
                     />
-                    <TouchableHighlight onPress={this._addTrip}>
+                    <TouchableHighlight onPress={() => {}}>
                         <Text>+</Text>
                     </TouchableHighlight>
                 </View>

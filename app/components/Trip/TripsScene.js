@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, ListView} from 'react-native'
+import {connect} from 'react-redux'
 import {toArrayWithIds} from 'app/utils/utils'
 import {goTo} from 'app/route'
 import TripItem from './TripItem'
 import AddTrip from './AddTrip'
 
-export default class TripsScene extends Component {
+class TripsScene extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -21,9 +22,8 @@ export default class TripsScene extends Component {
     _toPaymentsList = (tripId) => {
         const {items, navigator} = this.props
         const {title} = this.state
-        const tripName = items[tripId].name
-        const passProps = {
-            name: tripName
+        passProps = {
+            name: tripId
         }
         return () => {
             goTo({
@@ -41,7 +41,16 @@ export default class TripsScene extends Component {
         )
     }
 
-    render() {
+    componentWillMount () {
+        console.log('TripsScene route:', this.props.route)
+    }
+
+    componentWillUpdate () {
+        console.log('TripsScene will update...')
+        console.log('updated trips:', this.props.items)
+    }
+
+    render(){
         const {items, navigator} = this.props
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
@@ -54,7 +63,7 @@ export default class TripsScene extends Component {
                     dataSource={dataSource}
                     renderRow={this._renderTripItem}
                 />
-                <AddTrip navigator={navigator}/>
+                <AddTrip route={this.props.route} navigator={navigator}/>
             </View>
         )
     }
@@ -75,3 +84,10 @@ var styles = StyleSheet.create({
         flex: 1,
     },
 })
+
+const mapStateToProps = (state) => {
+    console.log('trips:', state.trips)
+    return {items: state.trips}
+}
+
+export default connect(mapStateToProps, null)(TripsScene)
