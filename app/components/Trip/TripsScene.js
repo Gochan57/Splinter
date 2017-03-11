@@ -41,6 +41,10 @@ class TripsScene extends Component {
         )
     }
 
+    componentWillMount () {
+        console.log('TripsScene route:', this.props.route)
+    }
+
     componentWillUpdate () {
         console.log('TripsScene will update...')
         console.log('updated trips:', this.props.items)
@@ -59,7 +63,7 @@ class TripsScene extends Component {
                     dataSource={dataSource}
                     renderRow={this._renderTripItem}
                 />
-                <AddTrip navigator={navigator}/>
+                <AddTrip route={this.props.route} navigator={navigator}/>
             </View>
         )
     }

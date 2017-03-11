@@ -39,7 +39,7 @@ export default class SNavigator extends Component {
     }
 
     _renderScene = (route, navigator) => {
-        return <route.component navigator={navigator} {...route.passProps}/>
+        return <route.component route={route} navigator={navigator} {...route.passProps}/>
     }
 
     _renderLeftButton = (route, navigator, index, navState) => {
@@ -57,21 +57,24 @@ export default class SNavigator extends Component {
     }
 
     _renderRightButton = (route, navigator, index, navState) => {
-        const {rightBtnAction, renderRightButton} = route
-        if(rightBtnAction) {
-            const onPress = () => {
-                route.rightBtnAction()
-                navigator.pop()
-            }
+        const {renderRightButton, rightBtnOK} = route
+        if(renderRightButton) {
             return (
-                <TouchableHighlight onPress={onPress}>
-                    <Text>Done</Text>
-                </TouchableHighlight>
+                <View style={styles.rightNavBtn}>
+                    {renderRightButton}
+                </View>
             )
         }
-        if(renderRightButton) {
-            return renderRightButton;
+        if(rightBtnOK) {
+            return (
+                <View style={styles.rightNavBtn}>
+                    <TouchableHighlight onPress={route.rightBtnAction}>
+                        <Text>OK</Text>
+                    </TouchableHighlight>
+                </View>
+            )
         }
+
         return null;
     }
 
@@ -95,6 +98,9 @@ const styles = StyleSheet.create({
         marginTop: (config.OS === OS.IOS ? 50 : 30)
     },
     leftNavBtn: {
+        marginTop: (config.OS === OS.IOS ? -10 : 0)
+    },
+    rightNavBtn: {
         marginTop: (config.OS === OS.IOS ? -10 : 0)
     },
     title: {

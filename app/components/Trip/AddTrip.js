@@ -8,6 +8,7 @@ export default class AddTrip extends Component {
 
     propTypes: {
         navigator: React.propTypes.object,
+        route: React.propTypes.object,
     }
 
     constructor(props) {
@@ -28,7 +29,8 @@ export default class AddTrip extends Component {
         const {navigator} = this.props
         goTo({
             navigator,
-            component: CreateNewTrip
+            component: CreateNewTrip,
+            rightBtnOK: true
         })
     }
 }
