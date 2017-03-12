@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import {Navigator, NavigatorIOS, StyleSheet, TouchableHighlight, View, Text} from 'react-native'
-import {config} from 'app/config'
-import {OS} from 'app/constants'
+import {Navigator, NavigatorIOS, TouchableHighlight, View, Text} from 'react-native'
+import appStyles from 'app/styles'
+
+const styles =  appStyles.navigatorStyles
 
 /**
  * Расширение нативного навигатора
@@ -88,25 +89,4 @@ export default class SNavigator extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-    navigationBar: {
-        backgroundColor: 'dimgrey',
-        height: 30,
-        marginTop: (config.OS === OS.IOS ? 20 : 0)
-    },
-    scene: {
-        marginTop: (config.OS === OS.IOS ? 50 : 30)
-    },
-    leftNavBtn: {
-        marginTop: (config.OS === OS.IOS ? -10 : 0)
-    },
-    rightNavBtn: {
-        marginTop: (config.OS === OS.IOS ? -10 : 0)
-    },
-    title: {
-        marginTop: (config.OS === OS.IOS ? -15 : 30),
-        marginLeft: 30,
-        justifyContent: 'center'
-    }
-})
 

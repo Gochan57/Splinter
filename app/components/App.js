@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import {config} from 'app/config'
-import {OS} from 'app/constants'
 import {scenes} from 'app/route'
 import store from 'app/store'
 import SNavigator from 'app/components/Common/SNavigator'

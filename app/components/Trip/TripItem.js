@@ -1,16 +1,8 @@
 import React, {Component} from 'react'
-import {StyleSheet, View, Text, TouchableHighlight} from 'react-native'
+import {View, Text, TouchableHighlight} from 'react-native'
+import appStyles from 'app/styles'
 
-const styles = StyleSheet.create({
-    row: {
-        height: 40,
-        padding: 10,
-        backgroundColor: 'lightgray',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 3,
-    }
-})
+const styles = appStyles.tripItemStyles
 
 export default class TripItem extends Component {
     constructor(props) {

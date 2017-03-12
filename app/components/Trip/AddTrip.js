@@ -1,14 +1,16 @@
 import React, {Component} from 'react'
-import {StyleSheet, TouchableHighlight, View, Text} from 'react-native'
+import {TouchableHighlight, View, Text} from 'react-native'
 import {goTo} from 'app/route'
-import TripItem from './Trip'
+import appStyles from 'app/styles'
 import CreateNewTrip from './CreateNewTrip'
+
+const styles = appStyles.addTripStyles
 
 export default class AddTrip extends Component {
 
     propTypes: {
-        navigator: React.propTypes.object,
         route: React.propTypes.object,
+        navigator: React.propTypes.object,
     }
 
     constructor(props) {
@@ -17,7 +19,7 @@ export default class AddTrip extends Component {
 
     render() {
         return (
-            <View style={{flex: 1}}>
+            <View>
                 <TouchableHighlight onPress={this._onPress}>
                     <Text style={styles.row}>Add new trip</Text>
                 </TouchableHighlight>
@@ -34,14 +36,3 @@ export default class AddTrip extends Component {
         })
     }
 }
-
-const styles = StyleSheet.create({
-    row: {
-        height: 40,
-        padding: 10,
-        backgroundColor: 'lightgray',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 3,
-    }
-})
