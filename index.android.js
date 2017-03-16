@@ -7,7 +7,7 @@ import {
     Navigator
 } from 'react-native';
 
-import {initDB} from './app/utils/db'
+import {initDB} from './app/services/db'
 import App from './app/components/App'
 
 let SQLite = require('react-native-sqlite-storage');

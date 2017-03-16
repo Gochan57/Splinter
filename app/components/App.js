@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import {scenes} from 'app/route'
 import store from 'app/store'
 import SNavigator from 'app/components/Common/SNavigator'
 import TripsScene from './Trip/TripsScene'
@@ -16,7 +15,6 @@ export default class App extends Component {
             <Provider store={store}>
                 <SNavigator
                     initialRoute={{ index: 0, component: TripsScene}}
-                    scenes={scenes}
                 />
             </Provider>
         )

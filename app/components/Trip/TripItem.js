@@ -5,6 +5,9 @@ import appStyles from 'app/styles'
 const styles = appStyles.tripItemStyles
 
 export default class TripItem extends Component {
+
+    static title = 'Счета'
+
     constructor(props) {
         super(props)
     }

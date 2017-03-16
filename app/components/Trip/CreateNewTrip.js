@@ -2,10 +2,12 @@ import React, { Component } from 'react'
 import { StyleSheet, TextInput, TouchableHighlight, View, Text } from 'react-native'
 import {connect} from 'react-redux'
 import { addTrip } from 'app/action/trips'
-import {goTo} from 'app/route'
+import {goTo} from 'app/components/Common/SNavigator'
 import TripsScene from './TripsScene'
 
 class CreateNewTrip extends Component {
+
+    static title = 'Добавить путешествие'
 
     propTypes: {
         navigator: React.propTypes.object,

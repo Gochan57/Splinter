@@ -1,12 +1,17 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, ListView} from 'react-native'
 import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
 import {toArrayWithIds} from 'app/utils/utils'
-import {goTo} from 'app/route'
+import {goTo} from 'app/components/Common/SNavigator'
 import TripItem from './TripItem'
 import AddTrip from './AddTrip'
+import {test} from 'app/action/trips'
 
 class TripsScene extends Component {
+
+    static title = 'Путешествия'
+
     constructor(props) {
         super(props)
         this.state = {
@@ -43,6 +48,7 @@ class TripsScene extends Component {
 
     componentWillMount () {
         console.log('TripsScene route:', this.props.route)
+        this.props.test('hello')
     }
 
     componentWillUpdate () {
@@ -64,6 +70,7 @@ class TripsScene extends Component {
                     renderRow={this._renderTripItem}
                 />
                 <AddTrip route={this.props.route} navigator={navigator}/>
+                <Text>{items.test}</Text>
             </View>
         )
     }
@@ -74,4 +81,8 @@ const mapStateToProps = (state) => {
     return {items: state.trips}
 }
 
-export default connect(mapStateToProps, null)(TripsScene)
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({test}, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TripsScene)

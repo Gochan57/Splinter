@@ -11,14 +11,12 @@ const styles =  appStyles.navigatorStyles
 export default class SNavigator extends Component {
     /**
      * initialRoute - Начальный экран навигатора, ожидается {index, component, passProps}
-     * scenes - Наименования сцен в формате {[component]: title} (см. app/route/scenes)
      */
     propTypes: {
         initialRoute: React.propTypes.object,
-        scenes: React.propTypes.object,
     }
 
-    render(){
+    render() {
         const {initialRoute} = this.props;
         return (
             <Navigator
@@ -81,12 +79,31 @@ export default class SNavigator extends Component {
 
     // TODO Разместить по центру по горизонтали
     _renderTitle = (route, navigator, index, navState) => {
-        const {scenes} = this.props;
-        const title = route.title || scenes[route.component].title || 'Notitle'
+        const title = route.title || route.component.title || 'Notitle'
         return (
             <Text style={styles.title}>{title}</Text>
         )
     }
+}
+
+/**
+ * @param navigator Объект навигатора.
+ * @param component Компонент, который будет рендерится на странице с этим навигатором.
+ * @param props Пропсы, которые передадутся в компонент.
+ * @param title Заголовок в строке навигатора. Если не указан, то будет взят из scenes. Если нет там, то отобразится Notitle.
+ * @param {Component} renderRightButton - Компонент правой кнопки, если заранее известен.
+ * @param {boolean} rightBtnOK - Правая кнопка будет OK. Действие на кнопке нужно задать в поле route.rightBtnAction на компоненте,
+ * который рендерится с этим навигатором (например в componentWillMount).
+ */
+export function goTo(params) {
+    const {navigator, component, props, title, renderRightButton, rightBtnOK} = params
+    navigator.push({
+        component,
+        title,
+        passProps: props,
+        renderRightButton,
+        rightBtnOK,
+    })
 }
 
 

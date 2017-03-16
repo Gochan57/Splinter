@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {TouchableHighlight, View, Text} from 'react-native'
-import {goTo} from 'app/route'
+import {goTo} from 'app/components/Common/SNavigator'
 import appStyles from 'app/styles'
 import CreateNewTrip from './CreateNewTrip'
 

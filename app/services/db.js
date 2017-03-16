@@ -1,6 +1,25 @@
 const DB_NAME = 'splinter.db'
 let db
 
+/**
+ * Добавляет путешествие в бд.
+ * @param name Название.
+ * @param people Массив имен.
+ * @returns Обещание.
+ */
+export async function createTrip (name, people) {
+    // TODO return {
+    //     [id]: {
+    //         name: 'name',
+    //         people: {
+    //             [id1]: {name: 'name1'},
+    //             [id2]: {name: 'name2'},
+    //             [id3]: {name: 'name3'},
+    //         }
+    //     }
+    // }
+}
+
 export function initDB(SQLite) {
     SQLite.DEBUG(true)
     SQLite.enablePromise(true)

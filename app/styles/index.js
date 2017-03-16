@@ -1,4 +1,4 @@
-import {navigatorStyles, tripItemStyles, addTripStyles} from './trips.android'
+import {navigatorStyles, tripItemStyles, addTripStyles} from './trips'
 
 export default appStyles = {
     navigatorStyles,
