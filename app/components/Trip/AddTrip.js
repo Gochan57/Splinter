@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {TouchableHighlight, View, Text} from 'react-native'
 import {goTo} from 'app/components/Common/SNavigator'
 import appStyles from 'app/styles'
-import CreateNewTrip from './CreateNewTrip'
+import CreateNewTripScene from './CreateNewTripScene'
 
 const styles = appStyles.addTripStyles
 
@@ -31,7 +31,7 @@ export default class AddTrip extends Component {
         const {navigator} = this.props
         goTo({
             navigator,
-            component: CreateNewTrip,
+            component: CreateNewTripScene,
             rightBtnOK: true
         })
     }

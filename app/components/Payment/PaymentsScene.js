@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 import PaymentsList from './PaymentsList'
 
-export default class PaymentsPage extends Component {
+export default class PaymentsScene extends Component {
     constructor(props) {
         super(props)
     }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StyleSheet, View, Text, ListView} from 'react-native'
+import {View, Text, ListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {toArrayWithIds} from 'app/utils/utils'
@@ -12,13 +12,10 @@ class TripsScene extends Component {
 
     static title = 'Путешествия'
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            title: 'Путешествия'
-        }
-    }
-
+    /**
+     * items - store.trips
+     * navigator - Навигатор.
+     */
     propTypes: {
         items: React.PropTypes.object,
         navigator: React.propTypes.object,
@@ -26,7 +23,6 @@ class TripsScene extends Component {
 
     _toPaymentsList = (tripId) => {
         const {items, navigator} = this.props
-        const {title} = this.state
         passProps = {
             name: tripId
         }
@@ -47,13 +43,7 @@ class TripsScene extends Component {
     }
 
     componentWillMount () {
-        console.log('TripsScene route:', this.props.route)
         this.props.test('hello')
-    }
-
-    componentWillUpdate () {
-        console.log('TripsScene will update...')
-        console.log('updated trips:', this.props.items)
     }
 
     render(){

@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { StyleSheet, TextInput, TouchableHighlight, View, Text } from 'react-native'
 import {connect} from 'react-redux'
+import appStyles from 'app/styles'
 import { addTrip } from 'app/action/trips'
 import {goTo} from 'app/components/Common/SNavigator'
 import TripsScene from './TripsScene'
 
-class CreateNewTrip extends Component {
+const styles = appStyles.createNewTripStyles
+
+class CreateNewTripScene extends Component {
 
     static title = 'Добавить путешествие'
 
@@ -22,17 +25,27 @@ class CreateNewTrip extends Component {
         }
     }
 
+    componentWillMount () {
+        // Задаем действие кнопке OK в navigation bar
+        this.props.route.rightBtnAction = this._addTrip
+    }
+
     _addTrip = () => {
-        this.props.addTrip(this.state.name)
+        const {name, members} = this.state
+        const {navigator} = this.props
+        this.props.addTrip(name, members)
         goTo({
-            navigator: this.props.navigator,
+            navigator,
             component: TripsScene,
         })
     }
 
-    componentWillMount () {
-        // Задаем действие кнопке OK в navigation bar
-        this.props.route.rightBtnAction = this._addTrip
+    _addMember = () => {
+        const {members, inputMember} = this.state
+        this.setState({
+            members: [...members, inputMember],
+            inputMember: ''
+        })
     }
 
     render() {
@@ -44,18 +57,18 @@ class CreateNewTrip extends Component {
             <View>
                 <View>
                     <Text>Введите наименование</Text>
-                    <TextInput style={styles.input}
+                    <TextInput style={styles.inputName}
                         onChangeText={text => {this.setState({name: text})}}
                         value={name}
                     />
                 </View>
                 <View>
-                    {members}
-                    <TextInput
+                    {_members}
+                    <TextInput style={styles.inputMember}
                         onChangeText={text => {this.setState({inputMember: text})}}
                         value={inputMember}
                     />
-                    <TouchableHighlight onPress={() => {}}>
+                    <TouchableHighlight onPress={this._addMember}>
                         <Text>+</Text>
                     </TouchableHighlight>
                 </View>
@@ -64,11 +77,4 @@ class CreateNewTrip extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-    input: {
-        backgroundColor: 'honeydew',
-        height: 30
-    }
-})
-
-export default connect(null, {addTrip})(CreateNewTrip)
+export default connect(null, {addTrip})(CreateNewTripScene)

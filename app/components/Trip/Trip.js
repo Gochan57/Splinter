@@ -12,6 +12,9 @@ const styles = StyleSheet.create({
     }
 })
 
+/**
+ * Строка путешествия в списке путешествий.
+ */
 export default class Trip extends Component {
     constructor(props) {
         super(props)

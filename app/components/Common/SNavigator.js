@@ -6,7 +6,6 @@ const styles =  appStyles.navigatorStyles
 
 /**
  * Расширение нативного навигатора
- * функция app/route/goTo служит для перехода между экранами
  */
 export default class SNavigator extends Component {
     /**
@@ -87,10 +86,13 @@ export default class SNavigator extends Component {
 }
 
 /**
+ * Функция для перехода на другие экраны.
+ *
  * @param navigator Объект навигатора.
  * @param component Компонент, который будет рендерится на странице с этим навигатором.
  * @param props Пропсы, которые передадутся в компонент.
- * @param title Заголовок в строке навигатора. Если не указан, то будет взят из scenes. Если нет там, то отобразится Notitle.
+ * @param title Заголовок в строке навигатора. Если не указан, то будет взят из статичного поля title компонента.
+ * Если нет там, то отобразится Notitle.
  * @param {Component} renderRightButton - Компонент правой кнопки, если заранее известен.
  * @param {boolean} rightBtnOK - Правая кнопка будет OK. Действие на кнопке нужно задать в поле route.rightBtnAction на компоненте,
  * который рендерится с этим навигатором (например в componentWillMount).
