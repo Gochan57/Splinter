@@ -14,14 +14,3 @@ export function addTrip(name, members) {
         }
     }
 }
-
-export function test (str) {
-    return dispatch => {
-        setTimeout(() => {
-            dispatch({
-                type: 'TEST',
-                payload: str
-            })
-        }, 1000)
-    }
-}

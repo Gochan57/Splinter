@@ -10,22 +10,31 @@ const trips = {
             '3': {name: 'Вова'},
         },
         payments: {
-            '1': {
-                date: '01.02.2017',
-                name: 'Супермаркет',
-                members: [
-                    {personId: '1', spend: 100, pay: 0},
-                    {personId: '2', spend: 100, pay: 200},
-                ]
+            '01.02.2017': {
+                '1': {
+                    name: 'Супермаркет',
+                    members: [
+                        {personId: '1', spend: 100, pay: 0},
+                        {personId: '2', spend: 100, pay: 200},
+                    ]
+                },
+                '2': {
+                    name: 'Обучение у Сусы',
+                    members: [
+                        {personId: '1', spend: 50, pay: 0},
+                        {personId: '2', spend: 50, pay: 150},
+                        {personId: '3', spend: 50, pay: 0},
+                    ]
+                }
             },
-            '2': {
-                date: '01.02.2017',
-                name: 'Обучение у Сусы',
-                members: [
-                    {personId: '1', spend: 50, pay: 0},
-                    {personId: '2', spend: 50, pay: 150},
-                    {personId: '3', spend: 50, pay: 0},
-                ]
+            '02.02.2017': {
+                '3': {
+                    name: 'Такси',
+                    members: [
+                        {personId: '1', spend: 200, pay: 400},
+                        {personId: '3', spend: 200, pay: 0},
+                    ]
+                }
             }
         }
     },
@@ -44,8 +53,7 @@ const trips = {
             '8': {name: 'Мегги'},
             '9': {name: 'Гоша'},
         }
-    },
-    test: ''
+    }
 }
 
 //TODO передавать id из экшна
@@ -59,12 +67,6 @@ export default (state = trips, action) => {
             const newId = getMaxId(state) + 1
             const newState = {...state, [newId]: {name}}
             return newState
-        }
-        case 'TEST': {
-            return {
-                ...state,
-                test: action.payload
-            }
         }
     }
 

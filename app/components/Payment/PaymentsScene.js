@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
+import {toArrayWithKeys} from 'app/utils/utils';
 import PaymentsList from './PaymentsList'
 
 export default class PaymentsScene extends Component {
@@ -8,36 +9,62 @@ export default class PaymentsScene extends Component {
     }
 
     propTypes: {
-        name: React.PropTypes.string,
-        payments: React.PropTypes.array,
+        tripId: React.PropTypes.number,
+        payments: React.PropTypes.object,
     }
 
-    render() {
-        const rPayments = this.reorganizePayments(this.props.payments)
-        paymentsList = this.generatePaymentsList(rPayments)
+    renderPayments () {
+        const {payments} = this.props
+        if (!payments) {
+            return (
+                <View>
+                    <Text>В этом путешествии пока нет ни одного счета</Text>
+                </View>
+            )
+        }
+        const dates = Object.keys(payments)
+        console.log('dates', dates)
+        const paymentsList = dates.map(date =>
+            <PaymentsList
+                key={date}
+                date={date}
+                payments={toArrayWithKeys(payments[date])}/>)
+        console.log('PaymentsList', paymentsList)
         return (
             <View>
-                <Text>{this.props.name}</Text>
                 {paymentsList}
             </View>
         )
     }
 
-    reorganizePayments = (payments) => {
-        let rPayments = {}
-        payments.forEach(payment => {
-            if(!rPayments[payment.date]){
-                rPayments[payment.date] = []
-            }
-            rPayments[payment.date].push(payment)
-        })
-        return rPayments
+    componentWillMount () {
+        console.log('PaymentsScene props', this.props)
     }
 
-    generatePaymentsList = (rPayments) => {
+    render() {
+        const payments = this.renderPayments()
+        return (
+            <View>
+                {payments}
+            </View>
+        )
+    }
+
+    reorganizePayments = (payments) => {
+        let arrPayments = {}
+        payments.forEach(payment => {
+            if(!arrPayments[payment.date]){
+                arrPayments[payment.date] = []
+            }
+            arrPayments[payment.date].push(payment)
+        })
+        return arrPayments
+    }
+
+    generatePaymentsList = (arrPayments) => {
         let paymentsList = []
-        for(date in rPayments) {
-            paymentsList.push(<PaymentsList date={date} payments={rPayments[date]}/>)
+        for(date in arrPayments) {
+            paymentsList.push(<PaymentsList date={date} payments={arrPayments[date]}/>)
         }
         return paymentsList
     }

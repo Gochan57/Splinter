@@ -2,11 +2,11 @@ import React, {Component} from 'react'
 import {View, Text, ListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {toArrayWithIds} from 'app/utils/utils'
+import {toArrayWithKeys} from 'app/utils/utils'
 import {goTo} from 'app/components/Common/SNavigator'
+import PaymentsScene from '../Payment/PaymentsScene';
 import TripItem from './TripItem'
 import AddTrip from './AddTrip'
-import {test} from 'app/action/trips'
 
 class TripsScene extends Component {
 
@@ -21,15 +21,20 @@ class TripsScene extends Component {
         navigator: React.propTypes.object,
     }
 
-    _toPaymentsList = (tripId) => {
+    _toPaymentsScene = (tripId) => {
         const {items, navigator} = this.props
-        passProps = {
-            name: tripId
+        const passProps = {
+            tripId,
+            payments: items[tripId].payments
         }
+        console.log('passProps', passProps)
+        console.log('tripId', tripId)
+        console.log('items[tripId]', items[tripId])
+        console.log('items[tripId].payments', items[tripId].payments)
         return () => {
             goTo({
                 navigator,
-                component: TripItem,
+                component: PaymentsScene,
                 props: passProps,
                 title: items[tripId].name
             })
@@ -38,19 +43,15 @@ class TripsScene extends Component {
 
     _renderTripItem = (rowData) => {
         return (
-            <TripItem name={rowData.name} onPress={this._toPaymentsList(rowData.id)}/>
+            <TripItem name={rowData.name} onPress={this._toPaymentsScene(rowData.id)}/>
         )
-    }
-
-    componentWillMount () {
-        this.props.test('hello')
     }
 
     render(){
         const {items, navigator} = this.props
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-        const rows = toArrayWithIds(items)
+        const rows = toArrayWithKeys(items)
         const dataSource = ds.cloneWithRows(rows)
 
         return (
@@ -60,7 +61,6 @@ class TripsScene extends Component {
                     renderRow={this._renderTripItem}
                 />
                 <AddTrip route={this.props.route} navigator={navigator}/>
-                <Text>{items.test}</Text>
             </View>
         )
     }
@@ -72,7 +72,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({test}, dispatch)
+    return bindActionCreators({}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TripsScene)

@@ -1,5 +1,8 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, TouchableHighlight} from 'react-native'
+import appStyles from 'app/styles'
+
+const styles = appStyles.paymentStyles
 
 export default class PaymentItem extends Component {
     constructor(props) {
@@ -22,12 +25,3 @@ export default class PaymentItem extends Component {
         )
     }
 }
-
-var styles = StyleSheet.create({
-    item: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        padding: 10,
-        backgroundColor: '#F6F6F6',
-    }
-})

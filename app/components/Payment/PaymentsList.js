@@ -17,9 +17,11 @@ export default class PaymentsList extends Component {
     }
 
     render() {
+        console.log('PaymentsList props', this.props)
         const paymentsList = this.props.payments.map(payment =>
             <PaymentItem key={payment.id} name={payment.name} onPress={this._onPress}/>
         )
+        console.log('paymentsList', paymentsList)
 
         return (
             <View>
