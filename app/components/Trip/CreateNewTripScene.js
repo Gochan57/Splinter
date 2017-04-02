@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { StyleSheet, TextInput, TouchableHighlight, View, Text } from 'react-native'
+import {ListItem} from 'react-native-material-ui'
 import {connect} from 'react-redux'
 import appStyles from 'app/styles'
 import { addTrip } from 'app/action/trips'
 import {goTo} from 'app/components/Common/SNavigator'
+import WideInput from 'app/components/Common/WideInput'
 import TripsScene from './TripsScene'
 
 const styles = appStyles.createNewTripStyles
@@ -49,17 +51,18 @@ class CreateNewTripScene extends Component {
     }
 
     render() {
-        const {name, members, inputMember} = this.state
+        const {inputMember, members} = this.state
         const _members = members.map(member => (
-            <Text>{member}</Text>
+            <ListItem
+                key={member}
+                centerElement={member}/>
         ))
         return (
             <View>
                 <View>
-                    <Text>Введите наименование</Text>
-                    <TextInput style={styles.inputName}
+                    <WideInput
                         onChangeText={text => {this.setState({name: text})}}
-                        value={name}
+                        placeholder={'Название'}
                     />
                 </View>
                 <View>

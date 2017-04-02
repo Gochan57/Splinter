@@ -23,10 +23,6 @@ export const addTripStyles = StyleSheet.create({
 })
 
 export const createNewTripStyles = StyleSheet.create({
-    inputName: {
-        backgroundColor: 'honeydew',
-        height: 30
-    },
     inputMember: {
         backgroundColor: 'lightyellow',
         height: 30

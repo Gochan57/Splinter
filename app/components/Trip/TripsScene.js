@@ -4,12 +4,14 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {toArrayWithKeys} from 'app/utils/utils'
 import {goTo} from 'app/components/Common/SNavigator'
+import WideButton from 'app/components/Common/WideButton'
 import PaymentsScene from '../Payment/PaymentsScene';
 import TripItem from './TripItem'
-import AddTrip from './AddTrip'
+import CreateNewTripScene from './CreateNewTripScene'
 
 class TripsScene extends Component {
 
+    // Отображается в строке навигатора
     static title = 'Путешествия'
 
     /**
@@ -27,10 +29,6 @@ class TripsScene extends Component {
             tripId,
             payments: items[tripId].payments
         }
-        console.log('passProps', passProps)
-        console.log('tripId', tripId)
-        console.log('items[tripId]', items[tripId])
-        console.log('items[tripId].payments', items[tripId].payments)
         return () => {
             goTo({
                 navigator,
@@ -39,6 +37,15 @@ class TripsScene extends Component {
                 title: items[tripId].name
             })
         }
+    }
+
+    _toAddTripScene = () => {
+        const {navigator} = this.props
+        goTo({
+            navigator,
+            component: CreateNewTripScene,
+            rightBtnOK: true
+        })
     }
 
     _renderTripItem = (rowData) => {
@@ -55,12 +62,12 @@ class TripsScene extends Component {
         const dataSource = ds.cloneWithRows(rows)
 
         return (
-            <View>
+            <View style={{flex: 1, justifyContent: 'space-between'}}>
                 <ListView
                     dataSource={dataSource}
                     renderRow={this._renderTripItem}
                 />
-                <AddTrip route={this.props.route} navigator={navigator}/>
+                <WideButton text={'Новое путешествие'} onPress={this._toAddTripScene} addBtn={true}/>
             </View>
         )
     }
