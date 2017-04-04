@@ -10,31 +10,30 @@ const trips = {
             '3': {name: 'Вова'},
         },
         payments: {
-            '01.02.2017': {
-                '1': {
-                    name: 'Супермаркет',
-                    members: [
-                        {personId: '1', spend: 100, pay: 0},
-                        {personId: '2', spend: 100, pay: 200},
-                    ]
-                },
-                '2': {
-                    name: 'Обучение у Сусы',
-                    members: [
-                        {personId: '1', spend: 50, pay: 0},
-                        {personId: '2', spend: 50, pay: 150},
-                        {personId: '3', spend: 50, pay: 0},
-                    ]
-                }
+            '1': {
+                name: 'Супермаркет',
+                date: '01.02.2017 17:01:24',
+                members: [
+                    {personId: '1', spend: 100, pay: 0},
+                    {personId: '2', spend: 100, pay: 200},
+                ]
             },
-            '02.02.2017': {
-                '3': {
-                    name: 'Такси',
-                    members: [
-                        {personId: '1', spend: 200, pay: 400},
-                        {personId: '3', spend: 200, pay: 0},
-                    ]
-                }
+            '2': {
+                name: 'Обучение у Сусы',
+                date: '01.02.2017 10:34:12',
+                members: [
+                    {personId: '1', spend: 50, pay: 0},
+                    {personId: '2', spend: 50, pay: 150},
+                    {personId: '3', spend: 50, pay: 0},
+                ]
+            },
+            '3': {
+                name: 'Такси',
+                date: '02.02.2017 12:56:01',
+                members: [
+                    {personId: '1', spend: 200, pay: 400},
+                    {personId: '3', spend: 200, pay: 0},
+                ]
             }
         }
     },

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { StyleSheet, TextInput, TouchableHighlight, View, Text } from 'react-native'
-import {ListItem} from 'react-native-material-ui'
 import {connect} from 'react-redux'
+import {ListItem} from 'react-native-material-ui'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
 import { addTrip } from 'app/action/trips'
 import {goTo} from 'app/components/Common/SNavigator'
@@ -24,6 +25,7 @@ class CreateNewTripScene extends Component {
             name: '',
             members: [],
             inputMember: '',
+            inputNewMember: false
         }
     }
 
@@ -50,13 +52,40 @@ class CreateNewTripScene extends Component {
         })
     }
 
+    renderNewMemberRow = () => {
+        const {inputNewMember, inputMember} = this.state
+        const leftElement = (inputNewMember ? null : <Icon name='plus' size={16} color='black'/>)
+        const textInputMember = (
+            <TextInput
+                autoFocus={true}
+                style={styles.inputMember}
+                value={inputMember}
+                onChangeText={text => {this.setState({inputMember: text})}}
+                onSubmitEditing={() => {
+                    this._addMember()
+                    this.setState({inputNewMember: false})
+                }}
+                placeholder={'Новый участник'}/>
+        )
+        const centerElement = (inputNewMember ? textInputMember : null)
+        return (
+            <ListItem
+                key={'new_member'}
+                leftElement={leftElement}
+                onLeftElementPress={() => {this.setState({inputNewMember: true})}}
+                centerElement={centerElement}
+                divider={true}/>
+        )
+    }
+
     render() {
         const {inputMember, members} = this.state
-        const _members = members.map(member => (
+        let _members = members.map(member => (
             <ListItem
                 key={member}
                 centerElement={member}/>
         ))
+        _members.push(this.renderNewMemberRow())
         return (
             <View>
                 <View>
@@ -67,13 +96,6 @@ class CreateNewTripScene extends Component {
                 </View>
                 <View>
                     {_members}
-                    <TextInput style={styles.inputMember}
-                        onChangeText={text => {this.setState({inputMember: text})}}
-                        value={inputMember}
-                    />
-                    <TouchableHighlight onPress={this._addMember}>
-                        <Text>+</Text>
-                    </TouchableHighlight>
                 </View>
             </View>
         )

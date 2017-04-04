@@ -1,71 +1,46 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
+import moment from 'moment'
 import {toArrayWithKeys} from 'app/utils/utils';
-import PaymentsList from './PaymentsList'
+import PaymentItem from './PaymentItem';
 
 export default class PaymentsScene extends Component {
-    constructor(props) {
-        super(props)
-    }
-
+    /**
+     * @prop tripId Идентификатор путешествия.
+     * @prop payments
+     * {
+     *  [id]: { Идентификатор платежа
+     *      name, Название платежа
+     *      date, Дата платежа DD.MM.YYYY HH:MI:SS
+     *      members: [{ Участники
+     *          personId, Идентификатор участника
+     *          spend, Потратил
+     *          pay Оплатил
+     *      }]
+     *  }
+     * }
+     */
     propTypes: {
         tripId: React.PropTypes.number,
         payments: React.PropTypes.object,
     }
 
-    renderPayments () {
-        const {payments} = this.props
-        if (!payments) {
+    render() {
+        // Преобразуем payments из стора в массив
+        const payments = toArrayWithKeys(this.props.payments)
+        // И сортируем в порядке убывания даты платежа
+            .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI:SS').diff(moment(p1.date, 'DD.MM.YYYY HH:MI:SS'), 'seconds'))
+        const paymentsList = payments.map(payment => {
+            const {id, name, date, members} = payment
+            const spent = members.reduce((s, v) => s + v.spend, 0)
             return (
-                <View>
-                    <Text>В этом путешествии пока нет ни одного счета</Text>
-                </View>
+                <PaymentItem key={id} id={id} name={name} date={date} spent={spent}/>
             )
-        }
-        const dates = Object.keys(payments)
-        console.log('dates', dates)
-        const paymentsList = dates.map(date =>
-            <PaymentsList
-                key={date}
-                date={date}
-                payments={toArrayWithKeys(payments[date])}/>)
-        console.log('PaymentsList', paymentsList)
+        })
         return (
             <View>
                 {paymentsList}
             </View>
         )
-    }
-
-    componentWillMount () {
-        console.log('PaymentsScene props', this.props)
-    }
-
-    render() {
-        const payments = this.renderPayments()
-        return (
-            <View>
-                {payments}
-            </View>
-        )
-    }
-
-    reorganizePayments = (payments) => {
-        let arrPayments = {}
-        payments.forEach(payment => {
-            if(!arrPayments[payment.date]){
-                arrPayments[payment.date] = []
-            }
-            arrPayments[payment.date].push(payment)
-        })
-        return arrPayments
-    }
-
-    generatePaymentsList = (arrPayments) => {
-        let paymentsList = []
-        for(date in arrPayments) {
-            paymentsList.push(<PaymentsList date={date} payments={arrPayments[date]}/>)
-        }
-        return paymentsList
     }
 }

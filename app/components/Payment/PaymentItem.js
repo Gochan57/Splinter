@@ -1,27 +1,28 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, TouchableHighlight} from 'react-native'
-import appStyles from 'app/styles'
-
-const styles = appStyles.paymentStyles
+import {ListItem} from 'react-native-material-ui'
 
 export default class PaymentItem extends Component {
-    constructor(props) {
-        super(props)
-    }
-
     propTypes: {
-        id: React.PropTypes.string,
-        name: React.PropTypes.array,
-        onPress: React.PropTypes.func,
+        id: React.PropTypes.string.isRequired,
+        name: React.PropTypes.string.isRequired,
+        date: React.PropTypes.string.isRequired,
+        spent: React.PropTypes.number.isRequired,  // Сумма потраченных денег по счету
     }
 
     render() {
+        const {id, name, date, spent} = this.props
         return (
-            <TouchableHighlight onPress={this.props.onPress}>
-                <Text style={styles.item}>
-                    {this.props.name}
-                </Text>
-            </TouchableHighlight>
+            <ListItem
+                key={id}
+                centerElement={{
+                    primaryText: name,
+                    secondaryText: date
+                }}
+                rightElement={<Text>{spent}</Text>}
+                onPress={() => {}}
+                divider={true}
+            />
         )
     }
 }

@@ -20,7 +20,6 @@
  * и значением которого будет значение ключа в объекте
  */
 export function toArrayWithKeys (o, propName = 'id') {
-    console.log('toArrayWithKeys:', o)
     if (typeof o !== 'object') {
         logError('Income param is not an object:', o)
         return

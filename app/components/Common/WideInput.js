@@ -28,8 +28,7 @@ export default class WideInput extends Component {
                     autoFocus={autoFocus}
                     onChangeText={this._onChangeText}
                     placeholder={placeholder}
-                    style={styles.wideInput}
-                    underlineColorAndroid={'#FF6C00'}/>
+                    style={styles.wideInput}/>
             </View>
         )
     }
