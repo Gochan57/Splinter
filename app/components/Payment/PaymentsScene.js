@@ -1,8 +1,11 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 import moment from 'moment'
-import {toArrayWithKeys} from 'app/utils/utils';
-import PaymentItem from './PaymentItem';
+import {toArrayWithKeys} from 'app/utils/utils'
+import appStyles from 'app/styles'
+import PaymentItem from './PaymentItem'
+
+const styles =  appStyles.commonStyles
 
 export default class PaymentsScene extends Component {
     /**
@@ -25,12 +28,20 @@ export default class PaymentsScene extends Component {
         payments: React.PropTypes.object,
     }
 
-    render() {
+    renderPaymentsList = () => {
+        const {payments} = this.props
+        if (!payments || !Object.keys(payments).length) {
+            return (
+                <View style={styles.infoTextContainer}>
+                    <Text style={styles.infoText}>Пока нет ни одного счета</Text>
+                </View>
+            )
+        }
         // Преобразуем payments из стора в массив
-        const payments = toArrayWithKeys(this.props.payments)
+        let _payments = toArrayWithKeys(payments)
         // И сортируем в порядке убывания даты платежа
-            .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI:SS').diff(moment(p1.date, 'DD.MM.YYYY HH:MI:SS'), 'seconds'))
-        const paymentsList = payments.map(payment => {
+            .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI').diff(moment(p1.date, 'DD.MM.YYYY HH:MI'), 'seconds'))
+        const paymentsList = _payments.map(payment => {
             const {id, name, date, members} = payment
             const spent = members.reduce((s, v) => s + v.spend, 0)
             return (
@@ -43,4 +54,13 @@ export default class PaymentsScene extends Component {
             </View>
         )
     }
+
+    render() {
+        return (
+            <View>
+                {this.renderPaymentsList()}
+            </View>
+        )
+    }
 }
+

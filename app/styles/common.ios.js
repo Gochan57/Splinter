@@ -13,6 +13,15 @@ export const commonStyles = StyleSheet.create({
     },
     wideButtonPrimaryText: {
         color: 'white',
+    },
+    infoTextContainer: {
+        height: 35,
+        flexGrow:1,
+        justifyContent: 'center'
+    },
+    infoText: {
+        textAlign:'center',
+        fontSize: 16
     }
 })
 
