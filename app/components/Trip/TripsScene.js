@@ -15,8 +15,8 @@ class TripsScene extends Component {
     static title = 'Путешествия'
 
     /**
-     * items - store.trips
-     * navigator - Навигатор.
+     * @prop items - store.trips
+     * @prop navigator - Навигатор.
      */
     propTypes: {
         items: React.PropTypes.object,

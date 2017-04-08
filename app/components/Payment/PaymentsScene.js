@@ -3,7 +3,9 @@ import {StyleSheet, View, Text} from 'react-native'
 import moment from 'moment'
 import {toArrayWithKeys} from 'app/utils/utils'
 import appStyles from 'app/styles'
+import WideButton from 'app/components/Common/WideButton'
 import PaymentItem from './PaymentItem'
+import CreatePaymentScene from './PaymentItem'
 
 const styles =  appStyles.commonStyles
 
@@ -22,10 +24,21 @@ export default class PaymentsScene extends Component {
      *      }]
      *  }
      * }
+     * @prop navigator - Навигатор.
      */
     propTypes: {
         tripId: React.PropTypes.number,
         payments: React.PropTypes.object,
+        navigator: React.propTypes.object,
+    }
+
+    _toAddTripScene = () => {
+        const {navigator} = this.props
+        goTo({
+            navigator,
+            component: CreateNewTripScene,
+            rightBtnOK: true
+        })
     }
 
     renderPaymentsList = () => {
@@ -51,6 +64,7 @@ export default class PaymentsScene extends Component {
         return (
             <View>
                 {paymentsList}
+                <WideButton text={'Новый счет'} onPress={this._toAddTripScene} addBtn={true}/>
             </View>
         )
     }
