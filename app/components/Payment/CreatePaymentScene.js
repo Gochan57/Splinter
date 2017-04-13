@@ -1,8 +1,11 @@
 import React, {Component} from 'react'
-import {StyleSheet, View, Text, TouchableHighlight, Switch} from 'react-native'
+import {StyleSheet, View, Text, TouchableHighlight} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
 
-export default class PaymentItem extends Component {
+import WideInput from 'app/components/Common/WideInput'
+import Switcher from 'app/components/Common/Switcher'
+
+export default class CreatePaymentScene extends Component {
     /**
      * tripId Идентификатор путешествия.
      */
@@ -10,20 +13,33 @@ export default class PaymentItem extends Component {
         tripId: React.PropTypes.string,
     }
 
-    state: {
-        spentEqually: false,
-        paidOne: false
+    /**
+     * name Название счета.
+     * spentEqually Потратили одинаково?
+     * paidOne Платил один?
+     */
+    constructor(props) {
+        super(props)
+        this.state = {
+            name: '',
+            spentEqually: false,
+            paidOne: false
+        }
     }
 
     render() {
         const {id, name, date, spent} = this.props
         return (
-            <Switch
-                onValueChange={(value) => this.setState({spentEqually: value})}
-                onTintColor="#00ff00"
-                thumbTintColor="#0000ff"
-                tintColor="#ff0000"
-                value={this.state.spentEqually} />
+            <View>
+                <WideInput
+                    placeholder='Название'
+                    onChangeText={text => {this.setState({name: text})}}
+                />
+                <Switcher
+                    label={'Потратили поровну'}
+                    onValueChange={(value) => this.setState({spentEqually: value})}
+                    value={this.state.spentEqually} />
+            </View>
         )
     }
 }

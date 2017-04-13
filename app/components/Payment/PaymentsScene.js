@@ -2,14 +2,19 @@ import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 import moment from 'moment'
 import {toArrayWithKeys} from 'app/utils/utils'
-import appStyles from 'app/styles'
+import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
+import appStyles from 'app/styles'
 import PaymentItem from './PaymentItem'
-import CreatePaymentScene from './PaymentItem'
+import CreatePaymentScene from './CreatePaymentScene'
 
 const styles =  appStyles.commonStyles
 
 export default class PaymentsScene extends Component {
+
+    // Отображается в строке навигатора
+    static title = 'Новый счет'
+
     /**
      * @prop tripId Идентификатор путешествия.
      * @prop payments
@@ -32,11 +37,11 @@ export default class PaymentsScene extends Component {
         navigator: React.propTypes.object,
     }
 
-    _toAddTripScene = () => {
+    _toCreatePaymentScene = () => {
         const {navigator} = this.props
         goTo({
             navigator,
-            component: CreateNewTripScene,
+            component: CreatePaymentScene,
             rightBtnOK: true
         })
     }
@@ -64,15 +69,15 @@ export default class PaymentsScene extends Component {
         return (
             <View>
                 {paymentsList}
-                <WideButton text={'Новый счет'} onPress={this._toAddTripScene} addBtn={true}/>
             </View>
         )
     }
 
     render() {
         return (
-            <View>
+            <View style={{flex: 1, justifyContent: 'space-between'}}>
                 {this.renderPaymentsList()}
+                <WideButton text={'Новый счет'} onPress={this._toCreatePaymentScene} addBtn={true}/>
             </View>
         )
     }
