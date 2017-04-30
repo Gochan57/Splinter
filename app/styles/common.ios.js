@@ -1,6 +1,15 @@
 import {StyleSheet} from 'react-native'
 
 export const commonStyles = StyleSheet.create({
+    verticalAlign: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
     wideInput: {
         backgroundColor: '#FFCE73',
         height: 35,

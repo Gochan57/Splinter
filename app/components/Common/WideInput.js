@@ -5,14 +5,32 @@ import appStyles from 'app/styles'
 const styles = appStyles.commonStyles
 
 export default class WideInput extends Component {
+
+    /**
+     * value Текст в инпуте.
+     */
     state: {
-        value: ''
+       value: ''
     }
 
+    /**
+     * onChangeText Коллбэк на изменение текста.
+     * placeholder Подсказка, отображающаяся при отстуствии значения в инпуте.
+     * value Текст в инпуте (передается, если текст нужно спустить сверху).
+     * textInputProps Свойства компонента TextInput.
+     */
     propTypes: {
-        autoFocus: React.propTypes.boolean,
         onChangeText: React.propTypes.func.isRequired,
         placeholder: React.propTypes.string,
+        value: React.propTypes.string,
+        textInputProps: React.propTypes.object,
+    }
+
+    constructor (props) {
+        super(props)
+        this.state = {
+            value: props.value
+        }
     }
 
     _onChangeText = (text) => {
@@ -21,14 +39,16 @@ export default class WideInput extends Component {
     }
 
     render() {
-        const {autoFocus = true, placeholder} = this.props
+        const {placeholder, textInputProps} = this.props
+        const {value} = this.state
         return (
             <View>
                 <TextInput
-                    autoFocus={autoFocus}
                     onChangeText={this._onChangeText}
                     placeholder={placeholder}
-                    style={styles.wideInput}/>
+                    value={value}
+                    style={styles.wideInput}
+                    {...textInputProps}/>
             </View>
         )
     }

@@ -54,7 +54,7 @@ class TripsScene extends Component {
         )
     }
 
-    render(){
+    render() {
         const {items, navigator} = this.props
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
@@ -74,7 +74,6 @@ class TripsScene extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log('trips:', state.trips)
     return {items: state.trips}
 }
 

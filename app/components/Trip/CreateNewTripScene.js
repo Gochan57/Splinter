@@ -92,6 +92,7 @@ class CreateNewTripScene extends Component {
                     <WideInput
                         onChangeText={text => {this.setState({name: text})}}
                         placeholder={'Название'}
+                        textInputProps={{autoFocus: true}}
                     />
                 </View>
                 <View>
