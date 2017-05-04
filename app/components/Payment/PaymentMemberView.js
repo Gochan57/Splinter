@@ -19,8 +19,8 @@ export default class PaymentMemberView extends Component {
      * onPaidChanged Коллбэк на изменение значения оплаченных денег.
      * radioButtonClass Класс группы радио-баттонов, отмечающих, кто оплатил весь счет.
      */
-    propTypes: {
-        included: PropTypes.string.bool,
+    static propTypes = {
+        included: PropTypes.bool,
         name: PropTypes.string.isRequired,
         spent: PropTypes.number,
         paid: PropTypes.number,
@@ -28,13 +28,6 @@ export default class PaymentMemberView extends Component {
         onSpentChanged: PropTypes.func.isRequired,
         onPaidChanged: PropTypes.func.isRequired,
         radioButtonClass: PropTypes.string.isRequired,
-    }
-
-    constructor(props) {
-        super(props)
-        this.state = {
-
-        }
     }
 
     render() {

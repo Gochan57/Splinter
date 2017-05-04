@@ -6,7 +6,7 @@ import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 import PaymentItem from './PaymentItem'
-import CreatePaymentScene from './CreatePaymentScene'
+import CreatePaymentScene from './NewPaymentScene'
 
 const styles =  appStyles.commonStyles
 

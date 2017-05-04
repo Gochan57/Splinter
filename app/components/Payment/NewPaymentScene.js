@@ -1,18 +1,29 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text, TouchableHighlight, SwipeableListView} from 'react-native'
-import {filter} from 'lodash'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+import {filter, forEach} from 'lodash'
+
+import {removeMemberFromNewPayment} from 'app/action/payments'
+import {toArrayWithKeys} from 'app/utils/utils'
 
 import WideInput from 'app/components/Common/WideInput'
 import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
 
-import PaymentMember from './PaymentMemberView'
+import PaymentMemberView from './PaymentMemberView'
 
-export default class CreatePaymentScene extends Component {
+class NewPaymentScene extends Component {
+
+    /**
+     * Заголовок сцены для строки навигатора.
+     */
+    static title = 'Новый счет'
+
     /**
      * tripId Идентификатор путешествия.
      */
-    propTypes: {
+    static propTypes = {
         tripId: React.PropTypes.string,
     }
 
@@ -39,9 +50,12 @@ export default class CreatePaymentScene extends Component {
     }
 
     renderMemberRow = (rowData) => (
-        <PaymentMember
+        <PaymentMemberView
             name={rowData.name}
             spent={rowData.spent}
+            onSpentChanged={()=>{}} //TODO
+            onPaidChanged={()=>{}} //TODO
+            radioButtonClass={'paidOne'}
             key={rowData.key}/>
     )
 
@@ -54,7 +68,8 @@ export default class CreatePaymentScene extends Component {
     }
 
     render() {
-        const data = this.state.data
+        //const data = this.state.data
+        const data = this.props.members
         console.log('render data:', data)
         const {id} = this.props
         const {spentEqually, paidOne, sum} = this.state
@@ -78,8 +93,31 @@ export default class CreatePaymentScene extends Component {
                 <RemovableListView
                     data={data}
                     renderRow={this.renderMemberRow}
-                    removeRow={this.removeRow}/>
+                    removeRow={(key) => this.props.removeMemberFromNewPayment(key)}/>
             </View>
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    console.log('---> mapStateToProps', state)
+    const newPayment = state.payments.newPayment
+    const people = state.trips[newPayment.tripId].people
+    let members = toArrayWithKeys(newPayment.members, 'key')
+    forEach(members, member => {
+        member.name = people[member.key].name
+    })
+    return {members}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({removeMemberFromNewPayment}, dispatch)
+}
+
+//const mapDispatchToProps = (dispatch) => ({
+//    removeMemberFromNewPayment(id) {
+//        dispatch(removeMemberFromNewPayment(id))
+//    },
+//})
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewPaymentScene)

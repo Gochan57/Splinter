@@ -1,16 +1,31 @@
-import {ADD_TRIP} from '../constants'
-// TODO Переделать на асинхронные экшны
+import {UPDATE_NEW_PAYMENT, REMOVE_MEMBER_FROM_NEW_PAYMENT} from '../constants'
+
 /**
- * Создание нового путешествие.
+ * Обновление информации о добавлении нового счета.
  *
- * @param {string} name - Название.
- * @param {string[]} members - Участники.
+ * @param newPayment - Информация о новом счете (структуру см. в reducer/payments.js const newPayment).
  */
-export function addTrip(name, members) {
+export function updateNewPayment(newPayment) {
     return {
-        type: ADD_TRIP,
+        type: UPDATE_NEW_PAYMENT,
         payload: {
-            name
+            newPayment
         }
+    }
+}
+
+/**
+ * Удаление участника из списка участников при добавлении нового счета.
+ *
+ * @param id - Идентификатор удаляемого участника.
+ */
+export function removeMemberFromNewPayment(id) {
+    return (dispatch) => {
+        dispatch({
+            type: REMOVE_MEMBER_FROM_NEW_PAYMENT,
+            payload: {
+                id
+            }
+        })
     }
 }

@@ -2,10 +2,12 @@ import React, {Component, PropTypes} from 'react'
 import {StyleSheet, View, Text, TextInput, TouchableHighlight} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-
+import {removeMemberFromNewPayment} from 'app/action/payments'
+import PaymentMemberView from './PaymentMemberView'
 
 class PaymentMember extends Component {
     /**
+     * id Идентификатор участника счета.
      * included Участвует в счете.
      * name Имя участника.
      * spent Потратил денег.
@@ -15,8 +17,9 @@ class PaymentMember extends Component {
      * onPaidChanged Коллбэк на изменение значения оплаченных денег.
      * radioButtonClass Класс группы радио-баттонов, отмечающих, кто оплатил весь счет.
      */
-    propTypes: {
-        included: PropTypes.string.bool,
+    static propTypes = {
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        included: PropTypes.bool,
         name: PropTypes.string.isRequired,
         spent: PropTypes.number,
         paid: PropTypes.number,
@@ -27,16 +30,23 @@ class PaymentMember extends Component {
     }
 
     render() {
-
+        const {included, name, spent, paid, paidOne, onSpentChanged, onPaidChanged, radioButtonClass} = this.props
+        return (
+            <PaymentMemberView
+                included={included}
+                name={name}
+                spent={spent}
+                paid={paid}
+                paidOne={paidOne}
+                onSpentChanged={onSpentChanged}
+                onPaidChanged={onPaidChanged}
+                radioButtonClass={radioButtonClass}/>
+        )
     }
 }
 
-const mapStateToProps = (state) => {
-    return {items: state.trips}
-}
-
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({}, dispatch)
+    return bindActionCreators({removeMemberFromNewPayment}, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TripsScene)
+export default connect(null, mapDispatchToProps)(PaymentMember)
