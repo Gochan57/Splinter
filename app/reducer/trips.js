@@ -1,5 +1,6 @@
-import {ADD_TRIP} from '../constants'
+import {ADD_TRIP, START_CREATING_NEW_PAYMENT} from '../constants'
 import {getMaxId} from 'app/utils/utils'
+import {cloneDeep} from 'lodash'
 
 const trips = {
     '1': {
@@ -9,33 +10,7 @@ const trips = {
             '2': {name: 'Гоша'},
             '3': {name: 'Вова'},
         },
-        payments: {
-            '1': {
-                name: 'Супермаркет',
-                date: '01.02.2017 17:01:24',
-                members: [
-                    {personId: '1', spend: 100, pay: 0},
-                    {personId: '2', spend: 100, pay: 200},
-                ]
-            },
-            '2': {
-                name: 'Обучение у Сусы',
-                date: '01.02.2017 10:34:12',
-                members: [
-                    {personId: '1', spend: 50, pay: 0},
-                    {personId: '2', spend: 50, pay: 150},
-                    {personId: '3', spend: 50, pay: 0},
-                ]
-            },
-            '3': {
-                name: 'Такси',
-                date: '02.02.2017 12:56:01',
-                members: [
-                    {personId: '1', spend: 200, pay: 400},
-                    {personId: '3', spend: 200, pay: 0},
-                ]
-            }
-        }
+        payments: ['1', '2', '3']
     },
     '2': {
         name: 'Kazan',
@@ -55,9 +30,8 @@ const trips = {
     }
 }
 
-//TODO передавать id из экшна
 export default (state = trips, action) => {
-    console.log('action:', action)
+    console.log('trip action:', action)
     const {type, payload} = action
 
     switch(type) {
@@ -66,6 +40,19 @@ export default (state = trips, action) => {
             const newId = getMaxId(state) + 1
             const newState = {...state, [newId]: {name}}
             return newState
+        }
+        case START_CREATING_NEW_PAYMENT: {
+            const {tripId, paymentId} = payload
+            return {
+                ...trips,
+                [tripId]: {
+                    ...trips[tripId],
+                    payments: [
+                        ...trips[tripId].payments,
+                        paymentId
+                    ]
+                }
+            }
         }
     }
 

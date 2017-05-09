@@ -27,7 +27,6 @@ class TripsScene extends Component {
         const {items, navigator} = this.props
         const passProps = {
             tripId,
-            payments: items[tripId].payments
         }
         return () => {
             goTo({

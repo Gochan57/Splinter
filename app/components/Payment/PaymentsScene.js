@@ -1,16 +1,23 @@
 import React, {Component} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+
 import moment from 'moment'
+import {filter, some} from 'lodash'
+
 import {toArrayWithKeys} from 'app/utils/utils'
+import {startCreatingNewPayment} from 'app/action/payments'
 import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
+
 import PaymentItem from './PaymentItem'
-import CreatePaymentScene from './NewPaymentScene'
+import CreatePaymentScene from './UpdatePaymentScene'
 
 const styles =  appStyles.commonStyles
 
-export default class PaymentsScene extends Component {
+class PaymentsScene extends Component {
 
     // Отображается в строке навигатора
     static title = 'Новый счет'
@@ -38,11 +45,15 @@ export default class PaymentsScene extends Component {
     }
 
     _toCreatePaymentScene = () => {
-        const {navigator} = this.props
+        const {tripId} = this.props
+        this.props.startCreatingNewPayment(tripId)
+        const passProps = {tripId}
         goTo({
-            navigator,
+            navigator: this.props.navigator,
             component: CreatePaymentScene,
-            rightBtnOK: true
+            props: passProps,
+            rightBtnOK: true,
+            title: 'Новый счет'
         })
     }
 
@@ -83,3 +94,18 @@ export default class PaymentsScene extends Component {
     }
 }
 
+const mapStateToProps = (state, ownProps) => {
+    // Получаем список id счетов текущего путешествия.
+    const paymentIds = state.trips[ownProps.tripId].payments
+    // Получаем список всех счетов.
+    const allPayments = toArrayWithKeys(state.payments)
+    // Выбираем из всех счетов те, которые входят в текущее путешествие.
+    const payments = filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
+    return {payments}
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({startCreatingNewPayment}, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PaymentsScene)

@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react'
 import {StyleSheet, View, Text, TextInput, TouchableHighlight} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {removeMemberFromNewPayment} from 'app/action/payments'
+import {removeMemberFromPayment} from 'app/action/payments'
 import PaymentMemberView from './PaymentMemberView'
 
 class PaymentMember extends Component {
@@ -46,7 +46,7 @@ class PaymentMember extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({removeMemberFromNewPayment}, dispatch)
+    return bindActionCreators({removeMemberFromPayment}, dispatch)
 }
 
 export default connect(null, mapDispatchToProps)(PaymentMember)

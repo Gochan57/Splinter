@@ -39,7 +39,7 @@ export default class PaymentMemberView extends Component {
                 </View>
                 <View style={commonStyles.verticalAlign}>
                     <TextInput
-                        onChangeText={this.onSpentChanged}
+                        onChangeText={onSpentChanged}
                         placeholder={'Оплатил'}
                         value={spent}
                         style={styles.input}
