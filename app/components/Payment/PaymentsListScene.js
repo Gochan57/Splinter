@@ -7,17 +7,17 @@ import moment from 'moment'
 import {filter, some} from 'lodash'
 
 import {toArrayWithKeys} from 'app/utils/utils'
-import {startCreatingNewPayment} from 'app/action/payments'
+import {} from 'app/action/payments'
 import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 
 import PaymentItem from './PaymentItem'
-import CreatePaymentScene from './UpdatePaymentScene'
+import CreatePaymentScene from './PaymentScene'
 
 const styles =  appStyles.commonStyles
 
-class PaymentsScene extends Component {
+class PaymentsListScene extends Component {
 
     // Отображается в строке навигатора
     static title = 'Новый счет'
@@ -45,8 +45,8 @@ class PaymentsScene extends Component {
     }
 
     _toCreatePaymentScene = () => {
+        // FIXME tripId
         const {tripId} = this.props
-        this.props.startCreatingNewPayment(tripId)
         const passProps = {tripId}
         goTo({
             navigator: this.props.navigator,
@@ -105,7 +105,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({startCreatingNewPayment}, dispatch)
+    return bindActionCreators({}, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PaymentsScene)
+export default connect(mapStateToProps, mapDispatchToProps)(PaymentsListScene)

@@ -14,7 +14,9 @@ export default class PaymentMemberView extends Component {
      * name Имя участника.
      * spent Потратил денег.
      * paid Оплатил денег.
-     * paidOne Платил только этот участник.
+     * spentEqually Все потратили одинаково денег?
+     * paidOne Платил только один участник?
+     * paidForAll За всех платил этот участник?
      * onSpentChanged Коллбэк на изменение значения потраченных денег.
      * onPaidChanged Коллбэк на изменение значения оплаченных денег.
      * radioButtonClass Класс группы радио-баттонов, отмечающих, кто оплатил весь счет.
@@ -24,14 +26,16 @@ export default class PaymentMemberView extends Component {
         name: PropTypes.string.isRequired,
         spent: PropTypes.number,
         paid: PropTypes.number,
+        spentEqually: PropTypes.bool,
         paidOne: PropTypes.bool,
+        paidForAll: PropTypes.bool,
         onSpentChanged: PropTypes.func.isRequired,
         onPaidChanged: PropTypes.func.isRequired,
         radioButtonClass: PropTypes.string.isRequired,
     }
 
     render() {
-        const {enabled, name, spent, paidOne, onSpentChanged, onPaidChanged, radioButtonClass,} = this.props
+        const {enabled, name, spent, paid, spentEqually, paidOne, onSpentChanged, onPaidChanged, radioButtonClass,} = this.props
         return (
             <View style={[commonStyles.rowContainer, styles.container]}>
                 <View style={commonStyles.verticalAlign}>
@@ -39,11 +43,21 @@ export default class PaymentMemberView extends Component {
                 </View>
                 <View style={commonStyles.verticalAlign}>
                     <TextInput
-                        onChangeText={onSpentChanged}
-                        placeholder={'Оплатил'}
-                        value={spent}
+                        editable={!spentEqually}
+                        onEndEditing={onSpentChanged}
+                        placeholder={'Потратил'}
+                        value={spent !== undefined ? spent.toString() : undefined}
                         style={styles.input}
                         />
+                </View>
+                <View style={commonStyles.verticalAlign}>
+                    <TextInput
+                        editable={!paidOne}
+                        onEndEditing={onPaidChanged}
+                        placeholder={'Оплатил'}
+                        value={paid !== undefined ? paid.toString() : undefined}
+                        style={styles.input}
+                    />
                 </View>
             </View>
         )
@@ -62,7 +76,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     input: {
-        backgroundColor: 'red',
+        height: 40,
         width: 100
     }
 })

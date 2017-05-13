@@ -1,5 +1,14 @@
-import {START_CREATING_NEW_PAYMENT, UPDATE_PAYMENT, REMOVE_MEMBER_FROM_PAYMENT, CHANGE_MEMBER_SPENT_ON_PAYMENT} from '../constants'
-import {toArrayWithKeys} from 'app/utils/utils'
+import {
+    START_UPDATING_PAYMENT,
+    REMOVE_MEMBER_FROM_PAYMENT,
+    SPENT_EQUALLY_SWITCHED,
+    PAID_ONE_SWITCHED,
+    CHANGE_MEMBER_SPENT_ON_PAYMENT,
+    UPDATE_PAYMENT,
+    CANCEL_UPDATING_PAYMENT,
+    TEMPORARY_ID,
+} from '../constants'
+import {toArrayWithKeys,logError} from 'app/utils/utils'
 
 /**
  * Начало создания нового счета.
@@ -10,28 +19,24 @@ export function startCreatingNewPayment(tripId) {
     return (dispatch, getState) => {
         // Составляем массив всех участников путешествия
         const members = toArrayWithKeys(getState().trips[tripId].people, 'personId')
-        // TODO get nextId from PAYMENTS table
-        tempPromise(4).then((paymentId) => {
-            dispatch({
-                type: START_CREATING_NEW_PAYMENT,
-                payload: {tripId, paymentId, members}
-            })
+        dispatch({
+            type: START_UPDATING_PAYMENT,
+            payload: {tripId, members}
         })
     }
 }
 
 /**
- * Обновление информации о счете.
+ * Начало редактирования счета.
  *
  * @param tripId - Идентификатор путешествия.
  * @param paymentId - Идентификатор счета.
- * @param newPayment - Информация о новом счете (структуру см. в reducer/payments.js const newPayment).
  */
-export function updatePayment(tripId, paymentId, newPayment) {
-    return (dispatch) => {
+export function startUpdatingPayment(tripId, paymentId) {
+    return (dispatch, getState) => {
         dispatch({
-            type: UPDATE_PAYMENT,
-            payload: {tripId, paymentId, newPayment}
+            type: START_UPDATING_PAYMENT,
+            payload: {tripId, paymentId}
         })
     }
 }
@@ -41,31 +46,83 @@ export function updatePayment(tripId, paymentId, newPayment) {
  *
  * @param tripId - Идентификатор путешествия. (TODO вообще-то tripId не нужен)
  * @param paymentId - Идентификатор счета.
- * @param memberId - Идентификатор удаляемого участника.
+ * @param personId - Идентификатор удаляемого участника.
  */
-export function removeMemberFromPayment(tripId, paymentId, memberId) {
+export function removeMemberFromPayment(tripId, paymentId, personId) {
     return (dispatch) => {
         dispatch({
             type: REMOVE_MEMBER_FROM_PAYMENT,
-            payload: {tripId, paymentId, memberId}
+            payload: {tripId, paymentId, personId}
         })
+    }
+}
+
+/**
+ * Switch потратили поровну.
+ *
+ * @param spentEqually - Все потратили поровну?
+ */
+export function spentEquallySwitched(spentEqually) {
+    return {
+        type: SPENT_EQUALLY_SWITCHED,
+        payload: {spentEqually}
+    }
+}
+
+/**
+ * Switch платил один.
+ *
+ * @param paidOne - Платил один?
+ */
+export function paidOneSwitched(paidOne) {
+    return {
+        type: PAID_ONE_SWITCHED,
+        payload: {paidOne}
     }
 }
 
 /**
  * Изменение потраченных денег у участника счета.
  *
- * @param tripId - Идентификатор путешествия.
- * @param paymentId - Идентификатор счета.
- * @param memberId - Идентификатор участника.
- * @param spent - Новое количество потраченных денег.
+ * @param personId - Идентификатор участника.
+ * @param value - Новое количество потраченных денег.
  */
-export function changeMemberSpentOnPayment(tripId, paymentId, memberId, spent) {
+export function changeMemberSpentOnPayment(personId, value) {
+    const spent = parseInt(value) || 0
     return (dispatch) => {
         dispatch({
             type: CHANGE_MEMBER_SPENT_ON_PAYMENT,
-            payload: {tripId, paymentId, memberId, spent}
+            payload: {personId, spent}
         })
+    }
+}
+
+/**
+ * Сохранение обновленной информации о счете.
+ *
+ * @param tripId - Идентификатор путешествия.
+ */
+export function updatePayment(tripId) {
+    return (dispatch, getState) => {
+        const payment = getState().payments[TEMPORARY_ID]
+        // FIXME сохранять счет в базу
+        const paymentId = payment.paymentId || '4'
+        tempPromise(paymentId).then(id => {
+            dispatch({
+                type: UPDATE_PAYMENT,
+                payload: {tripId, paymentId: id, payment}
+            })
+        })
+    }
+}
+
+/**
+ * Отмена редактирования счета.
+ *
+ */
+export function cancelUpdatingPayment() {
+    return {
+        type: CANCEL_UPDATING_PAYMENT,
     }
 }
 

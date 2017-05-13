@@ -4,8 +4,18 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {filter, find, forEach, pickBy} from 'lodash'
 
-import {removeMemberFromPayment} from 'app/action/payments'
+import {
+    startCreatingNewPayment,
+    startUpdatingPayment,
+    spentEquallySwitched,
+    paidOneSwitched,
+    removeMemberFromPayment,
+    changeMemberSpentOnPayment,
+    updatePayment,
+    cancelUpdatingPayment,
+} from 'app/action/payments'
 import {toArrayWithKeys} from 'app/utils/utils'
+import {TEMPORARY_ID} from 'app/constants'
 
 import WideInput from 'app/components/Common/WideInput'
 import Switcher from 'app/components/Common/Switcher'
@@ -13,7 +23,7 @@ import RemovableListView from 'app/components/Common/RemovableListView'
 
 import PaymentMemberView from './PaymentMemberView'
 
-class UpdatePaymentScene extends Component {
+class PaymentScene extends Component {
 
     static defaultProps: {
         loading: false,
@@ -45,11 +55,33 @@ class UpdatePaymentScene extends Component {
         members: React.PropTypes.array,
     }
 
+    componentWillMount () {
+        const {tripId, paymentId} = this.props
+        if (paymentId) {
+            this.props.startUpdatingPayment(tripId, paymentId)
+        }
+        else {
+            this.props.startCreatingNewPayment(tripId)
+        }
+        // Задаем действие кнопке "Сохранить"
+        this.props.route.rightBtnAction = () => {
+            this.props.updatePayment(tripId)
+            this.props.navigator.pop()
+        }
+    }
+
+    componentWillUnmount () {
+        this.props.cancelUpdatingPayment()
+    }
+
     renderMemberRow = (rowData) => (
         <PaymentMemberView
             name={rowData.name}
             spent={rowData.spent}
-            onSpentChanged={()=>{}} //TODO
+            paid={rowData.paid}
+            spentEqually={rowData.spentEqually}
+            paidOne={rowData.paidOne}
+            onSpentChanged={value => {this.props.changeMemberSpentOnPayment(rowData.personId, value)}}
             onPaidChanged={()=>{}} //TODO
             radioButtonClass={'paidOne'}
             key={rowData.key}/>
@@ -68,11 +100,11 @@ class UpdatePaymentScene extends Component {
                 />
                 <Switcher
                     label={'Потратили поровну'}
-                    onValueChange={(value) => this.setState({spentEqually: value})}
+                    onValueChange={(value) => {this.props.spentEquallySwitched(value)}}
                     value={spentEqually} />
                 <Switcher
                     label={'Платил один'}
-                    onValueChange={(value) => this.setState({paidOne: value})}
+                    onValueChange={(value) => {this.props.paidOneSwitched(value)}}
                     value={paidOne} />
                 <WideInput
                     placeholder='Общая сумма счета'
@@ -80,7 +112,7 @@ class UpdatePaymentScene extends Component {
                 <RemovableListView
                     data={members}
                     renderRow={this.renderMemberRow}
-                    removeRow={(memberId) => this.props.removeMemberFromPayment(tripId, paymentId, memberId)}/>
+                    removeRow={(personId) => this.props.removeMemberFromPayment(tripId, paymentId, personId)}/>
             </View>
         )
     }
@@ -89,31 +121,29 @@ class UpdatePaymentScene extends Component {
 const mapStateToProps = (state, ownProps) => {
     const {tripId} = ownProps
     // Из списка всех счетов выберем счет с пометкой "новый".
-    let newPayment
-    let newPaymentId
-    const paymentIds = Object.keys(state.payments)
-    for(let i = 0; i<paymentIds.length; i++) {
-        const paymentId = paymentIds[i]
-        if (state.payments[paymentId].isNewPayment) {
-            newPaymentId = paymentId
-            newPayment = state.payments[paymentId]
-            break
-        }
-    }
-    // Новый счет добавляется в общий список счетов, id для которого запрашивается в базе.
-    // TODO подумать, может id создавать во время сохранения счета?
-    if(!newPayment) {
+    let payment = state.payments[TEMPORARY_ID]
+    if(!payment) {
         return {loading: true}
     }
-    let members = newPayment.members
-    forEach(members, member => {
+    // Добавим к каждому member поле key (этого требует элемент RemovableListView)
+    forEach(payment.members, member => {
         member.key = member.personId
     })
-    return {loading: false, paymentId: newPaymentId, members}
+    const {paymentId, name, spentEqually, paidOne, sum, members} = payment
+    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum, members}
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({removeMemberFromPayment}, dispatch)
+    return bindActionCreators({
+        startCreatingNewPayment,
+        startUpdatingPayment,
+        spentEquallySwitched,
+        paidOneSwitched,
+        removeMemberFromPayment,
+        changeMemberSpentOnPayment,
+        updatePayment,
+        cancelUpdatingPayment,
+    }, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdatePaymentScene)
+export default connect(mapStateToProps, mapDispatchToProps)(PaymentScene)

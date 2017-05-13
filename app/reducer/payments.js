@@ -1,5 +1,13 @@
-import {START_CREATING_NEW_PAYMENT, UPDATE_PAYMENT, REMOVE_MEMBER_FROM_PAYMENT, CHANGE_MEMBER_SPENT_ON_PAYMENT} from '../constants'
-import {cloneDeep, remove} from 'lodash'
+import {
+    START_UPDATING_PAYMENT,
+    SPENT_EQUALLY_SWITCHED,
+    PAID_ONE_SWITCHED,
+    REMOVE_MEMBER_FROM_PAYMENT,
+    CHANGE_MEMBER_SPENT_ON_PAYMENT,
+    UPDATE_PAYMENT,
+    CANCEL_UPDATING_PAYMENT,
+    TEMPORARY_ID} from '../constants'
+import {cloneDeep, find, remove, omit} from 'lodash'
 
 const defaultPayments = {
     '1': {
@@ -35,11 +43,11 @@ const defaultPayments = {
         spentEqually: true,
         paidOne: true,
         sum: 400
-    },
+    }
 }
 
 const defaultNewPayment = {
-    isNewPayment: true,
+    paymentId: undefined,
     members: [],
     spentEqually: false,
     paidOne: false,
@@ -47,36 +55,82 @@ const defaultNewPayment = {
 }
 
 export default (payments = defaultPayments, action) => {
-    console.log('payments action:', action)
     const {type, payload} = action
 
     switch(type) {
-        case START_CREATING_NEW_PAYMENT: {
+        case START_UPDATING_PAYMENT: {
+            // Создадим в payments поле с ключом -1, куда скопируем редактируемый счет,
+            // или, в случае создания нового счета,  defaultNewPayment.
+            // При редактировании счета будем менять именно этот счет, а затем,
+            // по нажатию "Сохранить", скопируем новые значения в поля оригинального счета.
+
+            // paymentId передается в случае редактирования существующего счета.
+            // members передается в случае создания нового счета (по умолчанию это все участники путешествия).
             const {paymentId, members} = payload
+
+            let updatingPayment
+            if (paymentId) {
+                // Если редактируется существующий счет
+                updatingPayment = cloneDeep(payments[paymentId])
+                updatingPayment.paymentId = paymentId
+            }
+            else {
+                // Если создается новый счет
+                updatingPayment = {...defaultNewPayment, members}
+            }
             return {
                 ...payments,
-                [paymentId]: {
-                    ...defaultNewPayment,
-                    members
+                [TEMPORARY_ID]: updatingPayment
+            }
+        }
+        case SPENT_EQUALLY_SWITCHED: {
+            const {spentEqually} = payload
+            return {
+                ...payments,
+                [TEMPORARY_ID]: {
+                    ...payments[TEMPORARY_ID],
+                    spentEqually
                 }
             }
         }
-        case UPDATE_PAYMENT: {
-            const {newPayment} = payload
+        case PAID_ONE_SWITCHED: {
+            const {paidOne} = payload
             return {
-                newPayment: {
-                    ...payments.newPayment,
-                    ...newPayment,
+                ...payments,
+                [TEMPORARY_ID]: {
+                    ...payments[TEMPORARY_ID],
+                    paidOne
                 }
             }
         }
         case REMOVE_MEMBER_FROM_PAYMENT: {
-            const {paymentId, memberId} = payload
-            let _newPayment = cloneDeep(payments[paymentId])
-            remove(_newPayment.members, member => member.personId === memberId)
+            const {personId} = payload
+            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
+            remove(updatingPayment.members, member => member.personId === personId)
             return {
-                newPayment: _newPayment
+                ...payments,
+                [TEMPORARY_ID]: updatingPayment
             }
+        }
+        case CHANGE_MEMBER_SPENT_ON_PAYMENT: {
+            const {personId, spent} = payload
+            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
+            const updatingMember = find(updatingPayment.members, member => member.personId == personId)
+            updatingMember.spent = spent
+            return {
+                ...payments,
+                [TEMPORARY_ID]: updatingPayment
+            }
+        }
+        case UPDATE_PAYMENT: {
+            const {paymentId, payment} = payload
+            return {
+                ...payments,
+                [paymentId]: omit(payment, ['paymentId'])
+            }
+        }
+        case CANCEL_UPDATING_PAYMENT: {
+            return omit(payments, [TEMPORARY_ID])
         }
     }
 

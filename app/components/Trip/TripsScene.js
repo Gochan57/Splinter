@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux'
 import {toArrayWithKeys} from 'app/utils/utils'
 import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
-import PaymentsScene from '../Payment/PaymentsScene';
+import PaymentsListScene from '../Payment/PaymentsListScene';
 import TripItem from './TripItem'
 import CreateNewTripScene from './CreateNewTripScene'
 
@@ -23,7 +23,7 @@ class TripsScene extends Component {
         navigator: React.propTypes.object,
     }
 
-    _toPaymentsScene = (tripId) => {
+    _toPaymentsListScene = (tripId) => {
         const {items, navigator} = this.props
         const passProps = {
             tripId,
@@ -31,7 +31,7 @@ class TripsScene extends Component {
         return () => {
             goTo({
                 navigator,
-                component: PaymentsScene,
+                component: PaymentsListScene,
                 props: passProps,
                 title: items[tripId].name
             })
@@ -49,7 +49,7 @@ class TripsScene extends Component {
 
     _renderTripItem = (rowData) => {
         return (
-            <TripItem name={rowData.name} onPress={this._toPaymentsScene(rowData.id)}/>
+            <TripItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.id)}/>
         )
     }
 
