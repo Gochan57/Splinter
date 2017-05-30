@@ -1,4 +1,5 @@
-import {commonStyles, navigatorStyles} from './common'
+import {commonStyles} from './common'
+import {navigatorStyles} from './navigator'
 import {tripItemStyles, addTripStyles, createNewTripStyles} from './trips'
 import {paymentStyles} from './payments'
 

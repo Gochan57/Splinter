@@ -1,14 +1,22 @@
 import {
     START_UPDATING_PAYMENT,
+    CHANGE_PAYMENT_NAME,
     REMOVE_MEMBER_FROM_PAYMENT,
     SPENT_EQUALLY_SWITCHED,
     PAID_ONE_SWITCHED,
+    RESET_PAID_FOR_ALL,
+    CHANGE_SUM_ON_PAYMENT,
+    SPLIT_SUM_BY_MEMBERS,
+    PAID_FOR_ALL_CHECKED,
+    CHANGE_PAID_TO_PAY_FOR_ALL,
     CHANGE_MEMBER_SPENT_ON_PAYMENT,
+    CHANGE_MEMBER_PAID_ON_PAYMENT,
     UPDATE_PAYMENT,
     CANCEL_UPDATING_PAYMENT,
     TEMPORARY_ID,
 } from '../constants'
-import {toArrayWithKeys,logError} from 'app/utils/utils'
+import {toArrayWithKeys, toNumber, logError} from 'app/utils/utils'
+import {find, reduce} from 'lodash'
 
 /**
  * Начало создания нового счета.
@@ -42,6 +50,20 @@ export function startUpdatingPayment(tripId, paymentId) {
 }
 
 /**
+ * Изменение названия счета.
+ *
+ * @param name - Название счета.
+ */
+export function changePaymentName(name) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: CHANGE_PAYMENT_NAME,
+            payload: {name}
+        })
+    }
+}
+
+/**
  * Удаление участника из списка участников.
  *
  * @param tripId - Идентификатор путешествия. (TODO вообще-то tripId не нужен)
@@ -63,9 +85,18 @@ export function removeMemberFromPayment(tripId, paymentId, personId) {
  * @param spentEqually - Все потратили поровну?
  */
 export function spentEquallySwitched(spentEqually) {
-    return {
-        type: SPENT_EQUALLY_SWITCHED,
-        payload: {spentEqually}
+    return (dispatch, getState) => {
+        dispatch ({
+            type: SPENT_EQUALLY_SWITCHED,
+            payload: {spentEqually}
+        })
+        if (spentEqually) {
+            // Если переключили на "Потратили поровну", разделим сумму счета по всем участникам
+            // Делаем небольшую задержку на случай, если переключили свитчер, не сняв фокус с инпута потраченных денег
+            // одного из участников счета, чтобы успело обновиться значение его потраченных денег.
+            //setTimeout(() => {dispatch(splitSumByMembers())}, 100)
+            setTimeout(() => {dispatch(splitSumByMembers())}, 100)
+        }
     }
 }
 
@@ -75,9 +106,91 @@ export function spentEquallySwitched(spentEqually) {
  * @param paidOne - Платил один?
  */
 export function paidOneSwitched(paidOne) {
+    return dispatch => {
+        dispatch({
+            type: PAID_ONE_SWITCHED,
+            payload: {paidOne}
+        })
+    }
+}
+
+/**
+ * Сбросить всем участникам счета галочку "Платил за всех".
+ */
+export function resetPaidForAll() {
     return {
-        type: PAID_ONE_SWITCHED,
-        payload: {paidOne}
+        type: RESET_PAID_FOR_ALL,
+        payload: {}
+    }
+}
+
+/**
+ * Изменение общей суммы счета.
+ *
+ * @param sum - Общая сумма счета.
+ */
+export function changeSumOnPayment(sum) {
+    return (dispatch) => {
+        dispatch({
+            type: CHANGE_SUM_ON_PAYMENT,
+            payload: {sum}
+        })
+        dispatch(splitSumByMembers(sum))
+    }
+}
+
+/**
+ * Распределение суммы счета по всем участникам счета.
+ *
+ * [sum] Сумма счета.
+ */
+export function splitSumByMembers(sum) {
+    return (dispatch, getState) => {
+        const payment = getState().payments[TEMPORARY_ID]
+        if (payment.members && payment.members.length > 0) {
+            const _sum = sum || payment.sum
+            const spentEach = _sum / payment.members.length
+            dispatch({
+                type: SPLIT_SUM_BY_MEMBERS,
+                payload: {spentEach}
+            })
+        }
+    }
+}
+
+/**
+ * Отметить человека, как оплатившего счет за всех.
+ *
+ * @param personId - Человек, который оплатил счет.
+ */
+export function paidForAllChecked(personId) {
+    return (dispatch, getState) => {
+        dispatch ({
+            type: PAID_FOR_ALL_CHECKED,
+            payload: {personId}
+        })
+        dispatch(changePaidToPayForAll(personId))
+    }
+}
+
+/**
+ * Отметить человека, как оплатившего счет за всех.
+ *
+ * @param personId - Человек, который оплатил счет.
+ */
+export function changePaidToPayForAll(personId) {
+    return (dispatch, getState) => {
+        // считаем сумму потраченных денег
+        const members = getState().payments[TEMPORARY_ID].members
+        const sumSpent = reduce(members, (sum, member) => sum + toNumber(member.spent), 0)
+        // если personId не передан, можно вычислить его из метки paidForAll у участника счета
+        if (!personId) {
+            personId = find(members, member => member.paidForAll).personId
+        }
+        dispatch ({
+            type: CHANGE_PAID_TO_PAY_FOR_ALL,
+            payload: {personId, sumSpent}
+        })
     }
 }
 
@@ -88,11 +201,37 @@ export function paidOneSwitched(paidOne) {
  * @param value - Новое количество потраченных денег.
  */
 export function changeMemberSpentOnPayment(personId, value) {
-    const spent = parseInt(value) || 0
-    return (dispatch) => {
+    const spent = toNumber(value)
+    return (dispatch, getState) => {
+        // считаем сумму редактируемого счета
+        const payment = getState().payments[TEMPORARY_ID]
+        const sum = reduce(payment.members, (sum, member) => {
+            const spent = (member.personId == personId ? toNumber(value) : toNumber(member.spent))
+            return sum + spent
+        }, 0)
         dispatch({
             type: CHANGE_MEMBER_SPENT_ON_PAYMENT,
-            payload: {personId, spent}
+            payload: {personId, spent, sum}
+        })
+        // если оплачивает один человек, то также изменим ему сумму оплаченных денег
+        if (payment.paidOne) {
+            dispatch(changePaidToPayForAll())
+        }
+    }
+}
+
+/**
+ * Изменение заплаченных денег у участника счета.
+ *
+ * @param personId - Идентификатор участника.
+ * @param value - Новое количество заплаченных денег.
+ */
+export function changeMemberPaidOnPayment(personId, value) {
+    const paid = toNumber(value)
+    return (dispatch, getState) => {
+        dispatch({
+            type: CHANGE_MEMBER_PAID_ON_PAYMENT,
+            payload: {personId, paid: value}
         })
     }
 }

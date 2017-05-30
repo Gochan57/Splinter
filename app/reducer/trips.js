@@ -18,7 +18,8 @@ const trips = {
             '4': {name: 'Юля'},
             '5': {name: 'Надя'},
             '6': {name: 'Костя'},
-        }
+        },
+        payments: []
     },
     '3': {
         name: 'Morocco',
@@ -26,7 +27,8 @@ const trips = {
             '7': {name: 'Саня'},
             '8': {name: 'Мегги'},
             '9': {name: 'Гоша'},
-        }
+        },
+        payments: []
     }
 }
 

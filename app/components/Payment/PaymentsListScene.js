@@ -31,7 +31,7 @@ class PaymentsListScene extends Component {
      *      date, Дата платежа DD.MM.YYYY HH:MI:SS
      *      members: [{ Участники
      *          personId, Идентификатор участника
-     *          spend, Потратил
+     *          spent, Потратил
      *          pay Оплатил
      *      }]
      *  }
@@ -57,8 +57,7 @@ class PaymentsListScene extends Component {
         })
     }
 
-    renderPaymentsList = () => {
-        const {payments} = this.props
+    renderPaymentsList = (payments) => {
         if (!payments || !Object.keys(payments).length) {
             return (
                 <View style={styles.infoTextContainer}>
@@ -72,7 +71,7 @@ class PaymentsListScene extends Component {
             .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI').diff(moment(p1.date, 'DD.MM.YYYY HH:MI'), 'seconds'))
         const paymentsList = _payments.map(payment => {
             const {id, name, date, members} = payment
-            const spent = members.reduce((s, v) => s + v.spend, 0)
+            const spent = members.reduce((s, v) => s + v.spent, 0)
             return (
                 <PaymentItem key={id} id={id} name={name} date={date} spent={spent}/>
             )
@@ -85,9 +84,10 @@ class PaymentsListScene extends Component {
     }
 
     render() {
+        const {payments} = this.props
         return (
             <View style={{flex: 1, justifyContent: 'space-between'}}>
-                {this.renderPaymentsList()}
+                {this.renderPaymentsList(payments)}
                 <WideButton text={'Новый счет'} onPress={this._toCreatePaymentScene} addBtn={true}/>
             </View>
         )
@@ -97,6 +97,9 @@ class PaymentsListScene extends Component {
 const mapStateToProps = (state, ownProps) => {
     // Получаем список id счетов текущего путешествия.
     const paymentIds = state.trips[ownProps.tripId].payments
+    if (!paymentIds) {
+        return {payments: null}
+    }
     // Получаем список всех счетов.
     const allPayments = toArrayWithKeys(state.payments)
     // Выбираем из всех счетов те, которые входят в текущее путешествие.

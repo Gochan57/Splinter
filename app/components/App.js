@@ -9,6 +9,10 @@ export default class App extends Component {
 
     constructor(props) {
         super(props)
+        this.state = {
+            top: 200,
+            contentInset: 0,
+        }
     }
 
     render() {

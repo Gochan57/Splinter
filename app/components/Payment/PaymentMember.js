@@ -15,7 +15,6 @@ class PaymentMember extends Component {
      * paidOne Платил только этот участник.
      * onSpentChanged Коллбэк на изменение значения потраченных денег.
      * onPaidChanged Коллбэк на изменение значения оплаченных денег.
-     * radioButtonClass Класс группы радио-баттонов, отмечающих, кто оплатил весь счет.
      */
     static propTypes = {
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -26,11 +25,10 @@ class PaymentMember extends Component {
         paidOne: PropTypes.bool,
         onSpentChanged: PropTypes.func.isRequired,
         onPaidChanged: PropTypes.func.isRequired,
-        radioButtonClass: PropTypes.string.isRequired,
     }
 
     render() {
-        const {included, name, spent, paid, paidOne, onSpentChanged, onPaidChanged, radioButtonClass} = this.props
+        const {included, name, spent, paid, paidOne, onSpentChanged, onPaidChanged} = this.props
         return (
             <PaymentMemberView
                 included={included}
@@ -39,8 +37,7 @@ class PaymentMember extends Component {
                 paid={paid}
                 paidOne={paidOne}
                 onSpentChanged={onSpentChanged}
-                onPaidChanged={onPaidChanged}
-                radioButtonClass={radioButtonClass}/>
+                onPaidChanged={onPaidChanged}/>
         )
     }
 }
