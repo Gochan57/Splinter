@@ -6,21 +6,24 @@ import {toArrayWithKeys} from 'app/utils/utils'
 import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 import PaymentsListScene from '../Payment/PaymentsListScene';
-import TripItem from './TripItem'
-import CreateNewTripScene from './CreateNewTripScene'
+import TripsListItem from './TripsListItem'
+import TripScene from './TripScene'
 
-class TripsScene extends Component {
+/**
+ * Экран со списком путешествий.
+ */
+class TripsListScene extends Component {
 
     // Отображается в строке навигатора
     static title = 'Путешествия'
 
     /**
      * @prop items - store.trips
-     * @prop navigator - Навигатор.
+     * @prop navigator Навигатор для переходов на другие экраны.
      */
-    propTypes: {
+    static propTypes = {
         items: React.PropTypes.object,
-        navigator: React.propTypes.object,
+        navigator: React.PropTypes.object,
     }
 
     _toPaymentsListScene = (tripId) => {
@@ -42,14 +45,14 @@ class TripsScene extends Component {
         const {navigator} = this.props
         goTo({
             navigator,
-            component: CreateNewTripScene,
+            component: TripScene,
             rightBtnOK: true
         })
     }
 
     _renderTripItem = (rowData) => {
         return (
-            <TripItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.id)}/>
+            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.id)}/>
         )
     }
 
@@ -80,4 +83,4 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({}, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TripsScene)
+export default connect(mapStateToProps, mapDispatchToProps)(TripsListScene)

@@ -13,7 +13,7 @@ export default class SNavigator extends Component {
      * initialRoute - Начальный экран навигатора, ожидается {index, component, passProps}
      */
     propTypes: {
-        initialRoute: React.propTypes.object,
+        initialRoute: React.PropTypes.object,
     }
 
     render() {

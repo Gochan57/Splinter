@@ -6,11 +6,19 @@ import appStyles from 'app/styles'
 
 const styles = appStyles.commonStyles
 
+/**
+ * Компонент кнопки на всю ширину экрана.
+ */
 export default class WideButton extends Component {
-    propTypes: {
-        onPress: React.propTypes.func.isRequired,
-        addBtn: React.propTypes.boolean, // Кнопка добавления? Если true, перед кнопкой будет отображаться +. По умолчанию false.
-        text: React.propTypes.string,
+    /**
+     * onPress Коллбэк на нажатие на кнопку.
+     * addBtn Кнопка добавления? Если true, перед кнопкой будет отображаться +. По умолчанию false.
+     * text Текст на кнопке.
+     */
+    static propTypes = {
+        onPress: React.PropTypes.func.isRequired,
+        addBtn: React.PropTypes.bool,
+        text: React.PropTypes.string,
     }
 
     render() {

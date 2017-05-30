@@ -3,7 +3,7 @@ import {Provider} from 'react-redux'
 import { ThemeProvider } from 'react-native-material-ui'
 import store from 'app/store'
 import SNavigator from 'app/components/Common/SNavigator'
-import TripsScene from './Trip/TripsScene'
+import TripsListScene from './Trip/TripsListScene'
 
 export default class App extends Component {
 
@@ -20,7 +20,7 @@ export default class App extends Component {
             <Provider store={store}>
                 <ThemeProvider uiTheme={null}>
                     <SNavigator
-                        initialRoute={{ index: 0, component: TripsScene}}
+                        initialRoute={{ index: 0, component: TripsListScene}}
                     />
                 </ThemeProvider>
             </Provider>

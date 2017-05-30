@@ -13,10 +13,10 @@ export default class Switcher extends Component {
      * value Значение свитча.
      * onValueChange Коллбек на изменение свитча.
      */
-    propTypes: {
-        label: React.propTypes.string,
-        value: React.propTypes.isRequired,
-        onValueChange: React.propTypes.func.isRequired,
+    static propTypes = {
+        label: React.PropTypes.string,
+        value: React.PropTypes.bool.isRequired,
+        onValueChange: React.PropTypes.func.isRequired,
     }
 
     render() {

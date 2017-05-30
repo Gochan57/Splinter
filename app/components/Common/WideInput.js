@@ -4,8 +4,10 @@ import appStyles from 'app/styles'
 
 const styles = appStyles.commonStyles
 
+/**
+ * Компонент инпута на всю ширину экрана.
+ */
 export default class WideInput extends Component {
-
     /**
      * onChangeText Коллбэк на изменение текста.
      * placeholder Подсказка, отображающаяся при отстуствии значения в инпуте.

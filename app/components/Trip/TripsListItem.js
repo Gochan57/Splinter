@@ -1,21 +1,28 @@
 import React, {Component} from 'react'
-import {View, Text, TouchableHighlight} from 'react-native'
+import {View, Text} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
 import appStyles from 'app/styles'
 
 const styles = appStyles.tripItemStyles
 
-export default class TripItem extends Component {
+/**
+ * Элемент в списке на экране со списком путешествий.
+ */
+export default class TripsListItem extends Component {
 
     static title = 'Счета'
 
-    constructor(props) {
-        super(props)
-    }
-
-    propTypes: {
+    /**
+     * name Наименование путешествия.
+     * onPress Коллбэк при нажатии на строку.
+     */
+    static propTypes = {
         name: React.PropTypes.string,
         onPress: React.PropTypes.func,
+    }
+
+    constructor(props) {
+        super(props)
     }
 
     render() {
@@ -25,13 +32,6 @@ export default class TripItem extends Component {
                 divider={true}
                 centerElement={name}
                 onPress={onPress}/>
-            //<TouchableHighlight onPress={onPress}>
-            //    <View style={styles.row}>
-            //        <Text style={styles.text}>
-            //            {name}
-            //        </Text>
-            //    </View>
-            //</TouchableHighlight>
         )
     }
 }

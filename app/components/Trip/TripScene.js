@@ -7,16 +7,22 @@ import appStyles from 'app/styles'
 import { addTrip } from 'app/action/trips'
 import {goTo} from 'app/components/Common/SNavigator'
 import WideInput from 'app/components/Common/WideInput'
-import TripsScene from './TripsScene'
+import TripsListScene from './TripsListScene'
 
 const styles = appStyles.createNewTripStyles
 
-class CreateNewTripScene extends Component {
+/**
+ * Экран для просмотра/добавления/редактирования путешествия.
+ */
+class TripScene extends Component {
 
     static title = 'Добавить путешествие'
 
-    propTypes: {
-        navigator: React.propTypes.object,
+    /**
+     * navigator Навигатор для переходов на другие экраны.
+     */
+    static propTypes = {
+        navigator: React.PropTypes.object,
     }
 
     constructor(props) {
@@ -40,7 +46,7 @@ class CreateNewTripScene extends Component {
         this.props.addTrip(name, members)
         goTo({
             navigator,
-            component: TripsScene,
+            component: TripsListScene,
         })
     }
 
@@ -103,4 +109,4 @@ class CreateNewTripScene extends Component {
     }
 }
 
-export default connect(null, {addTrip})(CreateNewTripScene)
+export default connect(null, {addTrip})(TripScene)

@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {StyleSheet, View, Text} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -12,11 +12,14 @@ import {goTo} from 'app/components/Common/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 
-import PaymentItem from './PaymentItem'
-import CreatePaymentScene from './PaymentScene'
+import PaymentsListItem from './PaymentsListItem'
+import PaymentScene from './PaymentScene'
 
 const styles =  appStyles.commonStyles
 
+/**
+ * Экран со списком счетов.
+ */
 class PaymentsListScene extends Component {
 
     // Отображается в строке навигатора
@@ -25,32 +28,32 @@ class PaymentsListScene extends Component {
     /**
      * @prop tripId Идентификатор путешествия.
      * @prop payments
-     * {
-     *  [id]: { Идентификатор платежа
-     *      name, Название платежа
-     *      date, Дата платежа DD.MM.YYYY HH:MI:SS
-     *      members: [{ Участники
-     *          personId, Идентификатор участника
-     *          spent, Потратил
-     *          pay Оплатил
-     *      }]
-     *  }
-     * }
-     * @prop navigator - Навигатор.
+     * [
+     *    id, Идентификатор платежа
+     *    name, Название платежа
+     *    date, Дата платежа DD.MM.YYYY HH:MI:SS
+     *    members: [{
+     *        personId, Идентификатор участника
+     *        spent, Потратил
+     *        pay, Оплатил
+     *        paidForAll, Платил за всех
+     *    }]
+     * ]
+     * @prop navigator - Навигатор для перехода на другие экраны.
      */
-    propTypes: {
-        tripId: React.PropTypes.number,
-        payments: React.PropTypes.object,
-        navigator: React.propTypes.object,
+    static propTypes = {
+        tripId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+        payments: PropTypes.array,
+        navigator: PropTypes.object,
     }
 
-    _toCreatePaymentScene = () => {
+    _toPaymentScene = () => {
         // FIXME tripId
         const {tripId} = this.props
         const passProps = {tripId}
         goTo({
             navigator: this.props.navigator,
-            component: CreatePaymentScene,
+            component: PaymentScene,
             props: passProps,
             rightBtnOK: true,
             title: 'Новый счет'
@@ -71,9 +74,9 @@ class PaymentsListScene extends Component {
             .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI').diff(moment(p1.date, 'DD.MM.YYYY HH:MI'), 'seconds'))
         const paymentsList = _payments.map(payment => {
             const {id, name, date, members} = payment
-            const spent = members.reduce((s, v) => s + v.spent, 0)
+            const sum = members.reduce((s, v) => s + v.spent, 0)
             return (
-                <PaymentItem key={id} id={id} name={name} date={date} spent={spent}/>
+                <PaymentsListItem key={id} id={id} name={name} date={date} sum={sum}/>
             )
         })
         return (
@@ -88,7 +91,7 @@ class PaymentsListScene extends Component {
         return (
             <View style={{flex: 1, justifyContent: 'space-between'}}>
                 {this.renderPaymentsList(payments)}
-                <WideButton text={'Новый счет'} onPress={this._toCreatePaymentScene} addBtn={true}/>
+                <WideButton text={'Новый счет'} onPress={this._toPaymentScene} addBtn={true}/>
             </View>
         )
     }

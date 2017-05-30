@@ -26,12 +26,15 @@ import WideInput from 'app/components/Common/WideInput'
 import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
 
-import PaymentMemberView from './PaymentMemberView'
+import PaymentMember from './PaymentMember'
 
 const commonStyles = appStyles.commonStyles
 
 const TOTAL_ROW_REF = 'totalRow'
 
+/**
+ * Экран просмотра/добавления/редактирования счета.
+ */
 class PaymentScene extends Component {
 
     static defaultProps: {
@@ -109,7 +112,7 @@ class PaymentScene extends Component {
         if (rowData.key === TOTAL_ROW_REF) {
             // Верхняя строка с общим счетом
             return (
-                <PaymentMemberView
+                <PaymentMember
                     name={rowData.name}
                     spent={toNumberNullable(rowData.spent)}
                     paid={toNumberNullable(rowData.paid)}
@@ -128,7 +131,7 @@ class PaymentScene extends Component {
             )
         }
         return (
-            <PaymentMemberView
+            <PaymentMember
                 name={rowData.name}
                 spent={toNumberNullable(rowData.spent)}
                 paid={toNumberNullable(rowData.paid)}
@@ -199,7 +202,7 @@ const mapStateToProps = (state, ownProps) => {
     const totalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: TOTAL_ROW_REF}
 
     const {paymentId, name, spentEqually, paidOne, sum, members} = payment
-    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum, totalRow, members}
+    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum: toNumberNullable(sum), totalRow, members}
 }
 
 const mapDispatchToProps = (dispatch) => {

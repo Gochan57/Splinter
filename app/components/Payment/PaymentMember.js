@@ -1,49 +1,151 @@
 import React, {Component, PropTypes} from 'react'
 import {StyleSheet, View, Text, TextInput, TouchableHighlight} from 'react-native'
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
-import {removeMemberFromPayment} from 'app/action/payments'
-import PaymentMemberView from './PaymentMemberView'
+import stylePropType from 'react-style-proptype'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import appStyles from 'app/styles'
+import {round} from 'app/utils/utils'
 
-class PaymentMember extends Component {
+const commonStyles = appStyles.commonStyles
+
+/**
+ * Представление компонента участника счета.
+ */
+export default class PaymentMember extends Component {
     /**
-     * id Идентификатор участника счета.
-     * included Участвует в счете.
      * name Имя участника.
      * spent Потратил денег.
      * paid Оплатил денег.
-     * paidOne Платил только этот участник.
+     * spentEditable Можно ли менять число потраченных денег?
+     * paidEditable Можно ли менять число заплаченных денег?
      * onSpentChanged Коллбэк на изменение значения потраченных денег.
      * onPaidChanged Коллбэк на изменение значения оплаченных денег.
+     * showPaidForAllCheck Показывать ли галочку для выбора, что человек платил за всех.
+     * onPaidForAllChecked Коллбэк на выбор участника счета, как оплатившего весь счет.
+     * paidForAll Платил за всех.
+     * style Кастомный стиль всей строки.
+     * customLabelStyle Кастомный стиль текста слева.
+     * customSpentStyle Кастомный стиль кол-ва потраченных денег.
+     * customPaidStyle Кастомный стиль кол-ва заплаченных денег.
      */
     static propTypes = {
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        included: PropTypes.bool,
         name: PropTypes.string.isRequired,
         spent: PropTypes.number,
         paid: PropTypes.number,
-        paidOne: PropTypes.bool,
+        spentEditable: PropTypes.bool,
+        paidEditable: PropTypes.bool,
         onSpentChanged: PropTypes.func.isRequired,
         onPaidChanged: PropTypes.func.isRequired,
+        showPaidForAllCheck: PropTypes.bool,
+        onPaidForAllChecked: PropTypes.func,
+        paidForAll: PropTypes.bool,
+        spentPlaceholder: PropTypes.string,
+        paidPlaceholder: PropTypes.string,
+        style: stylePropType,
+        customLabelStyle: stylePropType,
+        customSpentStyle: stylePropType,
+        customPaidStyle: stylePropType,
+    }
+
+    static defaultProps = {
+        spentPlaceholder: 'Потратил',
+        paidPlaceholder: 'Оплатил',
+        showPaidForAllCheck: false
+    }
+
+    constructor (props) {
+        super(props)
+        this.state = {
+            spentValue: this.formatValue(props.spent),
+            paidValue: this.formatValue(props.paid),
+        }
+    }
+
+    formatValue = (value) => {
+        return value !== undefined ? round(value, 2).toString() : undefined
+    }
+
+    /**
+     * Снять фокус со всех инпутов.
+     */
+    blur() {
+        this.refs.spentTextInput.blur()
+        this.refs.paidTextInput.blur()
+    }
+
+    spentFocus() {
+        this.refs.spentTextInput.focus()
+    }
+
+    componentWillReceiveProps (nextProps) {
+        this.setState({
+            spentValue: this.formatValue(nextProps.spent),
+            paidValue: this.formatValue(nextProps.paid),
+        })
     }
 
     render() {
-        const {included, name, spent, paid, paidOne, onSpentChanged, onPaidChanged} = this.props
+        const {name, spent, paid,
+            spentEditable, paidEditable, onSpentChanged, onPaidChanged,
+            showPaidForAllCheck, onPaidForAllChecked, paidForAll,
+            spentPlaceholder, paidPlaceholder,
+            style, customLabelStyle, customSpentStyle, customPaidStyle} = this.props
+        let paidForAllCheck = null
+        if (showPaidForAllCheck) {
+            const color = paidForAll ? '#3333ff' : '#e6e6e6'
+            paidForAllCheck = (
+                <TouchableHighlight onPress={onPaidForAllChecked}>
+                    <Icon name={'check'} size={16} color={color}/>
+                </TouchableHighlight>
+            )
+        }
         return (
-            <PaymentMemberView
-                included={included}
-                name={name}
-                spent={spent}
-                paid={paid}
-                paidOne={paidOne}
-                onSpentChanged={onSpentChanged}
-                onPaidChanged={onPaidChanged}/>
+            <View style={[commonStyles.rowContainer, styles.container, style]}>
+                <View style={[commonStyles.verticalAlign, commonStyles.flex]}>
+                    <Text style={[styles.label, customLabelStyle]}>{name}</Text>
+                </View>
+                <View ref={'spentContainer'} style={[commonStyles.center, commonStyles.flex]}>
+                    <TextInput
+                        editable={spentEditable}
+                        value={this.state.spentValue}
+                        onChangeText={value => {this.setState({spentValue: value})}}
+                        onEndEditing={e => {onSpentChanged(e.nativeEvent.text)}}
+                        placeholder={spentPlaceholder}
+                        style={[styles.input, customSpentStyle]}
+                        ref={'spentTextInput'}
+                    />
+                </View>
+                <View ref={'paidContainer'} style={[commonStyles.center, commonStyles.flex]}>
+                    <TextInput
+                        editable={paidEditable}
+                        value={this.state.paidValue}
+                        onChangeText={value => {this.setState({paidValue: value})}}
+                        onEndEditing={e => {onPaidChanged(e.nativeEvent.text)}}
+                        placeholder={paidPlaceholder}
+                        style={[styles.input, customPaidStyle]}
+                        ref={'paidTextInput'}
+                    />
+                </View>
+                <View>
+                    {paidForAllCheck}
+                </View>
+            </View>
         )
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({removeMemberFromPayment}, dispatch)
-}
-
-export default connect(null, mapDispatchToProps)(PaymentMember)
+const styles = StyleSheet.create({
+    container: {
+        height: 40,
+        paddingLeft: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#5DCFC3'
+    },
+    label: {
+        fontSize: 16,
+        textAlign: 'left',
+    },
+    input: {
+        height: 40,
+        width: 100
+    }
+})
