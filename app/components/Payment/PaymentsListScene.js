@@ -47,16 +47,17 @@ class PaymentsListScene extends Component {
         navigator: PropTypes.object,
     }
 
-    _toPaymentScene = () => {
-        // FIXME tripId
+    _toPaymentScene = (payment) => {
         const {tripId} = this.props
-        const passProps = {tripId}
+        const paymentId = payment && payment.id
+        const name = payment && payment.name
+        const passProps = {tripId, paymentId}
         goTo({
             navigator: this.props.navigator,
             component: PaymentScene,
             props: passProps,
             rightBtnOK: true,
-            title: 'Новый счет'
+            title: name || 'Новый счет'
         })
     }
 
@@ -69,14 +70,22 @@ class PaymentsListScene extends Component {
             )
         }
         // Преобразуем payments из стора в массив
-        let _payments = toArrayWithKeys(payments)
+        let _payments = payments
         // И сортируем в порядке убывания даты платежа
             .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI').diff(moment(p1.date, 'DD.MM.YYYY HH:MI'), 'seconds'))
         const paymentsList = _payments.map(payment => {
-            const {id, name, date, members} = payment
-            const sum = members.reduce((s, v) => s + v.spent, 0)
+            const {id, name, date, sum} = payment
+            //const sum = members.reduce((s, v) => s + v.spent, 0)
             return (
-                <PaymentsListItem key={id} id={id} name={name} date={date} sum={sum}/>
+                <PaymentsListItem
+                    key={id}
+                    tripId={this.props.tripId}
+                    id={id}
+                    name={name}
+                    date={date}
+                    sum={sum}
+                    onPress={this._toPaymentScene.bind(this, payment)}
+                    navigator={this.props.navigator}/>
             )
         })
         return (

@@ -148,7 +148,7 @@ class PaymentScene extends Component {
     }
 
     render() {
-        const {tripId, paymentId, loading, spentEqually, paidOne, sum, totalRow, members} = this.props
+        const {tripId, paymentId, loading, name, spentEqually, paidOne, sum, totalRow, members} = this.props
 
         if (loading) {
             return <ActivityIndicator />
@@ -159,6 +159,7 @@ class PaymentScene extends Component {
                 <WideInput
                     placeholder='Название'
                     onChangeText={text => {this.props.changePaymentName(text)}}
+                    value={name}
                 />
                 <Switcher
                     label={'Потратили поровну'}
@@ -187,14 +188,17 @@ class PaymentScene extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     const {tripId} = ownProps
-    // Из списка всех счетов выберем счет с пометкой "новый".
+    // Из списка всех счетов выберем редактируемый счет.
     let payment = state.payments[TEMPORARY_ID]
     if(!payment) {
         return {loading: true}
     }
-    // Добавим к каждому member поле key (этого требует элемент RemovableListView)
+    // Все участники путешествия
+    const people = state.trips[tripId].people
+    // Добавим к каждому member поле key (этого требует элемент RemovableListView) и name
     forEach(payment.members, member => {
         member.key = member.personId
+        member.name = people[member.personId].name
     })
     // Вычислим строку Итого
     const totalPaid = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег

@@ -16,7 +16,7 @@ import {
     TEMPORARY_ID,
 } from '../constants'
 import {toArrayWithKeys, toNumber, logError} from 'app/utils/utils'
-import {find, reduce} from 'lodash'
+import {find, map, reduce} from 'lodash'
 
 /**
  * Начало создания нового счета.
@@ -26,7 +26,9 @@ import {find, reduce} from 'lodash'
 export function startCreatingNewPayment(tripId) {
     return (dispatch, getState) => {
         // Составляем массив всех участников путешествия
-        const members = toArrayWithKeys(getState().trips[tripId].people, 'personId')
+        //const members = toArrayWithKeys(getState().trips[tripId].people, 'personId')
+        const people = getState().trips[tripId].people
+        const members = people && map(Object.keys(people), personId => ({personId}))
         dispatch({
             type: START_UPDATING_PAYMENT,
             payload: {tripId, members}

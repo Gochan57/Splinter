@@ -22,8 +22,8 @@ const defaultPayments = {
         name: 'Супермаркет',
         date: '01.02.2017 17:01:24',
         members: [
-            {personId: '1', spent: 100, paid: 0, paidForAll: false},
-            {personId: '2', spent: 100, paid: 200, paidForAll: false},
+            {personId: '1', spent: 100, paid: 0},
+            {personId: '2', spent: 100, paid: 200, paidForAll: true},
         ],
         spentEqually: true,
         paidOne: true,
@@ -34,7 +34,7 @@ const defaultPayments = {
         date: '01.02.2017 10:34:12',
         members: [
             {personId: '1', spent: 50, paid: 0},
-            {personId: '2', spent: 50, paid: 150},
+            {personId: '2', spent: 50, paid: 150, paidForAll: true},
             {personId: '3', spent: 50, paid: 0},
         ],
         spentEqually: true,
@@ -45,7 +45,7 @@ const defaultPayments = {
         name: 'Такси',
         date: '02.02.2017 12:56:01',
         members: [
-            {personId: '1', spent: 200, paid: 400},
+            {personId: '1', spent: 200, paid: 400, paidForAll: true},
             {personId: '3', spent: 200, paid: 0},
         ],
         spentEqually: true,
