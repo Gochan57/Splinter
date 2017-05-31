@@ -73,16 +73,20 @@ export function changePaymentName(name) {
  * @param personId - Идентификатор удаляемого участника.
  */
 export function removeMemberFromPayment(tripId, paymentId, personId) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch({
             type: REMOVE_MEMBER_FROM_PAYMENT,
             payload: {tripId, paymentId, personId}
         })
+        // Если выбрано "Платили поровну", то разделим счет на оставшихся.
+        if (getState().payments[TEMPORARY_ID].spentEqually) {
+            dispatch(splitSumByMembers())
+        }
     }
 }
 
 /**
- * Switch потратили поровну.
+ * Переключение "Потратили поровну".
  *
  * @param spentEqually - Все потратили поровну?
  */
@@ -103,7 +107,7 @@ export function spentEquallySwitched(spentEqually) {
 }
 
 /**
- * Switch платил один.
+ * Переключение "Платил один".
  *
  * @param paidOne - Платил один?
  */
@@ -113,6 +117,10 @@ export function paidOneSwitched(paidOne) {
             type: PAID_ONE_SWITCHED,
             payload: {paidOne}
         })
+        if (!paidOne) {
+            // Если выключили "Платил один", то снимем галочку с человека, помеченного как платящего за всех.
+            dispatch(resetPaidForAll())
+        }
     }
 }
 
