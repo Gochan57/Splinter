@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
+import {ActivityIndicator, Modal, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {filter, find, forEach, pickBy, reduce} from 'lodash'
@@ -23,6 +23,7 @@ import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
 import WideInput from 'app/components/Common/WideInput'
+import WideButton from 'app/components/Common/WideButton'
 import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
 
@@ -67,13 +68,20 @@ class PaymentScene extends Component {
         members: React.PropTypes.array,
     }
 
+    /**
+     * chooseMembersModalVisible Отображать модальное окно с выбором участников счета.
+     */
     constructor (props) {
         super(props)
         this.state = {
-            test: ''
+            chooseMembersModalVisible: false
         }
     }
 
+    /**
+     * Генератор ref по key для строк с участниками счета.
+     * @param key
+     */
     refFor(key) {
         return `ref_${key}`
     }
@@ -87,6 +95,14 @@ class PaymentScene extends Component {
         forEach(members, member => {
             this.refs.list.refs[this.refFor(member.key)].blur()
         })
+    }
+
+    /**
+     * Показать/скрыть модальное окно с выбором участников счета.
+     * @param visible
+     */
+    setChooseMembersModalVisible = (visible) => {
+        this.setState({chooseMembersModalVisible: visible})
     }
 
     componentWillMount () {
@@ -147,6 +163,22 @@ class PaymentScene extends Component {
         )
     }
 
+    renderChooseMembersModal = () => {
+        return (
+            <Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={this.state.chooseMembersModalVisible}
+                onRequestClose={() => {}}>
+                <View style={[commonStyles.flex, {justifyContent: 'center', alignItems: 'center'}, {borderWidth: 1, borderColor: 'red'}]}>
+                    <TouchableHighlight style={[{borderWidth: 1, borderColor: 'yellow'}]} onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                                <View style={{width: 200, height: 300, backgroundColor: 'green'}}/>
+                    </TouchableHighlight>
+                </View>
+            </Modal>
+        )
+    }
+
     render() {
         const {tripId, paymentId, loading, name, spentEqually, paidOne, sum, totalRow, members} = this.props
 
@@ -155,7 +187,7 @@ class PaymentScene extends Component {
         }
         const data = [totalRow, ...members]
         return (
-            <View ref={'mainView'}>
+            <View style={commonStyles.flex} ref={'mainView'}>
                 <WideInput
                     placeholder='Название'
                     onChangeText={text => {this.props.changePaymentName(text)}}
@@ -181,6 +213,12 @@ class PaymentScene extends Component {
                     data={data}
                     renderRow={this.renderMemberRow}
                     removeRow={(personId) => this.props.removeMemberFromPayment(tripId, paymentId, personId)} />
+                <View style={[commonStyles.flex, commonStyles.bottomContainer]}>
+                    <WideButton
+                        text={'Добавить участников'}
+                        onPress={() => {this.setChooseMembersModalVisible(true)}}/>
+                </View>
+                {this.renderChooseMembersModal()}
             </View>
         )
     }

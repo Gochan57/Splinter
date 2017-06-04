@@ -14,6 +14,10 @@ export const commonStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-start'
     },
+    bottomContainer: {
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
+    },
     rowContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
