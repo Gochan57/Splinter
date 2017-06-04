@@ -21,10 +21,6 @@ export default class TripsListItem extends Component {
         onPress: React.PropTypes.func,
     }
 
-    constructor(props) {
-        super(props)
-    }
-
     render() {
         const {name, onPress} = this.props
         return (
