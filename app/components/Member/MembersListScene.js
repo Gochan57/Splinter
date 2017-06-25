@@ -1,8 +1,13 @@
 import React, {Component, PropTypes} from 'react'
-import {ListView, View} from 'react-native'
+import {ListView, View, StyleSheet, Text, TouchableHighlight} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {forEach} from 'lodash'
+import {filter, forEach} from 'lodash'
+
+import appStyles from 'app/styles'
+import {navigatorGray} from 'app/themes'
+
+const commonStyles = appStyles.commonStyles
 
 export default class MembersListScene extends Component {
     /**
@@ -20,7 +25,7 @@ export default class MembersListScene extends Component {
             name: PropTypes.string,
             selected: PropTypes.bool
         })),
-        selectMember: PropTypes.func
+        onFinish: PropTypes.func
     }
 
     /**
@@ -31,11 +36,12 @@ export default class MembersListScene extends Component {
      */
     constructor (props) {
         super(props)
+
+        // Храним выбранных участников в стейте в selectedMembers
         let selectedMembers = {}
         forEach(props.members, member => {
             selectedMembers[member.personId] = member.selected
         })
-        
         this.state = {
             selectedMembers
         }
@@ -50,27 +56,56 @@ export default class MembersListScene extends Component {
         this.setState({
             selectedMembers: {
                 ...this.state.selectedMembers,
-                personId: value
+                [personId]: value
             }
         })
     }
+
+    onFinish = () => {
+        const {selectedMembers} = this.state
+        const onlySelectedMembers = filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
+        this.props.onFinish(onlySelectedMembers)
+    }
+
+    /**
+     * Рендерим заголовок окна
+     */
+    renderHeader = () => (
+        <View style={[styles.headerContainer]}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>Выберите участников счета</Text>
+                <TouchableHighlight onPress={this.onFinish}>
+                    <Icon name={'check'} size={16} color={navigatorGray}/>
+                </TouchableHighlight>
+            </View>
+        </View>
+    )
 
     /**
      * Рендерим одну строку в списке участников.
      * @param rowData Один элемент в массиве props.members.
      */
     renderRow = (rowData) => {
-        const {personId} = rowData
+        const {personId, name} = rowData
         const selected = this.state.selectedMembers[personId]
         const color = selected ? '#3333ff' : '#e6e6e6'
+        const onPress = () => {
+            this.selectPerson(personId, !selected)
+        }
         const check = (
-            <Icon name={'check'} size={16} color={color}/>
+            <TouchableHighlight onPress={onPress}>
+                <Icon name={'check'} size={16} color={color}/>
+            </TouchableHighlight>
         )
         return (
-            <ListItem
-                divider={true}
-                onPress={() => {this.selectPerson(personId, !selected)}}
-                rightElement={check}/>
+            <TouchableHighlight onPress={onPress}>
+                <View>
+                    <ListItem
+                        divider={true}
+                        centerElement={name}
+                        rightElement={check}/>
+                </View>
+            </TouchableHighlight>
         )
     }
 
@@ -78,8 +113,41 @@ export default class MembersListScene extends Component {
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
         const dataSource = ds.cloneWithRows(this.props.members)
 
-        return <ListView
-            dataSource={dataSource}
-            renderRow={this.renderRow}/>
+        return (
+            <View>
+                {this.renderHeader()}
+                <View style={styles.container}>
+                    <ListView
+                        dataSource={dataSource}
+                        renderRow={this.renderRow}/>
+                </View>
+            </View>
+        )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'white',
+        borderLeftWidth: 0.5,
+        borderRightWidth: 0.5,
+        borderColor: '#E6E6E6'
+    },
+    headerContainer: {
+        height: 40,
+        backgroundColor: '#009E8E',
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#E6E6E6',
+        justifyContent: 'center',
+    },
+    header: {
+        paddingLeft: 10,
+        paddingRight: 10,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignItems: 'stretch'
+    },
+    headerText: {
+        color: 'white',
+    }
+})

@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Navigator, NavigatorIOS, TouchableHighlight, View, Text} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
+import {navigatorGray} from 'app/themes'
 
 const styles =  appStyles.navigatorStyles
 
@@ -48,7 +49,7 @@ export default class SNavigator extends Component {
             return (
                 <View style={styles.leftNavBtn}>
                     <TouchableHighlight onPress={() => navigator.pop()}>
-                        <Icon name="chevron-left" size={16} color="#CCCCCC"/>
+                        <Icon name="chevron-left" size={16} color={navigatorGray}/>
                     </TouchableHighlight>
                 </View>
             )
@@ -68,7 +69,7 @@ export default class SNavigator extends Component {
             return (
                 <View style={styles.rightNavBtn}>
                     <TouchableHighlight onPress={route.rightBtnAction}>
-                        <Icon name="check" size={16} color="#CCCCCC"/>
+                        <Icon name="check" size={16} color={navigatorGray}/>
                     </TouchableHighlight>
                 </View>
             )

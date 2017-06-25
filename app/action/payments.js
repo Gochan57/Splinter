@@ -1,6 +1,7 @@
 import {
     START_UPDATING_PAYMENT,
     CHANGE_PAYMENT_NAME,
+    SET_MEMBERS_OF_PAYMENT,
     REMOVE_MEMBER_FROM_PAYMENT,
     SPENT_EQUALLY_SWITCHED,
     PAID_ONE_SWITCHED,
@@ -62,6 +63,24 @@ export function changePaymentName(name) {
             type: CHANGE_PAYMENT_NAME,
             payload: {name}
         })
+    }
+}
+
+/**
+ * Изменение списка участников счета.
+ *
+ * @param personIdList Массив id людей, участвующих в счете.
+ */
+export function setMembersOfPayment(personIdList) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: SET_MEMBERS_OF_PAYMENT,
+            payload: {personIdList}
+        })
+        // Если выбрано "Платили поровну", то разделим счет на участников счета.
+        if (getState().payments[TEMPORARY_ID].spentEqually) {
+            dispatch(splitSumByMembers())
+        }
     }
 }
 

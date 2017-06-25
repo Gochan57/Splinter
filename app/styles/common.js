@@ -10,9 +10,13 @@ export const commonStyles = StyleSheet.create({
     horizontal: {
         flexDirection: 'row'
     },
-    center: {
+    leftContainer: {
         justifyContent: 'center',
         alignItems: 'flex-start'
+    },
+    centerContainer: {
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     bottomContainer: {
         flexDirection: 'column',

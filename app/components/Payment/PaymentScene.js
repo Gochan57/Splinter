@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {ActivityIndicator, Modal, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {filter, find, forEach, pickBy, reduce} from 'lodash'
+import {filter, find, forEach, pickBy, reduce, some} from 'lodash'
 
 import {
     startCreatingNewPayment,
@@ -12,6 +12,7 @@ import {
     paidOneSwitched,
     changeSumOnPayment,
     paidForAllChecked,
+    setMembersOfPayment,
     removeMemberFromPayment,
     changeMemberSpentOnPayment,
     changeMemberPaidOnPayment,
@@ -28,6 +29,7 @@ import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
 
 import PaymentMember from './PaymentMember'
+import MembersListScene from '../Member/MembersListScene'
 
 const commonStyles = appStyles.commonStyles
 
@@ -56,6 +58,7 @@ class PaymentScene extends Component {
      * paidOne Платил один?
      * sum Общая сумма счета.
      * members Участника счета.
+     * tripMembers Участники путешествия.
      */
     static propTypes = {
         tripId: React.PropTypes.string.isRequired,
@@ -66,6 +69,7 @@ class PaymentScene extends Component {
         paidOne: React.PropTypes.bool,
         sum: React.PropTypes.number,
         members: React.PropTypes.array,
+        tripMembers: React.PropTypes.array,
     }
 
     /**
@@ -163,18 +167,34 @@ class PaymentScene extends Component {
         )
     }
 
+    /**
+     * Рендерим модальное окно для выбора участников счета.
+     */
     renderChooseMembersModal = () => {
+        // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
+        const members = this.props.tripMembers.map(member => ({
+                ...member,
+                selected: some(this.props.members, {personId: member.personId})
+            })
+        )
+        const onChosenMembers = (personIdList) => {
+            this.props.setMembersOfPayment(personIdList)
+            this.setChooseMembersModalVisible(false)
+        }
         return (
             <Modal
                 animationType={"slide"}
                 transparent={true}
                 visible={this.state.chooseMembersModalVisible}
-                onRequestClose={() => {}}>
-                <View style={[commonStyles.flex, {justifyContent: 'center', alignItems: 'center'}, {borderWidth: 1, borderColor: 'red'}]}>
-                    <TouchableHighlight style={[{borderWidth: 1, borderColor: 'yellow'}]} onPress={() => {this.setChooseMembersModalVisible(false)}}>
-                                <View style={{width: 200, height: 300, backgroundColor: 'green'}}/>
-                    </TouchableHighlight>
-                </View>
+                onRequestClose={() => {}}
+                onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                <TouchableHighlight
+                    style={[commonStyles.flex, commonStyles.centerContainer]}
+                    onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                    <View style={styles.chooseMembersModalStyle}>
+                        <MembersListScene members={members} onFinish={onChosenMembers}/>
+                    </View>
+                </TouchableHighlight>
             </Modal>
         )
     }
@@ -215,7 +235,7 @@ class PaymentScene extends Component {
                     removeRow={(personId) => this.props.removeMemberFromPayment(tripId, paymentId, personId)} />
                 <View style={[commonStyles.flex, commonStyles.bottomContainer]}>
                     <WideButton
-                        text={'Добавить участников'}
+                        text={'Изменить участников'}
                         onPress={() => {this.setChooseMembersModalVisible(true)}}/>
                 </View>
                 {this.renderChooseMembersModal()}
@@ -238,13 +258,14 @@ const mapStateToProps = (state, ownProps) => {
         member.key = member.personId
         member.name = people[member.personId].name
     })
+    const tripMembers = toArrayWithKeys(people, 'personId')
     // Вычислим строку Итого
     const totalPaid = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
     const remainsToPay = totalPaid - payment.sum
     const totalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: TOTAL_ROW_REF}
 
     const {paymentId, name, spentEqually, paidOne, sum, members} = payment
-    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum: toNumberNullable(sum), totalRow, members}
+    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum: toNumberNullable(sum), totalRow, members, tripMembers}
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -256,6 +277,7 @@ const mapDispatchToProps = (dispatch) => {
         paidOneSwitched,
         changeSumOnPayment,
         paidForAllChecked,
+        setMembersOfPayment,
         removeMemberFromPayment,
         changeMemberSpentOnPayment,
         changeMemberPaidOnPayment,
@@ -281,4 +303,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red'
     },
+    chooseMembersModalStyle: {
+        width: 300,
+    }
 })
