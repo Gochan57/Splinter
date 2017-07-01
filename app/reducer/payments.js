@@ -122,7 +122,6 @@ export default (payments = defaultPayments, action) => {
             }
         }
         case RESET_PAID_FOR_ALL: {
-            const {paidOne} = payload
             let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
             forEach(updatingPayment.members, member => {
                 member.paidForAll = false
