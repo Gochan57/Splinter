@@ -7,7 +7,7 @@ export const navigatorStyles = StyleSheet.create({
         marginTop: 20,
     },
     scene: {
-        marginTop: 70,
+        marginTop: 20,
     },
     leftNavBtn: {
         marginTop: -10,
@@ -18,10 +18,8 @@ export const navigatorStyles = StyleSheet.create({
         marginRight: 5
     },
     title: {
-        marginTop: -15,
-        marginLeft: 30,
         fontSize: 16,
-        justifyContent: 'center',
+        alignItems: 'center',
         color: 'white',
     }
 })

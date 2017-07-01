@@ -7,8 +7,8 @@ import moment from 'moment'
 import {filter, some} from 'lodash'
 
 import {toArrayWithKeys} from 'app/utils/utils'
-import {} from 'app/action/payments'
-import {goTo} from 'app/components/Common/SNavigator'
+import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
+import {goTo} from 'app/components/Common/Navigator/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 
@@ -22,7 +22,7 @@ const styles =  appStyles.commonStyles
  */
 class PaymentsListScene extends Component {
 
-    // Отображается в строке навигатора
+    // Отображается в строке навигатора по дефолту
     static title = 'Новый счет'
 
     /**
@@ -43,6 +43,7 @@ class PaymentsListScene extends Component {
      */
     static propTypes = {
         tripId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+        tripName: PropTypes.string,
         payments: PropTypes.array,
         navigator: PropTypes.object,
     }
@@ -50,15 +51,24 @@ class PaymentsListScene extends Component {
     _toPaymentScene = (payment) => {
         const {tripId} = this.props
         const paymentId = payment && payment.id
-        const name = payment && payment.name
         const passProps = {tripId, paymentId}
         goTo({
             navigator: this.props.navigator,
             component: PaymentScene,
             props: passProps,
-            rightBtnOK: true,
-            title: name || 'Новый счет'
         })
+    }
+
+    renderNavigatorBar = () => {
+        const {navigator} = this.props
+        const leftButton = button(IconTypes.back, () => {navigator.pop()})
+        const title = this.props.tripName || PaymentsListScene.title
+        return (
+            <SNavigatorBar
+                LeftButton={leftButton}
+                Title={title}
+            />
+        )
     }
 
     renderPaymentsList = (payments) => {
@@ -99,7 +109,10 @@ class PaymentsListScene extends Component {
         const {payments} = this.props
         return (
             <View style={{flex: 1, justifyContent: 'space-between'}}>
-                {this.renderPaymentsList(payments)}
+                <View>
+                    {this.renderNavigatorBar()}
+                    {this.renderPaymentsList(payments)}
+                </View>
                 <WideButton text={'Новый счет'} onPress={this._toPaymentScene} addBtn={true}/>
             </View>
         )
@@ -107,8 +120,12 @@ class PaymentsListScene extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+    // Текущее путешествие
+    const trip = state.trips[ownProps.tripId]
+    // Название путешествия
+    const tripName = trip.name
     // Получаем список id счетов текущего путешествия.
-    const paymentIds = state.trips[ownProps.tripId].payments
+    const paymentIds = trip.payments
     if (!paymentIds) {
         return {payments: null}
     }
@@ -116,7 +133,7 @@ const mapStateToProps = (state, ownProps) => {
     const allPayments = toArrayWithKeys(state.payments)
     // Выбираем из всех счетов те, которые входят в текущее путешествие.
     const payments = filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
-    return {payments}
+    return {tripName, payments}
 }
 
 const mapDispatchToProps = (dispatch) => {

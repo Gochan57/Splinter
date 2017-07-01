@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {ActivityIndicator, Modal, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -23,6 +23,7 @@ import {toArrayWithKeys, toNumber, toNumberNullable, round} from 'app/utils/util
 import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
+import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
 import WideInput from 'app/components/Common/WideInput'
 import WideButton from 'app/components/Common/WideButton'
 import Switcher from 'app/components/Common/Switcher'
@@ -59,17 +60,19 @@ class PaymentScene extends Component {
      * sum Общая сумма счета.
      * members Участника счета.
      * tripMembers Участники путешествия.
+     * navigator Навигатор для перехода на другие экраны.
      */
     static propTypes = {
-        tripId: React.PropTypes.string.isRequired,
-        paymentId: React.PropTypes.string,
-        loading: React.PropTypes.bool,
-        name: React.PropTypes.string,
-        spentEqually: React.PropTypes.bool,
-        paidOne: React.PropTypes.bool,
-        sum: React.PropTypes.number,
-        members: React.PropTypes.array,
-        tripMembers: React.PropTypes.array,
+        tripId: PropTypes.string.isRequired,
+        paymentId: PropTypes.string,
+        loading: PropTypes.bool,
+        name: PropTypes.string,
+        spentEqually: PropTypes.bool,
+        paidOne: PropTypes.bool,
+        sum: PropTypes.number,
+        members: PropTypes.array,
+        tripMembers: PropTypes.array,
+        navigator: PropTypes.object,
     }
 
     /**
@@ -117,15 +120,27 @@ class PaymentScene extends Component {
         else {
             this.props.startCreatingNewPayment(tripId)
         }
-        // Задаем действие кнопке "Сохранить"
-        this.props.route.rightBtnAction = () => {
-            this.props.updatePayment(tripId)
-            this.props.navigator.pop()
-        }
     }
 
     componentWillUnmount () {
         this.props.cancelUpdatingPayment()
+    }
+
+    renderNavigatorBar = () => {
+        const {tripId, name, navigator} = this.props
+        const leftButton = button(IconTypes.back, () => {navigator.pop()})
+        const title = name || 'Новый счет'
+        const rightButton = button(IconTypes.OK, () => {
+            this.props.updatePayment(tripId)
+            this.props.navigator.pop()
+        })
+        return (
+            <SNavigatorBar
+                LeftButton={leftButton}
+                Title={title}
+                RightButton={rightButton}
+            />
+        )
     }
 
     renderMemberRow = (rowData) => {
@@ -208,6 +223,7 @@ class PaymentScene extends Component {
         const data = [totalRow, ...members]
         return (
             <View style={commonStyles.flex} ref={'mainView'}>
+                {this.renderNavigatorBar()}
                 <WideInput
                     placeholder='Название'
                     onChangeText={text => {this.props.changePaymentName(text)}}

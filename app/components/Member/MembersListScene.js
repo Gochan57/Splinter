@@ -4,10 +4,7 @@ import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {filter, forEach} from 'lodash'
 
-import appStyles from 'app/styles'
-import {navigatorGray} from 'app/themes'
-
-const commonStyles = appStyles.commonStyles
+import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
 
 export default class MembersListScene extends Component {
     /**
@@ -70,16 +67,16 @@ export default class MembersListScene extends Component {
     /**
      * Рендерим заголовок окна
      */
-    renderHeader = () => (
-        <View style={[styles.headerContainer]}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Выберите участников счета</Text>
-                <TouchableHighlight onPress={this.onFinish}>
-                    <Icon name={'check'} size={16} color={navigatorGray}/>
-                </TouchableHighlight>
-            </View>
-        </View>
-    )
+    renderHeader = () => {
+        const title = (<Text style={styles.headerText}>Выберите участников счета</Text>)
+        const rightButton = button(IconTypes.OK, this.onFinish)
+        return (
+            <SNavigatorBar
+                Title={title}
+                RightButton={rightButton}
+            />
+        )
+    }
 
     /**
      * Рендерим одну строку в списке участников.
@@ -133,21 +130,8 @@ const styles = StyleSheet.create({
         borderRightWidth: 0.5,
         borderColor: '#E6E6E6'
     },
-    headerContainer: {
-        height: 40,
-        backgroundColor: '#009E8E',
-        borderBottomWidth: 0.5,
-        borderBottomColor: '#E6E6E6',
-        justifyContent: 'center',
-    },
-    header: {
-        paddingLeft: 10,
-        paddingRight: 10,
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-        alignItems: 'stretch'
-    },
     headerText: {
         color: 'white',
+        fontSize: 13,
     }
 })
