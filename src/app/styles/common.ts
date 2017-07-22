@@ -35,7 +35,7 @@ export const commonStyles = StyleSheet.create({
     wideButtonContentViewContainer: {
         backgroundColor: '#FFA500',
         height: 35,
-        paddingLeft: 10,
+        paddingLeft: 10
     },
     wideButtonPrimaryText: {
         color: 'white',
@@ -46,11 +46,11 @@ export const commonStyles = StyleSheet.create({
     },
     infoTextContainer: {
         height: 35,
-        flexGrow:1,
+        flexGrow: 1,
         justifyContent: 'center'
     },
     infoText: {
-        textAlign:'center',
+        textAlign: 'center',
         fontSize: 16
     },
     flex: {

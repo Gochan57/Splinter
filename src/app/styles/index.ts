@@ -1,9 +1,9 @@
 import {commonStyles} from './common'
-import {navigatorStyles} from './navigator'
+import {navigatorStyles} from 'app/styles/navigator'
 import {tripItemStyles, addTripStyles, createNewTripStyles} from './trips'
 import {paymentStyles} from './payments'
 
-export default appStyles = {
+const appStyles = {
     commonStyles,
     navigatorStyles,
     tripItemStyles,
@@ -11,3 +11,4 @@ export default appStyles = {
     createNewTripStyles,
     paymentStyles,
 }
+export default appStyles

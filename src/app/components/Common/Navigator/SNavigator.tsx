@@ -1,47 +1,57 @@
-import React, {Component} from 'react'
-import {Navigator} from 'react-native'
+import React, {
+    Component,
+    ComponentClass,
+    ReactElement
+} from 'react'
+import {
+    Navigator,
+    NavigatorStatic,
+    Route,
+    View,
+    ViewProperties
+} from 'react-native'
 import appStyles from 'app/styles'
 
 const styles =  appStyles.navigatorStyles
 
-export interface IProps {}
+interface IRoute extends Route {
+    component: ComponentClass<any>
+}
+
+export interface ISNavigatorProps {
+    initialRoute: IRoute
+}
 
 /**
  * Расширение нативного навигатора
  */
-export default class SNavigator extends Component<IProps, void> {
-    /**
-     * initialRoute - Начальный экран навигатора, ожидается {index, component, passProps}
-     */
-    propTypes: {
-        initialRoute: React.PropTypes.object,
-    }
+export default class SNavigator extends Component<ISNavigatorProps, any> {
 
     render() {
-        const {initialRoute} = this.props;
+        const {initialRoute} = this.props
         return (
             <Navigator
                 initialRoute={initialRoute}
                 renderScene={this._renderScene}
-                sceneStyle={styles.scene}
             />
         )
     }
 
-    _renderScene = (route, navigator) => {
-        return <route.component route={route} navigator={navigator} {...route.passProps}/>
+    _renderScene = (route: IRoute, navigator: NavigatorStatic): ReactElement<ViewProperties> => {
+        return (
+            <route.component navigator={navigator} {...route.passProps}/>
+        )
     }
 }
 
 /**
  * Функция для перехода на другие экраны.
  *
- * @param navigator Объект навигатора.
- * @param component Компонент, который будет рендерится на странице с этим навигатором.
- * @param props Пропсы, которые передадутся в компонент.
+ * navigator Объект навигатора.
+ * component Компонент (экран), на который мы переходим.
+ * props Пропсы, которые передадутся в компонент.
  */
-export function goTo(params) {
-    const {navigator, component, props} = params
+export function goTo(navigator: NavigatorStatic, component: ComponentClass<ViewProperties>, props?: Object) {
     navigator.push({
         component,
         passProps: props,

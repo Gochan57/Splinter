@@ -1,28 +1,38 @@
-import React, {Component, PropTypes} from 'react'
-import {StyleSheet, Text, TouchableHighlight, View} from 'react-native'
+import React, {
+    Component,
+    ReactElement,
+} from 'react'
+import {
+    StyleSheet,
+    Text,
+    TouchableHighlight,
+    View,
+    ViewProperties
+} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-interface INavigatorButton {
-    type: string,
-    callback: () => void
+/**
+ * Для передачи в пропсы кнопки необходимо воспользоваться функцией button,
+ * передав ей на вход тип кнопки (IconType) и действие (callback).
+ */
+interface INavigatorBarProps {
+    LeftButton?: ReactElement<ViewProperties>,
+    RightButton?: ReactElement<ViewProperties>,
+    Title?: string,
+    LeftButtons?: ReactElement<ViewProperties>[],
+    RightButtons?: ReactElement<ViewProperties>[],
 }
 
-export interface INavigatorBarProps {
-    LeftButton: INavigatorButton,
-    RightButton: INavigatorButton,
-    Title: string,
-    LeftButtons: [INavigatorButton],
-    RightButtons: [INavigatorButton],
-}
-
-export default class SNavigatorBar extends Component<INavigatorBarProps, void> {
-    static propTypes = {
-        LeftButton: PropTypes.oneOfType([PropTypes.element, PropTypes.shape({type: PropTypes.string, callback: PropTypes.func})]),
-        RightButton: PropTypes.oneOfType([PropTypes.element, PropTypes.shape({type: PropTypes.string, callback: PropTypes.func})]),
-        Title: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-        LeftButtons: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.shape({type: PropTypes.string, callback: PropTypes.func})])),
-        RightButtons: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.shape({type: PropTypes.string, callback: PropTypes.func})])),
-    }
+/**
+ * Строка навигатора.
+ * Пример использования:
+ * <SNavigatorBar
+ *      LeftButton={button(IconType.BACK, navigator.pop)}
+ *      Title={'Некоторый экран'}
+ *      RightButton={button(IconType.OK, props.save)}
+ * />
+ */
+export default class SNavigatorBar extends Component<INavigatorBarProps, null> {
 
     renderButton = (button) => {
         return (
@@ -67,23 +77,30 @@ export default class SNavigatorBar extends Component<INavigatorBarProps, void> {
 }
 
 /**
- * Иконки для строки навигатора.
+ * Типы иконок для строки навигатора.
  */
-export const IconTypes = {
-    back: 'chevron-left',
-    OK: 'check'
+export enum IconType {
+    BACK, OK
+}
+
+/**
+ * Наименования компоненты Icon для для типов иконок в строке навигатора.
+ */
+const mapIconType = {
+    [IconType.BACK]: 'chevron-left',
+    [IconType.OK]: 'check'
 }
 
 /**
  * Кнопка для строки навигатора.
  *
- * @param type Строка из IconTypes.
+ * @param type Строка из IconType.
  * @param callback
  */
-export const button = (type, callback) => {
+export const button = (type: IconType, callback: () => void): ReactElement<ViewProperties> => {
     return (
         <TouchableHighlight onPress={callback}>
-            <Icon name={type} size={16} color={'#CCCCCC'}/>
+            <Icon name={mapIconType[type]} size={16} color={'#CCCCCC'}/>
         </TouchableHighlight>
     )
 }

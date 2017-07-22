@@ -6,19 +6,24 @@
         "jsx": "react",
         "outDir": "artifacts",
         "rootDir": "src",
+        "baseUrl": "src",
         "allowSyntheticDefaultImports": true,
         "noImplicitAny": false,
         "preserveConstEnums": true,
         "allowJs": false,
         "sourceMap": true,
-        "noImplicitReturns": true,
-        "noUnusedParameters": true,
-        "noUnusedLocals": true
+        "noImplicitReturns": false,
+        "noUnusedParameters": false,
+        "noUnusedLocals": false,
+        "paths": {
+            "*": ["*", "*.ios", "*.android"]
+        }
     },
     "filesGlob": [
         "typings/index.d.ts",
         "src/**/*.ts",
-        "src/**/*.tsx"
+        "src/**/*.tsx",
+        "src/**/*.json"
     ],
     "types": [
         "react",
@@ -31,6 +36,5 @@
         "build",
         "node_modules"
     ],
-    "compileOnSave": true,
-    "baseUrl": "src/"
+    "compileOnSave": true
 }

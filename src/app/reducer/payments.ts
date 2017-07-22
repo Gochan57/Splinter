@@ -16,9 +16,31 @@ import {
     CANCEL_UPDATING_PAYMENT,
     TEMPORARY_ID,
 } from '../constants'
+import {
+    IAction,
+    IStorable
+} from 'app/models/common'
+import {
+    IPayloadStartUpdatingPayment,
+    IPayloadChangePaymentName,
+    IPayloadSetMembersOfPayment,
+    IPayloadRemoveMemberFromPayment,
+    IPayloadSpentEquallySwitched,
+    IPayloadPaidOneSwitched,
+    IPayloadChangeSumOnPayment,
+    IPayloadSplitSumByMembers,
+    IPayloadPaidForAllChecked,
+    IPayloadChangePaidToPayForAll,
+    IPayloadСhangeMemberSpentOnPayment,
+    IPayloadChangeMemberPaidOnPayment,
+    IPayloadUpdatePayment,
+    IMember,
+    IPayment,
+} from 'app/models/payments'
+import { handleActions } from 'redux-actions'
 import {cloneDeep, find, forEach, some, remove, omit} from 'lodash'
 
-const defaultPayments = {
+const defaultPayments: IStorable<IPayment> = {
     '1': {
         name: 'Супермаркет',
         date: '01.02.2017 17:01:24',
@@ -55,7 +77,7 @@ const defaultPayments = {
     }
 }
 
-const defaultNewPayment = {
+const defaultNewPayment: IPayment = {
     paymentId: undefined,
     members: [],
     spentEqually: false,
@@ -63,171 +85,175 @@ const defaultNewPayment = {
     sum: 0
 }
 
-export default (payments = defaultPayments, action) => {
-    const {type, payload} = action
-
-    switch(type) {
-        case START_UPDATING_PAYMENT: {
-            // Создадим в payments поле с ключом -1, куда скопируем редактируемый счет,
-            // или, в случае создания нового счета,  defaultNewPayment.
-            // При редактировании счета будем менять именно этот счет, а затем,
-            // по нажатию "Сохранить", скопируем новые значения в поля оригинального счета.
-
-            // paymentId передается в случае редактирования существующего счета.
-            // members передается в случае создания нового счета (по умолчанию это все участники путешествия).
-            const {paymentId, members} = payload
-
-            let updatingPayment
-            if (paymentId) {
-                // Если редактируется существующий счет
-                updatingPayment = cloneDeep(payments[paymentId])
-                updatingPayment.paymentId = paymentId
-            }
-            else {
-                // Если создается новый счет
-                updatingPayment = {...defaultNewPayment, members}
-            }
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case CHANGE_PAYMENT_NAME: {
-            const {name} = payload
-            return {
-                ...payments,
-                [TEMPORARY_ID]: {
-                    ...payments[TEMPORARY_ID],
-                    name
-                }
-            }
-        }
-        case SPENT_EQUALLY_SWITCHED: {
-            const {spentEqually} = payload
-            return {
-                ...payments,
-                [TEMPORARY_ID]: {
-                    ...payments[TEMPORARY_ID],
-                    spentEqually
-                }
-            }
-        }
-        case PAID_ONE_SWITCHED: {
-            const {paidOne} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            updatingPayment.paidOne = paidOne
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case RESET_PAID_FOR_ALL: {
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            forEach(updatingPayment.members, member => {
-                member.paidForAll = false
-            })
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case CHANGE_SUM_ON_PAYMENT: {
-            const {sum} = payload
-            return {
-                ...payments,
-                [TEMPORARY_ID]: {
-                    ...payments[TEMPORARY_ID],
-                    sum
-                }
-            }
-        }
-        case SPLIT_SUM_BY_MEMBERS: {
-            const {spentEach} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            forEach(updatingPayment.members, member => {member.spent = spentEach})
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case PAID_FOR_ALL_CHECKED: {
-            const {personId} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            forEach(updatingPayment.members, member => {
-                member.paidForAll = member.personId == personId
-            })
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case CHANGE_PAID_TO_PAY_FOR_ALL: {
-            const {sumSpent, personId} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            let updatingMember = find(updatingPayment.members, member => member.personId == personId)
-            updatingMember.paid = sumSpent
-            forEach(updatingPayment.members, member => {
-                member.paid = (member.personId == personId ? sumSpent : 0)
-            })
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case SET_MEMBERS_OF_PAYMENT: {
-            const {personIdList} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            // Для уже существующих участников счета оставим данные как есть,
-            // по остальным добавим в список участником объект {personId}
-            updatingPayment.members = personIdList.map(personId => {
-                return find(updatingPayment.members, {personId: personId}) || {personId}
-            })
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case REMOVE_MEMBER_FROM_PAYMENT: {
-            const {personId} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            remove(updatingPayment.members, member => member.personId === personId)
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case CHANGE_MEMBER_SPENT_ON_PAYMENT: {
-            const {personId, spent, sum} = payload
-            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            updatingPayment.sum = sum
-            let updatingMember = find(updatingPayment.members, member => member.personId == personId)
-            updatingMember.spent = spent
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case CHANGE_MEMBER_PAID_ON_PAYMENT: {
-            const {personId, paid} = payload
-            const updatingPayment = cloneDeep(payments[TEMPORARY_ID])
-            let updatingMember = find(updatingPayment.members, member => member.personId == personId)
-            updatingMember.paid = paid
-            return {
-                ...payments,
-                [TEMPORARY_ID]: updatingPayment
-            }
-        }
-        case UPDATE_PAYMENT: {
-            const {paymentId, payment} = payload
-            return {
-                ...payments,
-                [paymentId]: omit(payment, ['paymentId'])
-            }
-        }
-        case CANCEL_UPDATING_PAYMENT: {
-            return omit(payments, [TEMPORARY_ID])
-        }
+export default (state = defaultPayments, action: IAction<any>) => {
+    if (action && action.type && reducer[action.type]) {
+        return reducer[action.type](state, action.payload)
     }
+    return state
+}
 
-    return payments
+// Указанный тип у reducer - небольшой хак, чтобы обмануть typescript насчет нисходящего приведения типов.
+// По-хорошему, ни здесь ни сверху в типе action не должно быть указано any.
+// Однако в таком виде ts не ругается, и для каждого действия задана типизация payload, к чему и стремились.
+const reducer: {[key: string]: any} = {
+    [START_UPDATING_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadStartUpdatingPayment): IStorable<IPayment> {
+        // Создадим в payments поле с ключом -1, куда скопируем редактируемый счет,
+        // или, в случае создания нового счета,  defaultNewPayment.
+        // При редактировании счета будем менять именно этот счет, а затем,
+        // по нажатию "Сохранить", скопируем новые значения в поля оригинального счета.
+
+        // paymentId передается в случае редактирования существующего счета.
+        // members передается в случае создания нового счета (по умолчанию это все участники путешествия).
+        const {paymentId, members} = payload
+
+        let updatingPayment: IPayment
+        if (paymentId) {
+            // Если редактируется существующий счет
+            updatingPayment = cloneDeep(payments[paymentId])
+            updatingPayment.paymentId = paymentId
+        }
+        else {
+            // Если создается новый счет
+            updatingPayment = {...defaultNewPayment, members}
+        }
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [CHANGE_PAYMENT_NAME]: function(payments: IStorable<IPayment>, payload: IPayloadChangePaymentName): IStorable<IPayment> {
+        const {name} = payload
+        return {
+            ...payments,
+            [TEMPORARY_ID]: {
+                ...payments[TEMPORARY_ID],
+                name
+            }
+        }
+    },
+    [SET_MEMBERS_OF_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadSetMembersOfPayment): IStorable<IPayment> {
+        const {personIdList} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        // Для уже существующих участников счета оставим данные как есть,
+        // по остальным добавим в список участником объект {personId}
+        updatingPayment.members = personIdList.map(personId => {
+            return find(updatingPayment.members, {personId: personId}) || {personId}
+        })
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [REMOVE_MEMBER_FROM_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadRemoveMemberFromPayment): IStorable<IPayment> {
+        const {personId} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        remove(updatingPayment.members, (member: IMember) => member.personId === personId)
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [SPENT_EQUALLY_SWITCHED]: function(payments: IStorable<IPayment>, payload: IPayloadSpentEquallySwitched): IStorable<IPayment> {
+        const {spentEqually} = payload
+        return {
+            ...payments,
+            [TEMPORARY_ID]: {
+                ...payments[TEMPORARY_ID],
+                spentEqually
+            }
+        }
+    },
+    [PAID_ONE_SWITCHED]: function(payments: IStorable<IPayment>, payload: IPayloadPaidOneSwitched): IStorable<IPayment> {
+        const {paidOne} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        updatingPayment.paidOne = paidOne
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [RESET_PAID_FOR_ALL]: function(payments: IStorable<IPayment>, payload: {}): IStorable<IPayment> {
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        forEach(updatingPayment.members, (member: IMember) => {
+            member.paidForAll = false
+        })
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [CHANGE_SUM_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadChangeSumOnPayment): IStorable<IPayment> {
+        const {sum} = payload
+        return {
+            ...payments,
+            [TEMPORARY_ID]: {
+                ...payments[TEMPORARY_ID],
+                sum
+            }
+        }
+    },
+    [SPLIT_SUM_BY_MEMBERS]: function(payments: IStorable<IPayment>, payload: IPayloadSplitSumByMembers): IStorable<IPayment> {
+        const {spentEach} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        forEach(updatingPayment.members, (member: IMember) => {member.spent = spentEach})
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [PAID_FOR_ALL_CHECKED]: function(payments: IStorable<IPayment>, payload: IPayloadPaidForAllChecked): IStorable<IPayment> {
+        const {personId} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        forEach(updatingPayment.members, (member: IMember) => {
+            member.paidForAll = member.personId === personId
+        })
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [CHANGE_PAID_TO_PAY_FOR_ALL]: function(payments: IStorable<IPayment>, payload: IPayloadChangePaidToPayForAll): IStorable<IPayment> {
+        const {sumSpent, personId} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        let updatingMember: IMember = find(updatingPayment.members, (member: IMember) => member.personId === personId)
+        updatingMember.paid = sumSpent
+        forEach(updatingPayment.members, (member: IMember) => {
+            member.paid = (member.personId === personId ? sumSpent : 0)
+        })
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [CHANGE_MEMBER_SPENT_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadСhangeMemberSpentOnPayment): IStorable<IPayment> {
+        const {personId, spent, sum} = payload
+        let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
+        updatingPayment.sum = sum
+        let updatingMember: IMember = find(updatingPayment.members, (member: IMember) => member.personId === personId)
+        updatingMember.spent = spent
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [CHANGE_MEMBER_PAID_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadChangeMemberPaidOnPayment): IStorable<IPayment> {
+        const {personId, paid} = payload
+        const updatingPayment = cloneDeep(payments[TEMPORARY_ID])
+        let updatingMember: IMember = find(updatingPayment.members, (member: IMember) => member.personId === personId)
+        updatingMember.paid = paid
+        return {
+            ...payments,
+            [TEMPORARY_ID]: updatingPayment
+        }
+    },
+    [UPDATE_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadUpdatePayment): IStorable<IPayment> {
+        const {paymentId, payment} = payload
+        return {
+            ...payments,
+            [paymentId]: omit(payment, ['paymentId'])
+        }
+    },
+    [CANCEL_UPDATING_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadStartUpdatingPayment): IStorable<IPayment> {
+        return omit(payments, [TEMPORARY_ID])
+    }
 }
