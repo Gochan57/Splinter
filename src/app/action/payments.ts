@@ -35,14 +35,12 @@ import {
     IPayloadSplitSumByMembers,
     IPayloadPaidForAllChecked,
     IPayloadChangePaidToPayForAll,
-    IPayloadСhangeMemberSpentOnPayment,
+    IPayloadChangeMemberSpentOnPayment,
     IPayloadChangeMemberPaidOnPayment,
     IPayloadUpdatePayment,
     IMember,
     IPayment,
-    IPaymentActions,
 } from 'app/models/payments'
-import {IPerson} from 'app/models/trips'
 import {find, map, reduce} from 'lodash'
 
 export const paymentActions = {
@@ -72,8 +70,8 @@ export const paymentActions = {
 export function startCreatingNewPayment(tripId: string) {
     return (dispatch, getState: () => IStore) => {
         // Составляем массив всех участников путешествия
-        const people: IStorable<IPerson> = getState().trips[tripId].people
-        const members: IMember[] = people && map(Object.keys(people), (personId: string) => ({personId}))
+        const people: string[] = getState().trips[tripId].people
+        const members: IMember[] = people && people.map((personId: string) => ({personId}))
         const action: IAction<IPayloadStartUpdatingPayment> = {
             type: START_UPDATING_PAYMENT,
             payload: {members}
@@ -264,7 +262,7 @@ export function changePaidToPayForAll(personId?: string) {
         const sumSpent: number = reduce(members, (sum: number, member: IMember) => sum + zeroIfNull(member.spent), 0)
         // если personId не передан, можно вычислить его из метки paidForAll у участника счета
         if (!personId) {
-            const memberPaidForAll: IMember = find(members, member => member.paidForAll)
+            const memberPaidForAll: IMember = find(members, (member: IMember) => member.paidForAll)
             if (memberPaidForAll) {
                 personId = memberPaidForAll.personId
             }
@@ -297,7 +295,7 @@ export function changeMemberSpentOnPayment(personId: string, value: number) {
             const memberSpent: number = (member.personId === personId ? value : member.spent)
             return paymentSum + memberSpent
         }, 0)
-        const action: IAction<IPayloadСhangeMemberSpentOnPayment> = {
+        const action: IAction<IPayloadChangeMemberSpentOnPayment> = {
             type: CHANGE_MEMBER_SPENT_ON_PAYMENT,
             payload: {personId, spent, sum}
         }

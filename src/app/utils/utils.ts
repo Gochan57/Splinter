@@ -1,4 +1,5 @@
 import {omit} from 'lodash'
+import {IStorable} from 'app/models/common'
 
 /**
  * Переводит объект в массив, добавляя в каждый элемент массива поле со значением ключа в объекте
@@ -21,12 +22,12 @@ import {omit} from 'lodash'
  * @param propName = 'id' Наименование поля, которое добавляется в каждый элемент массива,
  * и значением которого будет значение ключа в объекте
  */
-export function toArrayWithKeys (o, propName: string = 'id') {
+export function toArrayWithKeys<T> (o, propName: string = 'id'): T[] {
     if (typeof o !== 'object') {
         logError('Income param is not an object:', o)
         return
     }
-    let res = []
+    let res: T[] = []
     for (let key in o) {
         if (o.hasOwnProperty(key)) {
             if (typeof o[key] === 'object') {

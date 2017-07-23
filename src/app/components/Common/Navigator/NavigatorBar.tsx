@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 interface INavigatorBarProps {
     LeftButton?: ReactElement<ViewProperties>,
     RightButton?: ReactElement<ViewProperties>,
-    Title?: string | ReactElement<TextProperties>,
+    Title: string | ReactElement<TextProperties>,
     LeftButtons?: ReactElement<ViewProperties>[],
     RightButtons?: ReactElement<ViewProperties>[],
 }
@@ -27,13 +27,13 @@ interface INavigatorBarProps {
 /**
  * Строка навигатора.
  * Пример использования:
- * <SNavigatorBar
+ * <NavigatorBar
  *      LeftButton={button(IconType.BACK, navigator.pop)}
  *      Title={'Некоторый экран'}
  *      RightButton={button(IconType.OK, props.save)}
  * />
  */
-export default class SNavigatorBar extends Component<INavigatorBarProps, null> {
+export default class NavigatorBar extends Component<INavigatorBarProps, null> {
 
     renderButton = (button) => {
         // Нехорошо указывать key='key', но настоящего ключа у нас здесь нет,

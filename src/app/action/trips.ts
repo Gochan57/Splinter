@@ -1,4 +1,7 @@
-import {ADD_TRIP} from 'app/constants'
+import {
+    ADD_PERSON,
+    ADD_TRIP
+} from 'app/constants'
 import {
     IAction,
     IStorable,
@@ -6,10 +9,11 @@ import {
 } from 'app/models/common'
 import {
     IPayloadAddTrip,
-    IPerson,
     ITrip
 } from 'app/models/trips'
-import {toObjectWithKeysArray} from '../utils/utils'
+import {
+    IPayloadAddPerson,
+} from 'app/models/people'
 // TODO Переделать на асинхронные экшны
 /**
  * Создание нового путешествие.
@@ -23,16 +27,24 @@ export function addTrip(name: string, people: string[]) {
         tempPromise('4').then((tripId: string) => {
             // Записываем людей в базу
             let promises = people.map((personName: string, index: number) => {
-                return tempPromise((10 + index).toString())
+                return new Promise((resolve, reject) => {
+                    tempPromise((10 + index).toString()).then((personId: string) => {
+                        // Добавляем новых людей в хранилище.
+                        const action: IAction<IPayloadAddPerson> = {
+                            type: ADD_PERSON,
+                            payload: {person: {
+                                personId,
+                                name: personName
+                            }}
+                        }
+                        dispatch(action)
+                        resolve(personId)
+                    })
+                })
             })
             Promise.all(promises).then((personIds: string[]) => {
-                const tripPeopleArr: IPerson[] = people.map((personName: string) => ({name: personName}))
-                const tripPeople: IStorable<IPerson> = toObjectWithKeysArray(tripPeopleArr, personIds)
-                const trip: ITrip = {
-                    tripId,
-                    name,
-                    people: tripPeople
-                }
+                // Добавляем новое путешествие в хранилище.
+                const trip: ITrip = {tripId, name, people: personIds, payments: []}
                 const action: IAction<IPayloadAddTrip> = {
                     type: ADD_TRIP,
                     payload: {trip}

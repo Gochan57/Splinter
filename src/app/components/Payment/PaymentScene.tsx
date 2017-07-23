@@ -12,16 +12,16 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {filter, find, forEach, pickBy, reduce, some} from 'lodash'
+import {filter, find, forEach, pickBy, pick, reduce, some} from 'lodash'
 
 import {
     paymentActions,
 } from 'app/action/payments'
-import {toArrayWithKeys, toNumber, toNumberNullable, round} from 'app/utils/utils'
+import {toNumber, toNumberNullable} from 'app/utils/utils'
 import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
-import SNavigatorBar, {IconType, button} from 'app/components/Common/Navigator/SNavigatorBar'
+import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
@@ -33,15 +33,13 @@ import {
     IPayment,
     IPaymentActions
 } from 'app/models/payments'
-import {IPerson} from 'app/models/trips'
 import {
     IKey,
     IStore
 } from 'app/models/common'
+import {IPerson} from 'app/models/people'
 
 const commonStyles = appStyles.commonStyles
-
-const TOTAL_ROW_REF = 'totalRow'
 
 /**
  * navigator Навигатор для перехода на другие экраны.
@@ -50,6 +48,7 @@ const TOTAL_ROW_REF = 'totalRow'
 interface IProps {
     navigator: NavigatorStatic,
     tripId: string,
+    paymentId?: string
 }
 
 /**
@@ -114,13 +113,15 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
     // Хак против ts. Без переопределения refs с any нет возможности вызвать blur.
     refs: {[key: string]: any}
 
-    private totalRow: PaymentMember = null
+    /**
+     * ref у строки "Итого"
+     */
+    private TOTAL_ROW_REF = 'totalRow'
 
     /**
-     * Генератор ref по key для строк с участниками счета.
-     * @param key
+     * Строка "Итого"
      */
-    refFor = (key) => `ref_${key}`
+    private totalRow: PaymentMember = null
 
     /**
      * Снять фокус со всех инпутов.
@@ -143,6 +144,8 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
     }
 
     componentWillMount () {
+        // Вызовем action начала редактирования/создания нового счета,
+        // чтобы перевести редактируемый счет под поле [TEMPORARY_ID] в сторе.
         const {tripId, paymentId} = this.props
         if (paymentId) {
             this.props.startUpdatingPayment(paymentId)
@@ -165,7 +168,7 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
             this.props.navigator.pop()
         })
         return (
-            <SNavigatorBar
+            <NavigatorBar
                 LeftButton={leftButton}
                 Title={title}
                 RightButton={rightButton}
@@ -174,8 +177,8 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
     }
 
     renderMemberRow = (rowData) => {
-        if (rowData.key === TOTAL_ROW_REF) {
-            // Верхняя строка с общим счетом
+        if (rowData.key === this.TOTAL_ROW_REF) {
+            // Верхняя строка с общим счетом "Итого"
             return (
                 <PaymentMember
                     name={rowData.name}
@@ -286,6 +289,12 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
             </View>
         )
     }
+
+    /**
+     * Генератор ref по key для строк с участникам§и счета.
+     * @param key
+     */
+    private refFor = (key) => `ref_${key}`
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
@@ -295,19 +304,17 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
     if (!payment) {
         return {loading: true}
     }
-    // Все участники путешествия
-    const people = state.trips[tripId].people
     // Добавим к каждому member поле key (этого требует элемент RemovableListView) и name
     const members: (IMember & IKey)[] = payment.members as (IMember & IKey)[]
     members.forEach(member => {
         member.key = member.personId
-        member.name = people[member.personId].name
+        member.name = state.people[member.personId].name
     })
-    const tripMembers = toArrayWithKeys(people, 'personId')
+    const tripMembers: IPerson[] = state.trips[tripId].people.map((personId: string) => state.people[personId])
     // Вычислим строку Итого
-    const totalPaid = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
-    const remainsToPay = totalPaid - payment.sum
-    const totalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: TOTAL_ROW_REF}
+    const totalPaid: number = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
+    const remainsToPay: number = totalPaid - payment.sum
+    const totalRow: ITotalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: this.TOTAL_ROW_REF}
 
     const {paymentId, name, spentEqually, paidOne, sum} = payment
     return {tripMembers, paymentId, loading: false, name, spentEqually, paidOne, sum, members, totalRow}

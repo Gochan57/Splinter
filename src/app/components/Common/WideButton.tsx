@@ -6,18 +6,23 @@ import appStyles from 'app/styles'
 
 const styles = appStyles.commonStyles
 
+/**
+ * onPress Действие при нажатии на кнопку.
+ * text Текст на кнопке.
+ * style Дополнительные стили на кнопке.
+ * addBtn Если true, будет отображен знак "+" перед текстом на кнопке.
+ */
 interface IProps {
     onPress: () => void,
-    addBtn?: boolean,
     text: string,
     style?: ViewStyle
+    addBtn?: boolean,
 }
 
 /**
  * Компонент кнопки на всю ширину экрана.
  */
 export default class WideButton extends Component<IProps, null> {
-
     render() {
         const {onPress, addBtn = false, text} = this.props
         const leftElement = (addBtn ? <Icon name='plus' size={16} color='white'/> : null)

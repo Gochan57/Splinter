@@ -6,12 +6,11 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toArrayWithKeys} from 'app/utils/utils'
-import {goTo} from 'app/components/Common/Navigator/SNavigator'
+
 import WideButton from 'app/components/Common/WideButton'
+import NavigatorBar from 'app/components/Common/Navigator/NavigatorBar'
+import PaymentsListScene from 'app/components/Payment/PaymentsListScene'
 
-import SNavigatorBar from 'app/components/Common/Navigator/SNavigatorBar'
-
-import PaymentsListScene from '../Payment/PaymentsListScene'
 import TripScene from './TripScene'
 import TripsListItem from './TripsListItem'
 import {ITrip} from 'app/models/trips'
@@ -35,17 +34,17 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
     _toPaymentsListScene = (tripId: string) => {
         const {navigator} = this.props
         return () => {
-            goTo(navigator, PaymentsListScene, {tripId})
+            navigator.push({component: PaymentsListScene, passProps: {tripId}})
         }
     }
 
     _toAddTripScene = () => {
         const {navigator} = this.props
-        goTo(navigator, TripScene, {})
+        navigator.push({component: TripScene, passProps: {}})
     }
 
     renderNavigatorBar = () => {
-        return (<SNavigatorBar Title={'Путешествия'}/>)
+        return (<NavigatorBar Title={'Путешествия'}/>)
     }
 
     _renderTripItem = (rowData: ITrip) => {
@@ -58,7 +57,7 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
         const {trips} = this.props
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-        const rows = toArrayWithKeys(trips)
+        const rows: ITrip[] = toArrayWithKeys<ITrip>(trips)
         const dataSource = ds.cloneWithRows(rows)
 
         return (

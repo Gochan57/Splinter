@@ -17,31 +17,19 @@ const defaultTrips: IStorable<ITrip> = {
     '1': {
         tripId: '1',
         name: 'Sri Lanka',
-        people: {
-            '1': {name: 'Юля'},
-            '2': {name: 'Гоша'},
-            '3': {name: 'Вова'},
-        },
+        people: ['1', '2', '3'],
         payments: ['1', '2', '3']
     },
     '2': {
         tripId: '2',
         name: 'Kazan',
-        people: {
-            '4': {name: 'Юля'},
-            '5': {name: 'Надя'},
-            '6': {name: 'Костя'},
-        },
+        people: ['4', '5', '6'],
         payments: []
     },
     '3': {
         tripId: '3',
         name: 'Morocco',
-        people: {
-            '7': {name: 'Саня'},
-            '8': {name: 'Мегги'},
-            '9': {name: 'Гоша'},
-        },
+        people: ['7', '8', '9'],
         payments: []
     }
 }
@@ -59,7 +47,7 @@ export default (state = defaultTrips, action: IAction<any>) => {
 const reducer: {[key: string]: any} = {
     [ADD_TRIP]: function(trips: IStorable<ITrip>, payload: IPayloadAddTrip): IStorable<ITrip> {
         const {trip} = payload
-        return {...trips, [trip.tripId]: omit(trip, 'tripId')}
+        return {...trips, [trip.tripId]: trip}
     },
     [UPDATE_PAYMENT]: function(trips: IStorable<ITrip>, payload: IPayloadUpdatePayment): IStorable<ITrip> {
         const {tripId, paymentId} = payload

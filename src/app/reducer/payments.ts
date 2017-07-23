@@ -31,7 +31,7 @@ import {
     IPayloadSplitSumByMembers,
     IPayloadPaidForAllChecked,
     IPayloadChangePaidToPayForAll,
-    IPayloadСhangeMemberSpentOnPayment,
+    IPayloadChangeMemberSpentOnPayment,
     IPayloadChangeMemberPaidOnPayment,
     IPayloadUpdatePayment,
     IMember,
@@ -228,7 +228,7 @@ const reducer: {[key: string]: any} = {
             [TEMPORARY_ID]: updatingPayment
         }
     },
-    [CHANGE_MEMBER_SPENT_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadСhangeMemberSpentOnPayment): IStorable<IPayment> {
+    [CHANGE_MEMBER_SPENT_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadChangeMemberSpentOnPayment): IStorable<IPayment> {
         const {personId, spent, sum} = payload
         let updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
         updatingPayment.sum = sum
@@ -241,7 +241,7 @@ const reducer: {[key: string]: any} = {
     },
     [CHANGE_MEMBER_PAID_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadChangeMemberPaidOnPayment): IStorable<IPayment> {
         const {personId, paid} = payload
-        const updatingPayment = cloneDeep(payments[TEMPORARY_ID])
+        const updatingPayment: IPayment = cloneDeep(payments[TEMPORARY_ID])
         let updatingMember: IMember = find(updatingPayment.members, (member: IMember) => member.personId === personId)
         updatingMember.paid = paid
         return {

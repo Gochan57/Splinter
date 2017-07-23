@@ -4,7 +4,7 @@ import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {filter, forEach} from 'lodash'
 
-import SNavigatorBar, {IconType, button} from 'app/components/Common/Navigator/SNavigatorBar'
+import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 
 /**
  * members Список участников.
@@ -15,18 +15,31 @@ interface IProps {
     onFinish: (selectedMembers: string[]) => void
 }
 
+/**
+ * personId Идентификатор участника счета.
+ * name Имя, отображаемое в строке с участником счета.
+ * selected Участвует ли в счете.
+ */
 export interface IMemberItem {
-    personId?: string,
+    personId: string,
     name: string,
     selected: boolean
 }
 
+/**
+ * Выбранные для участия в счете люди.
+ */
 interface IState {
-    selectedMembers: {
-        [personId: string]: boolean
-    }
+    selectedMembers: ISelectedMembers
 }
 
+interface ISelectedMembers {
+    [personId: string]: boolean
+}
+
+/**
+ * Компонент для выбора участников счета.
+ */
 export default class MembersListScene extends Component<IProps, IState> {
     /**
      * selectedMembers объект с полями id участников и булевскими значениями, выбран участник или нет
@@ -38,8 +51,8 @@ export default class MembersListScene extends Component<IProps, IState> {
         super(props)
 
         // Храним выбранных участников в стейте в selectedMembers
-        let selectedMembers = {}
-        forEach(props.members, member => {
+        let selectedMembers: ISelectedMembers = {}
+        props.members.forEach(member => {
             selectedMembers[member.personId] = member.selected
         })
         this.state = {
@@ -63,7 +76,7 @@ export default class MembersListScene extends Component<IProps, IState> {
 
     onFinish = () => {
         const {selectedMembers} = this.state
-        const onlySelectedMembers = filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
+        const onlySelectedMembers: string[] = filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
         this.props.onFinish(onlySelectedMembers)
     }
 
@@ -74,7 +87,7 @@ export default class MembersListScene extends Component<IProps, IState> {
         const title = (<Text style={styles.headerText}>Выберите участников счета</Text>)
         const rightButton = button(IconType.OK, this.onFinish)
         return (
-            <SNavigatorBar
+            <NavigatorBar
                 Title={title}
                 RightButton={rightButton}
             />
@@ -87,11 +100,11 @@ export default class MembersListScene extends Component<IProps, IState> {
      */
     renderRow = (rowData) => {
         const {personId, name} = rowData
-        const selected = this.state.selectedMembers[personId]
-        const color = selected ? '#3333ff' : '#e6e6e6'
+        const selected: boolean = this.state.selectedMembers[personId]
         const onPress = () => {
             this.selectPerson(personId, !selected)
         }
+        const color = selected ? '#3333ff' : '#e6e6e6'
         const check = (
             <TouchableHighlight onPress={onPress}>
                 <Icon name={'check'} size={16} color={color}/>

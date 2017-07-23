@@ -9,8 +9,9 @@ import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
 import { addTrip } from 'app/action/trips'
-import {goTo} from 'app/components/Common/Navigator/SNavigator'
-import SNavigatorBar, {IconType, button} from 'app/components/Common/Navigator/SNavigatorBar'
+
+import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
+
 import TripsListScene from './TripsListScene'
 
 const styles = appStyles.createNewTripStyles
@@ -54,10 +55,7 @@ class TripScene extends Component<IProps, IState> {
         const {name, people} = this.state
         const {navigator} = this.props
         this.props.addTrip(name, people)
-        goTo(
-            navigator,
-            TripsListScene,
-        )
+        navigator.push({component: TripsListScene})
     }
 
     _addMember = () => {
@@ -73,7 +71,7 @@ class TripScene extends Component<IProps, IState> {
         const leftButton = button(IconType.BACK, () => {navigator.pop()})
         const rightButton = button(IconType.OK, this._addTrip)
         return (
-            <SNavigatorBar
+            <NavigatorBar
                 LeftButton={leftButton}
                 Title={'Добавить путешествие'}
                 RightButton={rightButton}

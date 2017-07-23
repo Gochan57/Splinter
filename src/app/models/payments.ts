@@ -1,4 +1,4 @@
-import {IAction} from './common';
+import {IAction} from './common'
 /**
  * Участник счета.
  *
@@ -30,7 +30,7 @@ export interface IPayment {
     paymentId?: string,
     name?: string,
     date?: string,
-    members?: IMember[],
+    members: IMember[],
     spentEqually?: boolean,
     paidOne?: boolean,
     sum?: number
@@ -156,7 +156,7 @@ export interface IPayloadChangePaidToPayForAll {
  * spent - Потратил денег.
  * sum - Общая сумма счета.
  */
-export interface IPayloadСhangeMemberSpentOnPayment {
+export interface IPayloadChangeMemberSpentOnPayment {
     personId: string,
     spent: number,
     sum: number

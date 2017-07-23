@@ -1,16 +1,3 @@
-import {IStorable} from './common'
-
-/**
- * Путешественник.
- *
- * personId Идентификатор путешественника (сквозная нумерация).
- * name Имя путешественника.
- */
-export interface IPerson {
-    personId?: string,
-    name: string
-}
-
 /**
  * Путешествие.
  *
@@ -19,10 +6,10 @@ export interface IPerson {
  * payments Счета (массив идентификаторов).
  */
 export interface ITrip {
-    tripId?: string,
-    name: string,
-    people?: IStorable<IPerson>,
-    payments?: string[]
+    tripId: string,
+    name?: string,
+    people: string[],
+    payments: string[]
 }
 
 /**

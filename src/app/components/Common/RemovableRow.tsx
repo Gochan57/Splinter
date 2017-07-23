@@ -100,11 +100,11 @@ export default class RemovableRow extends Component<IProps, IState> {
      */
     move = (e) => {
         const {maxSwipeDistance} = this.props
-        const marginLeft = e.nativeEvent.pageX - this.startPosition.pageX
+        const marginLeft: number = e.nativeEvent.pageX - this.startPosition.pageX
         // если отклонение превышает maxSwipeDistance, элемент будет удален
-        const isDeleting = (Math.abs(marginLeft) > maxSwipeDistance)
+        const isDeleting: boolean = (Math.abs(marginLeft) > maxSwipeDistance)
         // прозрачность элемента равномерно меняется по мере приближения к maxSwipeDistance
-        const opacity = 1 - Math.min(Math.abs(marginLeft) / maxSwipeDistance, 1)
+        const opacity: number = 1 - Math.min(Math.abs(marginLeft) / maxSwipeDistance, 1)
         this.setState({marginLeft, isDeleting, opacity})
     }
 
@@ -128,14 +128,13 @@ export default class RemovableRow extends Component<IProps, IState> {
             onResponderTerminationRequest: (e) => true,
             onResponderTerminate: this.finishSwiping,
         }
-        const style: ViewStyle = {marginLeft, opacity}
+        let style: ViewStyle = {marginLeft, opacity}
         if (this.width) {
             style.width = this.width
         }
-        const content = this.props.children
         return (
             <View ref='row' {...swipeProps} style={style}>
-                {content}
+                {this.props.children}
             </View>
         )
     }

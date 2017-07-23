@@ -11,15 +11,15 @@ import moment from 'moment'
 import {filter, some} from 'lodash'
 
 import {toArrayWithKeys} from 'app/utils/utils'
-import SNavigatorBar, {IconType, button} from 'app/components/Common/Navigator/SNavigatorBar'
+import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 
 import PaymentsListItem from './PaymentsListItem'
 import PaymentScene from './PaymentScene'
-import {IPayment} from '../../models/payments'
-import {IStore} from '../../models/common'
-import {ITrip} from '../../models/trips'
+import {IPayment} from 'app/models/payments'
+import {IStore} from 'app/models/common'
+import {ITrip} from 'app/models/trips'
 
 const styles =  appStyles.commonStyles
 
@@ -45,7 +45,6 @@ interface IStateProps {
  * Экран со списком счетов.
  */
 class PaymentsListScene extends Component<IProps & IStateProps, null> {
-
     /**
      * Переход на экран редактирования счета.
      * Если payment не передается, то откроется экран создания нового счета.
@@ -63,7 +62,7 @@ class PaymentsListScene extends Component<IProps & IStateProps, null> {
         const leftButton = button(IconType.BACK, () => {navigator.pop()})
         const title: string = this.props.tripName || 'Новый счет'
         return (
-            <SNavigatorBar
+            <NavigatorBar
                 LeftButton={leftButton}
                 Title={title}
             />
@@ -127,7 +126,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps) => {
         return {payments: null}
     }
     // Получаем список всех счетов.
-    const allPayments: IPayment[] = toArrayWithKeys(state.payments)
+    const allPayments: IPayment[] = toArrayWithKeys<IPayment>(state.payments)
     // Выбираем из всех счетов те, которые входят в текущее путешествие.
     const payments: IPayment[] = filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
     return {tripName, payments}

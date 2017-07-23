@@ -113,26 +113,30 @@ export default class PaymentMember extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps (nextProps) {
+        // Преобразуем числовые значения в отформатированные строковые.
         this.setState({
             spentValue: this.formatValue(nextProps.spent),
             paidValue: this.formatValue(nextProps.paid),
         })
     }
 
-    render() {
-        const {name, spentEditable, paidEditable, onSpentChanged, onPaidChanged,
-            showPaidForAllCheck, onPaidForAllChecked, paidForAll,
-            spentPlaceholder, paidPlaceholder,
-            style, customLabelStyle, customSpentStyle, customPaidStyle} = this.props
-        let paidForAllCheck = null
+    renderPaidForAllCheck = () => {
+        const {showPaidForAllCheck, onPaidForAllChecked, paidForAll} = this.props
         if (showPaidForAllCheck) {
             const color = paidForAll ? '#3333ff' : '#e6e6e6'
-            paidForAllCheck = (
+            return (
                 <TouchableHighlight onPress={onPaidForAllChecked}>
                     <Icon name={'check'} size={16} color={color}/>
                 </TouchableHighlight>
             )
         }
+        return null
+    }
+
+    render() {
+        const {name, spentEditable, paidEditable, onSpentChanged, onPaidChanged,
+            spentPlaceholder, paidPlaceholder,
+            style, customLabelStyle, customSpentStyle, customPaidStyle} = this.props
         return (
             <View style={[commonStyles.rowContainer, styles.container, style]}>
                 <View style={[commonStyles.verticalCenter, commonStyles.flex]}>
@@ -160,9 +164,7 @@ export default class PaymentMember extends Component<IProps, IState> {
                         ref={'paidTextInput'}
                     />
                 </View>
-                <View>
-                    {paidForAllCheck}
-                </View>
+                {this.renderPaidForAllCheck()}
             </View>
         )
     }
