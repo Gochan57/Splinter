@@ -42,6 +42,7 @@ import {cloneDeep, find, forEach, some, remove, omit} from 'lodash'
 
 const defaultPayments: IStorable<IPayment> = {
     '1': {
+        paymentId: '1',
         name: 'Супермаркет',
         date: '01.02.2017 17:01:24',
         members: [
@@ -53,6 +54,7 @@ const defaultPayments: IStorable<IPayment> = {
         sum: 200
     },
     '2': {
+        paymentId: '2',
         name: 'Обучение у Сусы',
         date: '01.02.2017 10:34:12',
         members: [
@@ -65,6 +67,7 @@ const defaultPayments: IStorable<IPayment> = {
         sum: 150
     },
     '3': {
+        paymentId: '3',
         name: 'Такси',
         date: '02.02.2017 12:56:01',
         members: [

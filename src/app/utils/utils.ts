@@ -21,18 +21,23 @@ import {omit} from 'lodash'
  * @param propName = 'id' Наименование поля, которое добавляется в каждый элемент массива,
  * и значением которого будет значение ключа в объекте
  */
-export function toArrayWithKeys (o, propName = 'id') {
+export function toArrayWithKeys (o, propName: string = 'id') {
     if (typeof o !== 'object') {
         logError('Income param is not an object:', o)
         return
     }
     let res = []
     for (let key in o) {
-        if (typeof o[key] === 'object') {
-            res.push({...o[key], [propName]: key})
-        }
-        else {
-            logError(`Can\'t transform object to array. ${o[key]} is not an object`, o)
+        if (o.hasOwnProperty(key)) {
+            if (typeof o[key] === 'object') {
+                res.push({
+                    ...o[key],
+                    [propName]: key
+                })
+            }
+            else {
+                logError(`Can\'t transform object to array. ${o[key]} is not an object`, o)
+            }
         }
     }
     return res
@@ -93,11 +98,19 @@ export function getMaxId (o) {
  * Преобразует строку в число.
  * @param value Строка.
  */
-export function toNumber(value) {
+export function toNumber(value: string): number {
+    if (!value) return 0
     if (typeof value === 'string') {
         value = value.replace(',', '.')
     }
-    return parseFloat(value || 0)
+    return parseFloat(value || '0')
+}
+
+/**
+ * null -> 0
+ */
+export function zeroIfNull(value: number): number {
+    return value ? value : 0
 }
 
 /**
@@ -105,9 +118,9 @@ export function toNumber(value) {
  * но если был передан null или undefined, вернет null или undefinde.
  * @param value Строка.
  */
-export function toNumberNullable(value) {
+export function toNumberNullable(value: string): number {
     if (value === null || value === undefined) {
-        return value
+        return null
     }
     return toNumber(value)
 }
@@ -118,7 +131,7 @@ export function toNumberNullable(value) {
  * @param value Число.
  * @param n Количсетво знаков.
  */
-export function round (value, n) {
+export function round (value, n: number): number {
     n = n || 0
     return Math.round(toNumber(value) * Math.pow(10, n)) / Math.pow(10, n)
 }
@@ -126,7 +139,7 @@ export function round (value, n) {
 /**
  * Логирует ошибку.
  *
- * @param error Текст ошибки.
+ * @param params Все выведется в консоль.
  */
 export function logError (...params) {
     console.log(params)

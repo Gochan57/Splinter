@@ -5,6 +5,7 @@ import React, {
 import {
     StyleSheet,
     Text,
+    TextProperties,
     TouchableHighlight,
     View,
     ViewProperties
@@ -18,7 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 interface INavigatorBarProps {
     LeftButton?: ReactElement<ViewProperties>,
     RightButton?: ReactElement<ViewProperties>,
-    Title?: string,
+    Title?: string | ReactElement<TextProperties>,
     LeftButtons?: ReactElement<ViewProperties>[],
     RightButtons?: ReactElement<ViewProperties>[],
 }
@@ -35,8 +36,10 @@ interface INavigatorBarProps {
 export default class SNavigatorBar extends Component<INavigatorBarProps, null> {
 
     renderButton = (button) => {
+        // Нехорошо указывать key='key', но настоящего ключа у нас здесь нет,
+        // и, учитывая, что элементов здесь немного, не такой уж страшный хак.
         return (
-            <View style={[styles.centerContainer, styles.buttonContainer]}>
+            <View key='key' style={[styles.centerContainer, styles.buttonContainer]}>
                 {button}
             </View>
         )

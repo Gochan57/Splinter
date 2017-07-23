@@ -16,7 +16,9 @@ import {
     CANCEL_UPDATING_PAYMENT,
     TEMPORARY_ID,
 } from '../constants'
-import {toArrayWithKeys, toNumber, logError} from 'app/utils/utils'
+import {
+    zeroIfNull
+} from 'app/utils/utils'
 import {
     IStorable,
     IAction,
@@ -38,9 +40,29 @@ import {
     IPayloadUpdatePayment,
     IMember,
     IPayment,
+    IPaymentActions,
 } from 'app/models/payments'
 import {IPerson} from 'app/models/trips'
 import {find, map, reduce} from 'lodash'
+
+export const paymentActions = {
+    startCreatingNewPayment,
+    startUpdatingPayment,
+    changePaymentName,
+    setMembersOfPayment,
+    removeMemberFromPayment,
+    spentEquallySwitched,
+    paidOneSwitched,
+    resetPaidForAll,
+    changeSumOnPayment,
+    splitSumByMembers,
+    paidForAllChecked,
+    changePaidToPayForAll,
+    changeMemberSpentOnPayment,
+    changeMemberPaidOnPayment,
+    updatePayment,
+    cancelUpdatingPayment,
+}
 
 /**
  * Начало создания нового счета.
@@ -239,16 +261,24 @@ export function changePaidToPayForAll(personId?: string) {
     return (dispatch, getState: () => IStore) => {
         // считаем сумму потраченных денег
         const members: IMember[] = getState().payments[TEMPORARY_ID].members
-        const sumSpent: number = reduce(members, (sum, member) => sum + toNumber(member.spent), 0)
+        const sumSpent: number = reduce(members, (sum: number, member: IMember) => sum + zeroIfNull(member.spent), 0)
         // если personId не передан, можно вычислить его из метки paidForAll у участника счета
         if (!personId) {
-            personId = find(members, member => member.paidForAll).personId
+            const memberPaidForAll: IMember = find(members, member => member.paidForAll)
+            if (memberPaidForAll) {
+                personId = memberPaidForAll.personId
+            }
         }
-        const action: IAction<IPayloadChangePaidToPayForAll> = {
-            type: CHANGE_PAID_TO_PAY_FOR_ALL,
-            payload: {personId, sumSpent}
+        if (personId) {
+            const action: IAction<IPayloadChangePaidToPayForAll> = {
+                type: CHANGE_PAID_TO_PAY_FOR_ALL,
+                payload: {
+                    personId,
+                    sumSpent
+                }
+            }
+            dispatch(action)
         }
-        dispatch (action)
     }
 }
 
@@ -259,12 +289,12 @@ export function changePaidToPayForAll(personId?: string) {
  * @param value - Новое количество потраченных денег.
  */
 export function changeMemberSpentOnPayment(personId: string, value: number) {
-    const spent: number = toNumber(value)
+    const spent: number = value
     return (dispatch, getState: () => IStore) => {
         // считаем сумму редактируемого счета
         const payment: IPayment = getState().payments[TEMPORARY_ID]
         const sum: number = reduce(payment.members, (paymentSum: number, member: IMember) => {
-            const memberSpent: number = (member.personId === personId ? toNumber(value) : toNumber(member.spent))
+            const memberSpent: number = (member.personId === personId ? value : member.spent)
             return paymentSum + memberSpent
         }, 0)
         const action: IAction<IPayloadСhangeMemberSpentOnPayment> = {
@@ -286,7 +316,7 @@ export function changeMemberSpentOnPayment(personId: string, value: number) {
  * @param value - Новое количество заплаченных денег.
  */
 export function changeMemberPaidOnPayment(personId: string, value: number) {
-    const paid: number = toNumber(value)
+    const paid: number = value
     return (dispatch, getState: () => IStore) => {
         const action: IAction<IPayloadChangeMemberPaidOnPayment> = {
             type: CHANGE_MEMBER_PAID_ON_PAYMENT,

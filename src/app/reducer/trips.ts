@@ -15,6 +15,7 @@ import {cloneDeep, omit} from 'lodash'
 
 const defaultTrips: IStorable<ITrip> = {
     '1': {
+        tripId: '1',
         name: 'Sri Lanka',
         people: {
             '1': {name: 'Юля'},
@@ -24,6 +25,7 @@ const defaultTrips: IStorable<ITrip> = {
         payments: ['1', '2', '3']
     },
     '2': {
+        tripId: '2',
         name: 'Kazan',
         people: {
             '4': {name: 'Юля'},
@@ -33,6 +35,7 @@ const defaultTrips: IStorable<ITrip> = {
         payments: []
     },
     '3': {
+        tripId: '3',
         name: 'Morocco',
         people: {
             '7': {name: 'Саня'},

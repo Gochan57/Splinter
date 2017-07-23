@@ -12,12 +12,11 @@ interface IProps {
     text: string,
     style?: ViewStyle
 }
-interface IState {}
 
 /**
  * Компонент кнопки на всю ширину экрана.
  */
-export default class WideButton extends Component<IProps, IState> {
+export default class WideButton extends Component<IProps, null> {
 
     render() {
         const {onPress, addBtn = false, text} = this.props

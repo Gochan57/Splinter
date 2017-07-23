@@ -108,7 +108,6 @@ class TripScene extends Component<IProps, IState> {
     }
 
     render() {
-        console.log('STATE:', this.state)
         const {people} = this.state
         let _members = people.map(member => (
             <ListItem

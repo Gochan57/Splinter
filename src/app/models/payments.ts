@@ -1,3 +1,4 @@
+import {IAction} from './common';
 /**
  * Участник счета.
  *
@@ -8,6 +9,7 @@
  */
 export interface IMember {
     personId: string,
+    name?: string,
     spent?: number,
     paid?: number,
     paidForAll?: boolean
@@ -32,6 +34,25 @@ export interface IPayment {
     spentEqually?: boolean,
     paidOne?: boolean,
     sum?: number
+}
+
+export interface IPaymentActions {
+    startCreatingNewPayment: (tripId: string) => void,
+    startUpdatingPayment: (paymentId: string) => void,
+    changePaymentName: (name: string) => void,
+    setMembersOfPayment: (personIdList: string[]) => void,
+    removeMemberFromPayment: (personId: string) => void,
+    spentEquallySwitched: (spentEqually: boolean) => void,
+    paidOneSwitched: (paidOne: boolean) => void,
+    resetPaidForAll: () => IAction<null>,
+    changeSumOnPayment: (sum: number) => void,
+    splitSumByMembers: (sum?: number) => void,
+    paidForAllChecked: (personId: string) => void,
+    changePaidToPayForAll: (personId?: string) => void,
+    changeMemberSpentOnPayment: (personId: string, value: number) => void,
+    changeMemberPaidOnPayment: (personId: string, value: number) => void,
+    updatePayment: (tripId: string) => void,
+    cancelUpdatingPayment: () => IAction<null>,
 }
 
 /**

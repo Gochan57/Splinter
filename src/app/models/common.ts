@@ -13,3 +13,7 @@ export interface IStore {
     trips: IStorable<ITrip>,
     payments: IStorable<IPayment>
 }
+
+export interface IKey {
+    key: string
+}

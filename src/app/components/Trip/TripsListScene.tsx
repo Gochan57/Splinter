@@ -11,7 +11,7 @@ import WideButton from 'app/components/Common/WideButton'
 
 import SNavigatorBar from 'app/components/Common/Navigator/SNavigatorBar'
 
-// import PaymentsListScene from '../Payment/PaymentsListScene'
+import PaymentsListScene from '../Payment/PaymentsListScene'
 import TripScene from './TripScene'
 import TripsListItem from './TripsListItem'
 import {ITrip} from 'app/models/trips'
@@ -34,10 +34,9 @@ interface IStateProps {
 class TripsListScene extends Component<IProps & IStateProps, null> {
     _toPaymentsListScene = (tripId: string) => {
         const {navigator} = this.props
-        return () => {console.log('_toPaymentsListScene')}
-        // return () => {
-        //     goTo(navigator, PaymentsListScene, {tripId})
-        // }
+        return () => {
+            goTo(navigator, PaymentsListScene, {tripId})
+        }
     }
 
     _toAddTripScene = () => {
