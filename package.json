@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@types/react-native": "^0.44.19",
+    "babel": "^6.23.0",
+    "babel-plugin-module-alias": "^1.6.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "react": "15.4.2",
