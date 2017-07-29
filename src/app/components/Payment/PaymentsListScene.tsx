@@ -2,7 +2,9 @@ import React, {Component} from 'react'
 import {
     View,
     Text,
-    NavigatorStatic
+    NavigatorStatic,
+    Modal,
+    TouchableHighlight
 } from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -20,6 +22,7 @@ import PaymentScene from './PaymentScene'
 import {IPayment} from 'app/models/payments'
 import {IStore} from 'app/models/common'
 import {ITrip} from 'app/models/trips'
+import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu';
 
 const styles =  appStyles.commonStyles
 
@@ -38,13 +41,25 @@ interface IProps {
  */
 interface IStateProps {
     tripName: string,
-    payments: IPayment[],
+    payments: IPayment[]
+}
+
+/**
+ * menuIsOpened Открыто всплывающее окно меню.
+ */
+interface IState {
+    menuIsOpened: boolean
 }
 
 /**
  * Экран со списком счетов.
  */
-class PaymentsListScene extends Component<IProps & IStateProps, null> {
+class PaymentsListScene extends Component<IProps & IStateProps, IState> {
+
+    state: IState = {
+        menuIsOpened: false
+    }
+
     /**
      * Переход на экран редактирования счета.
      * Если payment не передается, то откроется экран создания нового счета.
@@ -57,14 +72,35 @@ class PaymentsListScene extends Component<IProps & IStateProps, null> {
         this.props.navigator.push({component: PaymentScene, passProps})
     }
 
+    toggleMenuWindow = (menuIsOpened: boolean) => {
+        this.setState({menuIsOpened})
+    }
+
+    renderMenuModal = () => {
+        const buttons: IModalMenuButton[] = [
+            {text: 'Редактировать', onPress: () => {}},
+            {text: 'Рассчитать', onPress: () => {}},
+        ]
+        return (
+            <ModalMenu
+                title='Выберите действие'
+                buttons={buttons}
+                isOpened={this.state.menuIsOpened}
+                closeModal={() => {this.toggleMenuWindow(false)}}
+            />
+        )
+    }
+
     renderNavigatorBar = () => {
         const {navigator} = this.props
         const leftButton = button(IconType.BACK, () => {navigator.pop()})
         const title: string = this.props.tripName || 'Новый счет'
+        const rightButton = button(IconType.MENU, () => {this.toggleMenuWindow(true)})
         return (
             <NavigatorBar
                 LeftButton={leftButton}
                 Title={title}
+                RightButton={rightButton}
             />
         )
     }
@@ -110,6 +146,7 @@ class PaymentsListScene extends Component<IProps & IStateProps, null> {
                     {this.renderPaymentsList(payments)}
                 </View>
                 <WideButton text={'Новый счет'} onPress={this._toPaymentScene} addBtn={true}/>
+                {this.renderMenuModal()}
             </View>
         )
     }

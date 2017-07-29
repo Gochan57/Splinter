@@ -46,6 +46,7 @@ export default class NavigatorBar extends Component<INavigatorBarProps, null> {
     }
 
     renderButtons = (button, buttons, styleContainer) => {
+        if (!button && !buttons) return null
         const buttonList = buttons || [button]
         const renderButtonList = buttonList.map(this.renderButton)
 
@@ -83,7 +84,7 @@ export default class NavigatorBar extends Component<INavigatorBarProps, null> {
  * Типы иконок для строки навигатора.
  */
 export enum IconType {
-    BACK, OK
+    BACK, OK, MENU
 }
 
 /**
@@ -91,7 +92,8 @@ export enum IconType {
  */
 const mapIconType = {
     [IconType.BACK]: 'chevron-left',
-    [IconType.OK]: 'check'
+    [IconType.OK]: 'check',
+    [IconType.MENU]: 'bars',
 }
 
 /**

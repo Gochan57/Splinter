@@ -38,6 +38,7 @@ import {
     IStore
 } from 'app/models/common'
 import {IPerson} from 'app/models/people'
+import ModalWindow from '../Common/ModalWindow';
 
 const commonStyles = appStyles.commonStyles
 
@@ -229,18 +230,12 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
             this.setChooseMembersModalVisible(false)
         }
         return (
-            <Modal
-                animationType={'slide'}
-                transparent={true}
-                visible={this.state.chooseMembersModalVisible}>
-                <TouchableHighlight
-                    style={[commonStyles.flex, commonStyles.centerContainer]}
-                    onPress={() => {this.setChooseMembersModalVisible(false)}}>
-                    <View style={styles.chooseMembersModalStyle}>
-                        <MembersListScene members={members} onFinish={onChosenMembers}/>
-                    </View>
-                </TouchableHighlight>
-            </Modal>
+            <ModalWindow
+                isOpened={this.state.chooseMembersModalVisible}
+                closeModal={() => {this.setChooseMembersModalVisible(false)}}
+            >
+                <MembersListScene members={members} onFinish={onChosenMembers}/>
+            </ModalWindow>
         )
     }
 
