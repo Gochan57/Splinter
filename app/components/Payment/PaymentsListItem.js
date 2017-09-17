@@ -2,9 +2,6 @@ import React, {Component, PropTypes} from 'react'
 import {StyleSheet, View, Text, TouchableHighlight} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
 
-import {goTo} from 'app/components/Common/SNavigator'
-import PaymentScene from './PaymentScene'
-
 /**
  * Элемент в списке на экране со списком счетов.
  */

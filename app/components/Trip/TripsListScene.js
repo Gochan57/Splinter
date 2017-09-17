@@ -3,9 +3,12 @@ import {View, Text, ListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {toArrayWithKeys} from 'app/utils/utils'
-import {goTo} from 'app/components/Common/SNavigator'
+import {goTo} from 'app/components/Common/Navigator/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
-import PaymentsListScene from '../Payment/PaymentsListScene';
+
+import SNavigatorBar from 'app/components/Common/Navigator/SNavigatorBar'
+
+import PaymentsListScene from '../Payment/PaymentsListScene'
 import TripsListItem from './TripsListItem'
 import TripScene from './TripScene'
 
@@ -13,9 +16,6 @@ import TripScene from './TripScene'
  * Экран со списком путешествий.
  */
 class TripsListScene extends Component {
-
-    // Отображается в строке навигатора
-    static title = 'Путешествия'
 
     /**
      * @prop items - store.trips
@@ -27,7 +27,7 @@ class TripsListScene extends Component {
     }
 
     _toPaymentsListScene = (tripId) => {
-        const {items, navigator} = this.props
+        const {navigator} = this.props
         const passProps = {
             tripId,
         }
@@ -36,7 +36,6 @@ class TripsListScene extends Component {
                 navigator,
                 component: PaymentsListScene,
                 props: passProps,
-                title: items[tripId].name
             })
         }
     }
@@ -46,8 +45,11 @@ class TripsListScene extends Component {
         goTo({
             navigator,
             component: TripScene,
-            rightBtnOK: true
         })
+    }
+
+    renderNavigatorBar = () => {
+        return (<SNavigatorBar Title={'Путешествия'}/>)
     }
 
     _renderTripItem = (rowData) => {
@@ -65,6 +67,7 @@ class TripsListScene extends Component {
 
         return (
             <View style={{flex: 1, justifyContent: 'space-between'}}>
+                {this.renderNavigatorBar()}
                 <ListView
                     dataSource={dataSource}
                     renderRow={this._renderTripItem}

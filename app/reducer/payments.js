@@ -1,6 +1,7 @@
 import {
     START_UPDATING_PAYMENT,
     CHANGE_PAYMENT_NAME,
+    SET_MEMBERS_OF_PAYMENT,
     REMOVE_MEMBER_FROM_PAYMENT,
     SPENT_EQUALLY_SWITCHED,
     PAID_ONE_SWITCHED,
@@ -15,7 +16,7 @@ import {
     CANCEL_UPDATING_PAYMENT,
     TEMPORARY_ID,
 } from '../constants'
-import {cloneDeep, find, forEach, remove, omit} from 'lodash'
+import {cloneDeep, find, forEach, some, remove, omit} from 'lodash'
 
 const defaultPayments = {
     '1': {
@@ -167,6 +168,19 @@ export default (payments = defaultPayments, action) => {
             updatingMember.paid = sumSpent
             forEach(updatingPayment.members, member => {
                 member.paid = (member.personId == personId ? sumSpent : 0)
+            })
+            return {
+                ...payments,
+                [TEMPORARY_ID]: updatingPayment
+            }
+        }
+        case SET_MEMBERS_OF_PAYMENT: {
+            const {personIdList} = payload
+            let updatingPayment = cloneDeep(payments[TEMPORARY_ID])
+            // Для уже существующих участников счета оставим данные как есть,
+            // по остальным добавим в список участником объект {personId}
+            updatingPayment.members = personIdList.map(personId => {
+                return find(updatingPayment.members, {personId: personId}) || {personId}
             })
             return {
                 ...payments,

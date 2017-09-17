@@ -50,6 +50,10 @@ export default class RemovableListView extends Component {
         </View>
     )
 
+    renderAddRow = () => {
+
+    }
+
     render() {
         const {data, renderRow = this.defaultRenderRow, removeRow} = this.props
         const list = data.map(elem => (

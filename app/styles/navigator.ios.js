@@ -1,27 +1,9 @@
 import {StyleSheet} from 'react-native'
 
+// FIXME на эмуляторе IOS сверху есть полоска 20px с батареей и тд. Проверить, убирается ли она на девайсе,
+// и если да, то избавиться от navigatorStyles
 export const navigatorStyles = StyleSheet.create({
-    navigationBar: {
-        backgroundColor: '#009E8E',
-        height: 50,
+    scene: {
         marginTop: 20,
     },
-    scene: {
-        marginTop: 70,
-    },
-    leftNavBtn: {
-        marginTop: -10,
-        marginLeft: 5
-    },
-    rightNavBtn: {
-        marginTop: -10,
-        marginRight: 5
-    },
-    title: {
-        marginTop: -15,
-        marginLeft: 30,
-        fontSize: 16,
-        justifyContent: 'center',
-        color: 'white',
-    }
 })

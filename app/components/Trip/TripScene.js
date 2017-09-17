@@ -5,7 +5,8 @@ import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
 import { addTrip } from 'app/action/trips'
-import {goTo} from 'app/components/Common/SNavigator'
+import {goTo} from 'app/components/Common/Navigator/SNavigator'
+import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
 import WideInput from 'app/components/Common/WideInput'
 import TripsListScene from './TripsListScene'
 
@@ -15,8 +16,6 @@ const styles = appStyles.createNewTripStyles
  * Экран для просмотра/добавления/редактирования путешествия.
  */
 class TripScene extends Component {
-
-    static title = 'Добавить путешествие'
 
     /**
      * navigator Навигатор для переходов на другие экраны.
@@ -58,6 +57,19 @@ class TripScene extends Component {
         })
     }
 
+    renderNavigatorBar = () => {
+        const {navigator} = this.props
+        const leftButton = button(IconTypes.back, () => {navigator.pop()})
+        const rightButton = button(IconTypes.OK, this._addTrip)
+        return (
+            <SNavigatorBar
+                LeftButton={leftButton}
+                Title={'Добавить путешествие'}
+                RightButton={rightButton}
+            />
+        )
+    }
+
     renderNewMemberRow = () => {
         const {inputNewMember, inputMember} = this.state
         const leftElement = (inputNewMember ? null : <Icon name='plus' size={16} color='black'/>)
@@ -85,7 +97,7 @@ class TripScene extends Component {
     }
 
     render() {
-        const {inputMember, members} = this.state
+        const {members} = this.state
         let _members = members.map(member => (
             <ListItem
                 key={member}
@@ -94,6 +106,7 @@ class TripScene extends Component {
         _members.push(this.renderNewMemberRow())
         return (
             <View>
+                {this.renderNavigatorBar()}
                 <View>
                     <WideInput
                         onChangeText={text => {this.setState({name: text})}}

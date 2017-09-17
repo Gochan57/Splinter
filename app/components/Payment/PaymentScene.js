@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
-import {ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
+import React, {Component, PropTypes} from 'react'
+import {ActivityIndicator, Modal, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {filter, find, forEach, pickBy, reduce} from 'lodash'
+import {filter, find, forEach, pickBy, reduce, some} from 'lodash'
 
 import {
     startCreatingNewPayment,
@@ -12,6 +12,7 @@ import {
     paidOneSwitched,
     changeSumOnPayment,
     paidForAllChecked,
+    setMembersOfPayment,
     removeMemberFromPayment,
     changeMemberSpentOnPayment,
     changeMemberPaidOnPayment,
@@ -22,11 +23,14 @@ import {toArrayWithKeys, toNumber, toNumberNullable, round} from 'app/utils/util
 import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
+import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
 import WideInput from 'app/components/Common/WideInput'
+import WideButton from 'app/components/Common/WideButton'
 import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
 
 import PaymentMember from './PaymentMember'
+import MembersListScene from '../Member/MembersListScene'
 
 const commonStyles = appStyles.commonStyles
 
@@ -55,25 +59,36 @@ class PaymentScene extends Component {
      * paidOne Платил один?
      * sum Общая сумма счета.
      * members Участника счета.
+     * tripMembers Участники путешествия.
+     * navigator Навигатор для перехода на другие экраны.
      */
     static propTypes = {
-        tripId: React.PropTypes.string.isRequired,
-        paymentId: React.PropTypes.string,
-        loading: React.PropTypes.bool,
-        name: React.PropTypes.string,
-        spentEqually: React.PropTypes.bool,
-        paidOne: React.PropTypes.bool,
-        sum: React.PropTypes.number,
-        members: React.PropTypes.array,
+        tripId: PropTypes.string.isRequired,
+        paymentId: PropTypes.string,
+        loading: PropTypes.bool,
+        name: PropTypes.string,
+        spentEqually: PropTypes.bool,
+        paidOne: PropTypes.bool,
+        sum: PropTypes.number,
+        members: PropTypes.array,
+        tripMembers: PropTypes.array,
+        navigator: PropTypes.object,
     }
 
+    /**
+     * chooseMembersModalVisible Отображать модальное окно с выбором участников счета.
+     */
     constructor (props) {
         super(props)
         this.state = {
-            test: ''
+            chooseMembersModalVisible: false
         }
     }
 
+    /**
+     * Генератор ref по key для строк с участниками счета.
+     * @param key
+     */
     refFor(key) {
         return `ref_${key}`
     }
@@ -89,6 +104,14 @@ class PaymentScene extends Component {
         })
     }
 
+    /**
+     * Показать/скрыть модальное окно с выбором участников счета.
+     * @param visible
+     */
+    setChooseMembersModalVisible = (visible) => {
+        this.setState({chooseMembersModalVisible: visible})
+    }
+
     componentWillMount () {
         const {tripId, paymentId} = this.props
         if (paymentId) {
@@ -97,15 +120,27 @@ class PaymentScene extends Component {
         else {
             this.props.startCreatingNewPayment(tripId)
         }
-        // Задаем действие кнопке "Сохранить"
-        this.props.route.rightBtnAction = () => {
-            this.props.updatePayment(tripId)
-            this.props.navigator.pop()
-        }
     }
 
     componentWillUnmount () {
         this.props.cancelUpdatingPayment()
+    }
+
+    renderNavigatorBar = () => {
+        const {tripId, name, navigator} = this.props
+        const leftButton = button(IconTypes.back, () => {navigator.pop()})
+        const title = name || 'Новый счет'
+        const rightButton = button(IconTypes.OK, () => {
+            this.props.updatePayment(tripId)
+            this.props.navigator.pop()
+        })
+        return (
+            <SNavigatorBar
+                LeftButton={leftButton}
+                Title={title}
+                RightButton={rightButton}
+            />
+        )
     }
 
     renderMemberRow = (rowData) => {
@@ -147,6 +182,38 @@ class PaymentScene extends Component {
         )
     }
 
+    /**
+     * Рендерим модальное окно для выбора участников счета.
+     */
+    renderChooseMembersModal = () => {
+        // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
+        const members = this.props.tripMembers.map(member => ({
+                ...member,
+                selected: some(this.props.members, {personId: member.personId})
+            })
+        )
+        const onChosenMembers = (personIdList) => {
+            this.props.setMembersOfPayment(personIdList)
+            this.setChooseMembersModalVisible(false)
+        }
+        return (
+            <Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={this.state.chooseMembersModalVisible}
+                onRequestClose={() => {}}
+                onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                <TouchableHighlight
+                    style={[commonStyles.flex, commonStyles.centerContainer]}
+                    onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                    <View style={styles.chooseMembersModalStyle}>
+                        <MembersListScene members={members} onFinish={onChosenMembers}/>
+                    </View>
+                </TouchableHighlight>
+            </Modal>
+        )
+    }
+
     render() {
         const {tripId, paymentId, loading, name, spentEqually, paidOne, sum, totalRow, members} = this.props
 
@@ -155,7 +222,8 @@ class PaymentScene extends Component {
         }
         const data = [totalRow, ...members]
         return (
-            <View ref={'mainView'}>
+            <View style={commonStyles.flex} ref={'mainView'}>
+                {this.renderNavigatorBar()}
                 <WideInput
                     placeholder='Название'
                     onChangeText={text => {this.props.changePaymentName(text)}}
@@ -181,6 +249,12 @@ class PaymentScene extends Component {
                     data={data}
                     renderRow={this.renderMemberRow}
                     removeRow={(personId) => this.props.removeMemberFromPayment(tripId, paymentId, personId)} />
+                <View style={[commonStyles.flex, commonStyles.bottomContainer]}>
+                    <WideButton
+                        text={'Изменить участников'}
+                        onPress={() => {this.setChooseMembersModalVisible(true)}}/>
+                </View>
+                {this.renderChooseMembersModal()}
             </View>
         )
     }
@@ -200,13 +274,14 @@ const mapStateToProps = (state, ownProps) => {
         member.key = member.personId
         member.name = people[member.personId].name
     })
+    const tripMembers = toArrayWithKeys(people, 'personId')
     // Вычислим строку Итого
     const totalPaid = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
     const remainsToPay = totalPaid - payment.sum
     const totalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: TOTAL_ROW_REF}
 
     const {paymentId, name, spentEqually, paidOne, sum, members} = payment
-    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum: toNumberNullable(sum), totalRow, members}
+    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum: toNumberNullable(sum), totalRow, members, tripMembers}
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -218,6 +293,7 @@ const mapDispatchToProps = (dispatch) => {
         paidOneSwitched,
         changeSumOnPayment,
         paidForAllChecked,
+        setMembersOfPayment,
         removeMemberFromPayment,
         changeMemberSpentOnPayment,
         changeMemberPaidOnPayment,
@@ -243,4 +319,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red'
     },
+    chooseMembersModalStyle: {
+        width: 300,
+    }
 })

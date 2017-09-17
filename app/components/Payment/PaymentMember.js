@@ -103,7 +103,7 @@ export default class PaymentMember extends Component {
                 <View style={[commonStyles.verticalAlign, commonStyles.flex]}>
                     <Text style={[styles.label, customLabelStyle]}>{name}</Text>
                 </View>
-                <View ref={'spentContainer'} style={[commonStyles.center, commonStyles.flex]}>
+                <View ref={'spentContainer'} style={[commonStyles.leftContainer, commonStyles.flex]}>
                     <TextInput
                         editable={spentEditable}
                         value={this.state.spentValue}
@@ -114,7 +114,7 @@ export default class PaymentMember extends Component {
                         ref={'spentTextInput'}
                     />
                 </View>
-                <View ref={'paidContainer'} style={[commonStyles.center, commonStyles.flex]}>
+                <View ref={'paidContainer'} style={[commonStyles.leftContainer, commonStyles.flex]}>
                     <TextInput
                         editable={paidEditable}
                         value={this.state.paidValue}
