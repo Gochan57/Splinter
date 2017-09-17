@@ -1,4 +1,5 @@
 import {IAction} from './common'
+import {IPerson} from './people';
 /**
  * Участник счета.
  *

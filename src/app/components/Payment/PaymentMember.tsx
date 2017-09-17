@@ -100,7 +100,7 @@ export default class PaymentMember extends Component<IProps, IState> {
         if (this.refs.spentTextInput instanceof TextInput) {
             (this.refs.spentTextInput as TextInput).blur()
         }
-        if (this.refs.spentTextInput instanceof TextInput) {
+        if (this.refs.paidTextInput instanceof TextInput) {
             (this.refs.paidTextInput as TextInput).blur()
         }
 
@@ -150,7 +150,7 @@ export default class PaymentMember extends Component<IProps, IState> {
                         onEndEditing={e => {onSpentChanged(toNumberNullable(e.nativeEvent.text))}}
                         placeholder={spentPlaceholder}
                         style={[styles.input, customSpentStyle]}
-                        ref={'spentTextInput'}
+                        ref={ref => this.refs.spentTextInput = ref}
                     />
                 </View>
                 <View ref={'paidContainer'} style={[commonStyles.leftContainer, commonStyles.flex]}>
@@ -161,7 +161,7 @@ export default class PaymentMember extends Component<IProps, IState> {
                         onEndEditing={e => {onPaidChanged(toNumberNullable(e.nativeEvent.text))}}
                         placeholder={paidPlaceholder}
                         style={[styles.input, customPaidStyle]}
-                        ref={'paidTextInput'}
+                        ref={ref => this.refs.paidTextInput = ref}
                     />
                 </View>
                 {this.renderPaidForAllCheck()}

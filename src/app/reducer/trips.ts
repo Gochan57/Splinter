@@ -18,19 +18,22 @@ const defaultTrips: IStorable<ITrip> = {
         tripId: '1',
         name: 'Sri Lanka',
         people: ['1', '2', '3'],
-        payments: ['1', '2', '3']
+        payments: ['1', '2', '3'],
+        transfers: ['1']
     },
     '2': {
         tripId: '2',
         name: 'Kazan',
         people: ['4', '5', '6'],
-        payments: []
+        payments: [],
+        transfers: []
     },
     '3': {
         tripId: '3',
         name: 'Morocco',
         people: ['7', '8', '9'],
-        payments: []
+        payments: [],
+        transfers: []
     }
 }
 
