@@ -38,6 +38,7 @@ import {
     IStore
 } from 'app/models/common'
 import {IPerson} from 'app/models/people'
+import ModalWindow from '../Common/ModalWindow';
 
 const commonStyles = appStyles.commonStyles
 
@@ -114,11 +115,6 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
     refs: {[key: string]: any}
 
     /**
-     * ref у строки "Итого"
-     */
-    private TOTAL_ROW_REF = 'totalRow'
-
-    /**
      * Строка "Итого"
      */
     private totalRow: PaymentMember = null
@@ -177,7 +173,7 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
     }
 
     renderMemberRow = (rowData) => {
-        if (rowData.key === this.TOTAL_ROW_REF) {
+        if (rowData.key === 'totalRow') {
             // Верхняя строка с общим счетом "Итого"
             return (
                 <PaymentMember
@@ -229,18 +225,14 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
             this.setChooseMembersModalVisible(false)
         }
         return (
-            <Modal
-                animationType={'slide'}
-                transparent={true}
-                visible={this.state.chooseMembersModalVisible}>
-                <TouchableHighlight
-                    style={[commonStyles.flex, commonStyles.centerContainer]}
-                    onPress={() => {this.setChooseMembersModalVisible(false)}}>
-                    <View style={styles.chooseMembersModalStyle}>
-                        <MembersListScene members={members} onFinish={onChosenMembers}/>
-                    </View>
-                </TouchableHighlight>
-            </Modal>
+            <ModalWindow
+                isOpened={this.state.chooseMembersModalVisible}
+                closeModal={() => {this.setChooseMembersModalVisible(false)}}
+            >
+                <View>
+                    <MembersListScene members={members} onFinish={onChosenMembers}/>
+                </View>
+            </ModalWindow>
         )
     }
 
@@ -314,7 +306,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
     // Вычислим строку Итого
     const totalPaid: number = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
     const remainsToPay: number = totalPaid - payment.sum
-    const totalRow: ITotalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: this.TOTAL_ROW_REF}
+    const totalRow: ITotalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: 'totalRow'}
 
     const {paymentId, name, spentEqually, paidOne, sum} = payment
     return {tripMembers, paymentId, loading: false, name, spentEqually, paidOne, sum, members, totalRow}
