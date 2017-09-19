@@ -7,7 +7,7 @@ import {IPerson} from './people'
  * count Количество денег.
  */
 export interface ITrade {
-    id: string,
+    id?: string,
     fromPerson: IPerson,
     toPerson: IPerson,
     count: number
@@ -24,6 +24,11 @@ export interface ITransfer {
     id: string,
     trades: ITrade[],
     date: string
+}
+
+export interface IPersonBalance {
+    person: IPerson,
+    balance: number
 }
 
 /**
