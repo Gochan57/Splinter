@@ -32,6 +32,11 @@ public class MainApplication extends Application implements ReactApplication {
             new VectorIconsPackage()
       );
     }
+
+    @Override
+    protected String getJSMainModuleName() {
+      return "artifacts/index.android";
+    }
   };
 
   @Override
