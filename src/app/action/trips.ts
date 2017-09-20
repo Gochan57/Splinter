@@ -56,6 +56,12 @@ export function addTrip(name: string, people: string[]) {
     }
 }
 
+export function settleUp(tripId: string) {
+    return (dispatch, getState: () => IStore) => {
+        dispatch({type: 'SETTLE_UP', payload: {}})
+    }
+}
+
 /**
  * Функция для тестирования поведения системы при задержках вызовов.
  * Например, пока нет базы, можно вместо вызова метода сохранения в базу
