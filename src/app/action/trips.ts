@@ -9,6 +9,7 @@ import {
 } from 'app/models/common'
 import {
     IPayloadAddTrip,
+    IStoreTrip,
     ITrip
 } from 'app/models/trips'
 import {
@@ -44,7 +45,7 @@ export function addTrip(name: string, people: string[]) {
             })
             Promise.all(promises).then((personIds: string[]) => {
                 // Добавляем новое путешествие в хранилище.
-                const trip: ITrip = {tripId, name, people: personIds, payments: [], transfers: []}
+                const trip: IStoreTrip = {tripId, name, people: personIds, payments: [], transfers: []}
                 const action: IAction<IPayloadAddTrip> = {
                     type: ADD_TRIP,
                     payload: {trip}

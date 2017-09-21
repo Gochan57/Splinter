@@ -3,8 +3,6 @@ import {
     View,
     Text,
     NavigatorStatic,
-    Modal,
-    TouchableHighlight
 } from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -12,13 +10,13 @@ import {bindActionCreators} from 'redux'
 import moment from 'moment'
 import {filter, some} from 'lodash'
 
-import {toArrayWithKeys} from 'app/utils/utils'
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 
 import PaymentsListItem from './PaymentsListItem'
 import PaymentScene from './PaymentScene'
+import SettleUpScene from '../Transfer/SettleUpScene'
 import {
     IPayment,
 } from 'app/models/payments'
@@ -27,9 +25,9 @@ import {ITrip} from 'app/models/trips'
 import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
 import PaymentSettleUpItem from './PaymentSettleUpItem'
 import {
-    ITrade,
     ITransfer
 } from 'app/models/transfers'
+import {objectifyTrip} from '../../utils/objectify';
 
 const styles =  appStyles.commonStyles
 
@@ -76,9 +74,14 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
     _toPaymentScene = (payment?: IPayment) => {
         const {tripId} = this.props
         const paymentId: string = payment && payment.paymentId
-        // FIXME props
         const passProps = {tripId, paymentId}
         this.props.navigator.push({component: PaymentScene, passProps})
+    }
+
+    toSettleUpScene = () => {
+        this.toggleMenuWindow(false)
+        const passProps = {tripId: this.props.tripId}
+        this.props.navigator.push({component: SettleUpScene, passProps})
     }
 
     toggleMenuWindow = (menuIsOpened: boolean) => {
@@ -88,7 +91,7 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
     renderMenuModal = () => {
         const buttons: IModalMenuButton[] = [
             {text: 'Редактировать', onPress: () => {}},
-            {text: 'Рассчитать', onPress: () => {}},
+            {text: 'Рассчитать', onPress: this.toSettleUpScene},
         ]
         return (
             <ModalMenu
@@ -173,26 +176,13 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
     // Текущее путешествие
-    const trip: ITrip = state.trips[ownProps.tripId]
-    // Название путешествия
-    const tripName: string = trip.name
+    const trip: ITrip = objectifyTrip(state, state.trips[ownProps.tripId])
 
-    // Получаем список id счетов текущего путешествия.
-    const paymentIds: string[] = trip.payments
-    // Получаем список всех счетов.
-    const allPayments: IPayment[] = toArrayWithKeys<IPayment>(state.payments)
-    // Выбираем из всех счетов те, которые входят в текущее путешествие.
-    const payments: IPayment[] = filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
-
-
-    // Получаем список id расчетов текущего путешествия.
-    const transferIds: string[] = trip.transfers
-    // Список всех расчётов.
-    const allTransfers: ITransfer[] = toArrayWithKeys<ITransfer>(state.transfers)
-    // Выбираем из всех счетов те, которые входят в текущее путешествие.
-    const transfers: ITransfer[] = filter(allTransfers, transfer => transferIds.indexOf(transfer.id) > -1)
-
-    return {tripName, payments, transfers}
+    return {
+        tripName: trip.name,
+        payments: trip.payments,
+        transfers: trip.transfers
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {

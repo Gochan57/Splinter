@@ -143,6 +143,15 @@ export function round (value, n: number): number {
 }
 
 /**
+ * Форматирование числового значения для отображения в текстовом поле.
+ */
+export function formatValue (value: number): string {
+    if (value === undefined) return undefined
+    if (value === null) return null
+    return round(value, 2).toString()
+}
+
+/**
  * Логирует ошибку.
  *
  * @param params Все выведется в консоль.
