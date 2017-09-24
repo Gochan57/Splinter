@@ -157,7 +157,9 @@ export function formatValue (value: number): string {
  * @returns {string}
  */
 export function dateToString(d: Date): string {
-    return `${d.toLocaleDateString()} ${d.getHours()}:${d.getMinutes()}`
+    // return `${d.toLocaleDateString()} ${d.getHours()}:${d.getMinutes()}`
+    const t: string = d.toLocaleTimeString()
+    return `${d.toLocaleDateString()} ${t.substr(0, t.length-3)}`
 }
 
 /**
