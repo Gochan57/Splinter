@@ -1,5 +1,10 @@
 import {omit} from 'lodash'
 import {IStorable} from 'app/models/common'
+import {
+    IPersonBalance,
+    ITrade,
+    ITransfer
+} from '../models/transfers';
 
 /**
  * Переводит объект в массив, добавляя в каждый элемент массива поле со значением ключа в объекте
@@ -99,7 +104,7 @@ export function getMaxId (o) {
  * Преобразует строку в число.
  * @param value Строка.
  */
-export function toNumber(value: string): number {
+export function toNumber (value: string): number {
     if (!value) return 0
     if (typeof value === 'string') {
         value = value.replace(',', '.')
@@ -110,7 +115,7 @@ export function toNumber(value: string): number {
 /**
  * null -> 0
  */
-export function zeroIfNull(value: number): number {
+export function zeroIfNull (value: number): number {
     return value ? value : 0
 }
 
@@ -119,7 +124,7 @@ export function zeroIfNull(value: number): number {
  * но если был передан null или undefined, вернет null или undefinde.
  * @param value Строка.
  */
-export function toNumberNullable(value: string): number {
+export function toNumberNullable (value: string): number {
     if (value === null || value === undefined) {
         return null
     }
@@ -138,10 +143,74 @@ export function round (value, n: number): number {
 }
 
 /**
+ * Форматирование числового значения для отображения в текстовом поле.
+ */
+export function formatValue (value: number): string {
+    if (value === undefined) return undefined
+    if (value === null) return null
+    return round(value, 2).toString()
+}
+
+/**
+ * Преобразование даты в строку формата DD.MM.YYYY HH:MM
+ * @param d
+ * @returns {string}
+ */
+export function dateToString(d: Date): string {
+    return `${d.toLocaleDateString()} ${d.getHours()}:${d.getMinutes()}`
+}
+
+/**
  * Логирует ошибку.
  *
  * @param params Все выведется в консоль.
  */
 export function logError (...params) {
     console.log(params)
+}
+
+export function settleUp (balances: IPersonBalance[]): ITrade[] {
+    let result: ITrade[]
+    let plus: IPersonBalance[]
+    let minus: IPersonBalance[]
+    let i, j: number
+
+    const person1 = {
+        personId: '1',
+        name: 'Юля1'
+    }
+    const person2 = {
+        personId: '2',
+        name: 'Юля2'
+    }
+    const person3 = {
+        personId: '3',
+        name: 'Юля3'
+    }
+
+    balances.forEach(b => {
+        if (b.balance > 0) {
+            plus.push(b)
+        }
+        if (b.balance < 0) {
+            minus.push(b)
+        }
+    })
+
+    for (i = 1; i < plus.length; i++) {
+    }
+
+    return [
+        {
+            fromPerson: person2,
+            toPerson: person1,
+            count: 100
+        },
+        {
+            fromPerson: person3,
+            toPerson: person1,
+            count: 100
+        },
+    ]
+    // return result
 }

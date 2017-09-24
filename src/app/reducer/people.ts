@@ -63,3 +63,4 @@ const reducer: {[key: string]: any} = {
         return {...people, [person.personId]: person}
     }
 }
+

@@ -1,25 +1,42 @@
 import { handleActions } from 'redux-actions'
-import {ADD_TRIP, UPDATE_PAYMENT} from 'app/constants'
+import {
+    ADD_TRANSFER_CHAIN,
+    ADD_TRIP,
+    SETTLE_UP,
+    UPDATE_PAYMENT
+} from 'app/constants'
 import {
     IAction,
-    IStorable
+    IStorable,
+    IStore
 } from 'app/models/common'
 import {
     IPayloadAddTrip,
+    IPayloadSettleUpTrip,
+    IStoreTrip,
     ITrip
 } from 'app/models/trips'
 import {
     IPayloadUpdatePayment
 } from '../models/payments'
 import {cloneDeep, omit} from 'lodash'
+import {IPayloadAddTransfer} from '../models/transfers';
 
-const defaultTrips: IStorable<ITrip> = {
+const defaultTrips: IStorable<IStoreTrip> = {
     '1': {
         tripId: '1',
         name: 'Sri Lanka',
         people: ['1', '2', '3'],
         payments: ['1', '2', '3'],
-        transfers: ['1']
+        transfers: ['1'],
+        settlingUp: {
+            trades: [
+                    {id: '1', fromPerson: '2', toPerson: '1', count:  100},
+                    {id: '2', fromPerson: '3', toPerson: '1', count:  100},
+                ],
+            date: '01.09.2017 15:47'
+        }
+
     },
     '2': {
         tripId: '2',
@@ -48,11 +65,21 @@ export default (state = defaultTrips, action: IAction<any>) => {
 // По-хорошему, ни здесь ни сверху в типе action не должно быть указано any.
 // Однако в таком виде ts не ругается, и для каждого действия задана типизация payload, к чему и стремились.
 const reducer: {[key: string]: any} = {
-    [ADD_TRIP]: function(trips: IStorable<ITrip>, payload: IPayloadAddTrip): IStorable<ITrip> {
+    [ADD_TRIP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadAddTrip): IStorable<IStoreTrip> {
         const {trip} = payload
         return {...trips, [trip.tripId]: trip}
     },
-    [UPDATE_PAYMENT]: function(trips: IStorable<ITrip>, payload: IPayloadUpdatePayment): IStorable<ITrip> {
+    [SETTLE_UP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadSettleUpTrip): IStorable<IStoreTrip> {
+        const {tripId, settlingUp} = payload
+        return {
+            ...trips,
+            [tripId]: {
+                ...trips[tripId],
+                settlingUp
+            }
+        }
+    },
+    [UPDATE_PAYMENT]: function(trips: IStorable<IStoreTrip>, payload: IPayloadUpdatePayment): IStorable<IStoreTrip> {
         const {tripId, paymentId} = payload
         return {
             ...trips,
@@ -64,5 +91,20 @@ const reducer: {[key: string]: any} = {
                 ]
             }
         }
+    },
+    [ADD_TRANSFER_CHAIN]: function(trips: IStorable<IStoreTrip>, payload: IPayloadAddTransfer): IStorable<IStoreTrip> {
+        const {tripId, transfer} = payload
+        return {
+            ...trips,
+            [tripId]: {
+                ...trips[tripId],
+                transfers: [
+                    ...trips[tripId].transfers,
+                    transfer.id
+                ]
+            }
+        }
     }
 }
+
+

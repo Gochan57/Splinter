@@ -3,8 +3,6 @@ import {
     View,
     Text,
     NavigatorStatic,
-    Modal,
-    TouchableHighlight
 } from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
@@ -12,24 +10,24 @@ import {bindActionCreators} from 'redux'
 import moment from 'moment'
 import {filter, some} from 'lodash'
 
-import {toArrayWithKeys} from 'app/utils/utils'
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
+import {tripActions} from 'app/action/trips';
+import {objectifyTrip} from 'app/utils/objectify';
+import {IPayment} from 'app/models/payments'
+import {IStore} from 'app/models/common'
+import {
+    ITrip,
+    ITripActions
+} from 'app/models/trips'
+import {ITransfer} from 'app/models/transfers'
 
 import PaymentsListItem from './PaymentsListItem'
 import PaymentScene from './PaymentScene'
-import {
-    IPayment,
-} from 'app/models/payments'
-import {IStore} from 'app/models/common'
-import {ITrip} from 'app/models/trips'
-import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
 import PaymentSettleUpItem from './PaymentSettleUpItem'
-import {
-    ITrade,
-    ITransfer
-} from 'app/models/transfers'
+import SettleUpScene from '../Transfer/SettleUpScene'
+import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
 
 const styles =  appStyles.commonStyles
 
@@ -53,6 +51,8 @@ interface IStateProps {
     transfers: ITransfer[]
 }
 
+interface IDispatchProps extends ITripActions {}
+
 /**
  * menuIsOpened Открыто всплывающее окно меню.
  */
@@ -63,7 +63,7 @@ interface IState {
 /**
  * Экран со списком счетов.
  */
-class PaymentsListScene extends Component<IProps & IStateProps, IState> {
+class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps, IState> {
 
     state: IState = {
         menuIsOpened: false
@@ -76,9 +76,21 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
     _toPaymentScene = (payment?: IPayment) => {
         const {tripId} = this.props
         const paymentId: string = payment && payment.paymentId
-        // FIXME props
         const passProps = {tripId, paymentId}
         this.props.navigator.push({component: PaymentScene, passProps})
+    }
+
+    settleUpButtonPress = () => {
+        const {settleUp, tripId} = this.props
+        // FIXME когда появится реализация от Юли
+        // this.props.settleUp(tripId)
+        this.toSettleUpScene()
+    }
+
+    toSettleUpScene = () => {
+        this.toggleMenuWindow(false)
+        const passProps = {tripId: this.props.tripId}
+        this.props.navigator.push({component: SettleUpScene, passProps})
     }
 
     toggleMenuWindow = (menuIsOpened: boolean) => {
@@ -88,7 +100,7 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
     renderMenuModal = () => {
         const buttons: IModalMenuButton[] = [
             {text: 'Редактировать', onPress: () => {}},
-            {text: 'Рассчитать', onPress: () => {}},
+            {text: 'Рассчитать', onPress: this.settleUpButtonPress},
         ]
         return (
             <ModalMenu
@@ -173,30 +185,17 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
     // Текущее путешествие
-    const trip: ITrip = state.trips[ownProps.tripId]
-    // Название путешествия
-    const tripName: string = trip.name
+    const trip: ITrip = objectifyTrip(state, state.trips[ownProps.tripId])
 
-    // Получаем список id счетов текущего путешествия.
-    const paymentIds: string[] = trip.payments
-    // Получаем список всех счетов.
-    const allPayments: IPayment[] = toArrayWithKeys<IPayment>(state.payments)
-    // Выбираем из всех счетов те, которые входят в текущее путешествие.
-    const payments: IPayment[] = filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
-
-
-    // Получаем список id расчетов текущего путешествия.
-    const transferIds: string[] = trip.transfers
-    // Список всех расчётов.
-    const allTransfers: ITransfer[] = toArrayWithKeys<ITransfer>(state.transfers)
-    // Выбираем из всех счетов те, которые входят в текущее путешествие.
-    const transfers: ITransfer[] = filter(allTransfers, transfer => transferIds.indexOf(transfer.id) > -1)
-
-    return {tripName, payments, transfers}
+    return {
+        tripName: trip.name,
+        payments: trip.payments,
+        transfers: trip.transfers
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({}, dispatch)
+    return bindActionCreators(tripActions, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaymentsListScene)

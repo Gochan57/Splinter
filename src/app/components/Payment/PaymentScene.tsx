@@ -46,7 +46,7 @@ const commonStyles = appStyles.commonStyles
  * navigator Навигатор для перехода на другие экраны.
  * tripId Идентификатор путешествия.
  */
-interface IProps {
+export interface IPaymentSceneProps {
     navigator: NavigatorStatic,
     tripId: string,
     paymentId?: string
@@ -97,7 +97,7 @@ interface IState {
 /**
  * Экран просмотра/добавления/редактирования счета.
  */
-class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, IState> {
+class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatchProps, IState> {
     static defaultProps: Partial<IStateProps> = {
         loading: false,
         name: '',
@@ -289,7 +289,7 @@ class PaymentScene extends Component<IProps & IStateProps & IDispatchProps, ISta
     private refFor = (key) => `ref_${key}`
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
+const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStateProps => {
     const {tripId} = ownProps
     // Из списка всех счетов выберем редактируемый счет.
     const payment: IPayment = state.payments[TEMPORARY_ID]
