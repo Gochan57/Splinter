@@ -49,3 +49,43 @@ export const objectifyTrip = (state: IStore, storeTrip: IStoreTrip): ITrip => {
         settlingUp: objectifySettlingUp(state, storeTrip.settlingUp)
     }
 }
+
+export const storifyTrade = (trade: ITrade): IStoreTrade => {
+    if (!trade) {
+        return null
+    }
+    return {
+        id: trade.id,
+        fromPerson: trade.fromPerson.personId,
+        toPerson: trade.toPerson.personId,
+        count: trade.count
+    }
+}
+
+export const storifySettlingUp = (settlingUp: ISettlingUp): IStoreSettlingUp => {
+    if (!settlingUp) {
+        return null
+    }
+    const trades = settlingUp.trades ? settlingUp.trades.map(trade => storifyTrade(trade)) : []
+    return {
+        trades,
+        date: settlingUp.date
+    }
+}
+
+export const storifyTrip = (trip: ITrip): IStoreTrip => {
+    if (!trip) {
+        return null
+    }
+    const people = trip.people ? trip.people.map(person => person.personId) : null
+    const payments = trip.payments ? trip.payments.map(payment => payment.paymentId) : null
+    const transfers = trip.transfers ? trip.transfers.map(transfer => transfer.id) : null
+    return {
+        tripId: trip.tripId,
+        name: trip.name,
+        people,
+        payments,
+        transfers,
+        settlingUp: storifySettlingUp(trip.settlingUp)
+    }
+}

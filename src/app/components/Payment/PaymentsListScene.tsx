@@ -27,6 +27,7 @@ import PaymentsListItem from './PaymentsListItem'
 import PaymentScene from './PaymentScene'
 import PaymentSettleUpItem from './PaymentSettleUpItem'
 import SettleUpScene from '../Transfer/SettleUpScene'
+import TripScene from '../Trip/TripScene'
 import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
 
 const styles =  appStyles.commonStyles
@@ -46,9 +47,7 @@ interface IProps {
  * transfers Список расчетов.
  */
 interface IStateProps {
-    tripName: string,
-    payments: IPayment[],
-    transfers: ITransfer[]
+    trip: ITrip
 }
 
 interface IDispatchProps extends ITripActions {}
@@ -80,6 +79,12 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
         this.props.navigator.push({component: PaymentScene, passProps})
     }
 
+    toEditTripScene = () => {
+        this.toggleMenuWindow(false)
+        const passProps = {trip: this.props.trip}
+        this.props.navigator.push({component: TripScene, passProps})
+    }
+
     settleUpButtonPress = () => {
         const {settleUp, tripId} = this.props
         // FIXME когда появится реализация от Юли
@@ -99,7 +104,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
 
     renderMenuModal = () => {
         const buttons: IModalMenuButton[] = [
-            {text: 'Редактировать', onPress: () => {}},
+            {text: 'Редактировать', onPress: this.toEditTripScene},
             {text: 'Рассчитать', onPress: this.settleUpButtonPress},
         ]
         return (
@@ -115,7 +120,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
     renderNavigatorBar = () => {
         const {navigator} = this.props
         const leftButton = button(IconType.BACK, () => {navigator.pop()})
-        const title: string = this.props.tripName || 'Новый счет'
+        const title: string = this.props.trip.name || 'Новый счет'
         const rightButton = button(IconType.MENU, () => {this.toggleMenuWindow(true)})
         return (
             <NavigatorBar
@@ -169,7 +174,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
     }
 
     render() {
-        const {payments, transfers} = this.props
+        const {payments, transfers} = this.props.trip
         return (
             <View style={{flex: 1, justifyContent: 'space-between'}}>
                 <View>
@@ -184,14 +189,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
-    // Текущее путешествие
-    const trip: ITrip = objectifyTrip(state, state.trips[ownProps.tripId])
-
-    return {
-        tripName: trip.name,
-        payments: trip.payments,
-        transfers: trip.transfers
-    }
+    return {trip: objectifyTrip(state, state.trips[ownProps.tripId])}
 }
 
 const mapDispatchToProps = (dispatch) => {
