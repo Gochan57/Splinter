@@ -10,10 +10,19 @@ export interface IPerson {
 }
 
 /**
- * Пэйлоад на создание нового путешественника.
+ * Пэйлоад на добавление человека.
  *
  * person - Новый путешественник.
  */
 export interface IPayloadAddPerson {
+    person: IPerson
+}
+
+/**
+ * Пэйлоад на редактирование человека.
+ *
+ * person - Новый путешественник.
+ */
+export interface IPayloadUpdatePerson {
     person: IPerson
 }
