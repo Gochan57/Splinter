@@ -152,6 +152,15 @@ export function formatValue (value: number): string {
 }
 
 /**
+ * Преобразование даты в строку формата DD.MM.YYYY HH:MM
+ * @param d
+ * @returns {string}
+ */
+export function dateToString(d: Date): string {
+    return `${d.toLocaleDateString()} ${d.getHours()}:${d.getMinutes()}`
+}
+
+/**
  * Логирует ошибку.
  *
  * @param params Все выведется в консоль.

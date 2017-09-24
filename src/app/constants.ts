@@ -1,4 +1,5 @@
 export const ADD_TRIP = 'ADD_TRIP'
+export const SETTLE_UP = 'SETTLE_UP'
 export const ADD_PERSON = 'ADD_PERSON'
 export const ADD_PAYMENT = 'ADD_PAYMENT'
 export const START_UPDATING_PAYMENT = 'START_UPDATING_PAYMENT'

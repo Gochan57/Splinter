@@ -15,15 +15,27 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {
     ISettlingUp,
     ITrade,
-    ITransfer
+    ITransferActions
 } from 'app/models/transfers';
 import {ListItem} from 'react-native-material-ui'
+
+import {tripActions} from 'app/action/trips';
 import {
     formatValue,
     toNumber
 } from 'app/utils/utils';
-import {IStore} from '../../models/common';
-import {objectifyTrip} from '../../utils/objectify';
+
+import {IStore} from 'app/models/common';
+import {objectifyTrip} from 'app/utils/objectify';
+import * as transferActions from 'app/action/transfers'
+
+import {
+    button,
+    IconType,
+    default as NavigatorBar
+} from '../Common/Navigator/NavigatorBar';
+
+import * as _ from 'lodash'
 
 /**
  * navigator - Навигатор для перехода на другие экраны.
@@ -43,25 +55,29 @@ interface IStateProps {
     settlingUp: ISettlingUp,
 }
 
+interface IDispatchProps extends ITransferActions {}
+
+interface IEditedTrade {
+    count: number,
+    willPay: boolean
+}
+
 /**
  * inputCounts Введенные данные о том, кто заплатил.
  */
 interface IState {
-    [tradeId: string]: {
-        count: number,
-        willPay: boolean
-    }
+    [tradeId: string]: IEditedTrade
 }
 
 /**
  * Экран с расчетом путешествия.
  */
-class SettleUpScene extends Component<IProps & IStateProps, IState> {
-    constructor(props: IProps & IStateProps) {
+class SettleUpScene extends Component<IProps & IStateProps & IDispatchProps, IState> {
+    constructor(props: IProps & IStateProps & IDispatchProps) {
         super(props)
 
         let trades = {}
-        props.settlingUp.trades && props.settlingUp.trades.forEach(trade => {
+        props.settlingUp && props.settlingUp.trades && props.settlingUp.trades.forEach(trade => {
             trades[trade.id] = {
                 count: trade.count,
                 willPay: false
@@ -69,6 +85,36 @@ class SettleUpScene extends Component<IProps & IStateProps, IState> {
         })
 
         this.state = trades
+    }
+
+    getTransferChain = (): ITrade[] => {
+        if(!this.props.settlingUp) {
+            return null
+        }
+        return _.filter(this.props.settlingUp.trades, (trade: ITrade) => {
+            const editedTrade: IEditedTrade = this.state[trade.id]
+            if(editedTrade.willPay) {
+                trade.count = editedTrade.count
+            }
+            return editedTrade.willPay
+        })
+    }
+
+    renderNavigatorBar = () => {
+        const {navigator, tripId} = this.props
+        const leftButton = button(IconType.BACK, () => {navigator.pop()})
+        const title: string = this.props.tripName + ' - расчет'
+        const rightButton = button(IconType.OK, () => {
+            this.props.addTransferChain(tripId, this.getTransferChain())
+            this.props.navigator.pop()
+        })
+        return (
+            <NavigatorBar
+                LeftButton={leftButton}
+                Title={title}
+                RightButton={rightButton}
+            />
+        )
     }
 
     rowItem = (trade: ITrade) => {
@@ -95,7 +141,6 @@ class SettleUpScene extends Component<IProps & IStateProps, IState> {
 
     onToggleWillPay = (tradeId: string) => () => {
         const trade = this.state[tradeId]
-        debugger
         this.setState({
             [tradeId]: {
                 ...trade,
@@ -108,13 +153,15 @@ class SettleUpScene extends Component<IProps & IStateProps, IState> {
         const color = trade.willPay ? '#3333ff' : '#e6e6e6'
         return (
             <View style={styles.rowContainer}>
-                <TextInput
-                    placeholder='Отдал'
-                    onChangeText={this.onChangeCount(tradeId)}
-                    value={formatValue(trade.count)}
-                    style={styles.input}
-                />
-                <TouchableHighlight onPress={this.onToggleWillPay(tradeId)}>
+                <View style={styles.verticalCenter}>
+                    <TextInput
+                        placeholder='Отдал'
+                        onChangeText={this.onChangeCount(tradeId)}
+                        value={formatValue(trade.count)}
+                        style={styles.input}
+                    />
+                </View>
+                <TouchableHighlight onPress={this.onToggleWillPay(tradeId)} style={styles.verticalCenter}>
                     <Icon name={'check'} size={16} color={color}/>
                 </TouchableHighlight>
             </View>
@@ -122,9 +169,10 @@ class SettleUpScene extends Component<IProps & IStateProps, IState> {
     }
 
     render() {
-        const rows = this.props.settlingUp.trades.map(this.rowItem)
+        const rows = this.props.settlingUp ? this.props.settlingUp.trades.map(this.rowItem) : null
         return (
             <View>
+                {this.renderNavigatorBar()}
                 {rows}
             </View>
         )
@@ -141,18 +189,23 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({}, dispatch)
+    return bindActionCreators({...transferActions}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettleUpScene)
 
 const styles = StyleSheet.create({
     rowContainer: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    verticalCenter: {
+        justifyContent: 'center'
     },
     input: {
         height: 40,
         width: 100
-    }
+    },
 })
 

@@ -6,6 +6,11 @@ import {
 import {IPerson} from './people';
 import {IPayment} from './payments';
 
+export interface ITripActions {
+    addTrip: (name: string, people: string[]) => void,
+    settleUp: (tripId: string) => void
+}
+
 /**
  * Путешествие.
  *
@@ -51,4 +56,15 @@ export interface IStoreTrip {
  */
 export interface IPayloadAddTrip {
     trip: IStoreTrip
+}
+
+/**
+ * Пэйлоад на расчет путешествия.
+ *
+ * tripId - Идентификатор путешествия.
+ * settlingUp - Расчет путешествия.
+ */
+export interface IPayloadSettleUpTrip {
+    tripId: string,
+    settlingUp: IStoreSettlingUp
 }

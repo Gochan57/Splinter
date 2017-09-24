@@ -13,21 +13,21 @@ import {filter, some} from 'lodash'
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
+import {tripActions} from 'app/action/trips';
+import {objectifyTrip} from 'app/utils/objectify';
+import {IPayment} from 'app/models/payments'
+import {IStore} from 'app/models/common'
+import {
+    ITrip,
+    ITripActions
+} from 'app/models/trips'
+import {ITransfer} from 'app/models/transfers'
 
 import PaymentsListItem from './PaymentsListItem'
 import PaymentScene from './PaymentScene'
-import SettleUpScene from '../Transfer/SettleUpScene'
-import {
-    IPayment,
-} from 'app/models/payments'
-import {IStore} from 'app/models/common'
-import {ITrip} from 'app/models/trips'
-import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
 import PaymentSettleUpItem from './PaymentSettleUpItem'
-import {
-    ITransfer
-} from 'app/models/transfers'
-import {objectifyTrip} from '../../utils/objectify';
+import SettleUpScene from '../Transfer/SettleUpScene'
+import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
 
 const styles =  appStyles.commonStyles
 
@@ -51,6 +51,8 @@ interface IStateProps {
     transfers: ITransfer[]
 }
 
+interface IDispatchProps extends ITripActions {}
+
 /**
  * menuIsOpened Открыто всплывающее окно меню.
  */
@@ -61,7 +63,7 @@ interface IState {
 /**
  * Экран со списком счетов.
  */
-class PaymentsListScene extends Component<IProps & IStateProps, IState> {
+class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps, IState> {
 
     state: IState = {
         menuIsOpened: false
@@ -78,6 +80,13 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
         this.props.navigator.push({component: PaymentScene, passProps})
     }
 
+    settleUpButtonPress = () => {
+        const {settleUp, tripId} = this.props
+        // FIXME когда появится реализация от Юли
+        // this.props.settleUp(tripId)
+        this.toSettleUpScene()
+    }
+
     toSettleUpScene = () => {
         this.toggleMenuWindow(false)
         const passProps = {tripId: this.props.tripId}
@@ -91,7 +100,7 @@ class PaymentsListScene extends Component<IProps & IStateProps, IState> {
     renderMenuModal = () => {
         const buttons: IModalMenuButton[] = [
             {text: 'Редактировать', onPress: () => {}},
-            {text: 'Рассчитать', onPress: this.toSettleUpScene},
+            {text: 'Рассчитать', onPress: this.settleUpButtonPress},
         ]
         return (
             <ModalMenu
@@ -186,7 +195,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({}, dispatch)
+    return bindActionCreators(tripActions, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaymentsListScene)

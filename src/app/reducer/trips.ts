@@ -1,5 +1,10 @@
 import { handleActions } from 'redux-actions'
-import {ADD_TRIP, UPDATE_PAYMENT} from 'app/constants'
+import {
+    ADD_TRANSFER_CHAIN,
+    ADD_TRIP,
+    SETTLE_UP,
+    UPDATE_PAYMENT
+} from 'app/constants'
 import {
     IAction,
     IStorable,
@@ -7,6 +12,7 @@ import {
 } from 'app/models/common'
 import {
     IPayloadAddTrip,
+    IPayloadSettleUpTrip,
     IStoreTrip,
     ITrip
 } from 'app/models/trips'
@@ -14,6 +20,7 @@ import {
     IPayloadUpdatePayment
 } from '../models/payments'
 import {cloneDeep, omit} from 'lodash'
+import {IPayloadAddTransfer} from '../models/transfers';
 
 const defaultTrips: IStorable<IStoreTrip> = {
     '1': {
@@ -62,6 +69,16 @@ const reducer: {[key: string]: any} = {
         const {trip} = payload
         return {...trips, [trip.tripId]: trip}
     },
+    [SETTLE_UP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadSettleUpTrip): IStorable<IStoreTrip> {
+        const {tripId, settlingUp} = payload
+        return {
+            ...trips,
+            [tripId]: {
+                ...trips[tripId],
+                settlingUp
+            }
+        }
+    },
     [UPDATE_PAYMENT]: function(trips: IStorable<IStoreTrip>, payload: IPayloadUpdatePayment): IStorable<IStoreTrip> {
         const {tripId, paymentId} = payload
         return {
@@ -74,6 +91,20 @@ const reducer: {[key: string]: any} = {
                 ]
             }
         }
+    },
+    [ADD_TRANSFER_CHAIN]: function(trips: IStorable<IStoreTrip>, payload: IPayloadAddTransfer): IStorable<IStoreTrip> {
+        const {tripId, transfer} = payload
+        return {
+            ...trips,
+            [tripId]: {
+                ...trips[tripId],
+                transfers: [
+                    ...trips[tripId].transfers,
+                    transfer.id
+                ]
+            }
+        }
     }
 }
+
 
