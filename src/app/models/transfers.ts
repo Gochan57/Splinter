@@ -40,7 +40,7 @@ export interface IStoreTrade {
 export interface ITransfer {
     id: string,
     trades: ITrade[],
-    date: string
+    date: Date
 }
 
 /**
@@ -51,7 +51,7 @@ export interface ITransfer {
  */
 export interface ISettlingUp {
     trades: ITrade[],
-    date: string
+    date: Date
 }
 
 /**
@@ -62,7 +62,7 @@ export interface ISettlingUp {
  */
 export interface IStoreSettlingUp {
     trades: IStoreTrade[],
-    date: string
+    date: Date
 }
 
 export interface IPersonBalance {

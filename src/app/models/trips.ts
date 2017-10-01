@@ -27,7 +27,8 @@ export interface ITrip {
     people: IPerson[],
     payments: IPayment[],
     transfers: ITransfer[],
-    settlingUp?: ISettlingUp
+    settlingUp?: ISettlingUp,
+    date: Date
 }
 
 /**
@@ -46,7 +47,8 @@ export interface IStoreTrip {
     people: string[],
     payments: string[],
     transfers: string[],
-    settlingUp?: IStoreSettlingUp
+    settlingUp?: IStoreSettlingUp,
+    date: Date
 }
 
 /**

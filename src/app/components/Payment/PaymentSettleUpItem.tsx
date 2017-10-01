@@ -11,6 +11,7 @@ import {
     ITrade,
     ITransfer
 } from 'app/models/transfers'
+import {dateToString} from '../../utils/utils';
 
 /**
  * id Идентификатор расчета.
@@ -52,7 +53,7 @@ export default class PaymentSettleUpItem extends Component<IProps, null> {
                 <View style={styles.container}>
                     <View style={styles.leftContainer}>
                         <Text style={styles.titleText}>Расчёт</Text>
-                        <Text style={styles.dateText}>{transfer.date}</Text>
+                        <Text style={styles.dateText}>{dateToString(transfer.date)}</Text>
                     </View>
                     <View style={styles.rightContainer}>
                         <ScrollView bounces={false}>

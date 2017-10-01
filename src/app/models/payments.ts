@@ -30,7 +30,7 @@ export interface IMember {
 export interface IPayment {
     paymentId?: string,
     name?: string,
-    date?: string,
+    date?: Date,
     members: IMember[],
     spentEqually?: boolean,
     paidOne?: boolean,

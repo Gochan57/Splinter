@@ -34,23 +34,25 @@ const defaultTrips: IStorable<IStoreTrip> = {
                     {id: '1', fromPerson: '2', toPerson: '1', count:  100},
                     {id: '2', fromPerson: '3', toPerson: '1', count:  100},
                 ],
-            date: '01.09.2017 15:47'
-        }
-
+            date: new Date(2017, 9, 1, 15, 47, 0)
+        },
+        date: new Date(2017, 9, 21)
     },
     '2': {
         tripId: '2',
         name: 'Kazan',
         people: ['4', '5', '6'],
         payments: [],
-        transfers: []
+        transfers: [],
+        date: new Date(2016, 6, 16)
     },
     '3': {
         tripId: '3',
         name: 'Morocco',
         people: ['7', '8', '9'],
         payments: [],
-        transfers: []
+        transfers: [],
+        date: new Date(2015, 1, 1)
     }
 }
 

@@ -46,7 +46,8 @@ export const objectifyTrip = (state: IStore, storeTrip: IStoreTrip): ITrip => {
         people,
         payments,
         transfers,
-        settlingUp: objectifySettlingUp(state, storeTrip.settlingUp)
+        settlingUp: objectifySettlingUp(state, storeTrip.settlingUp),
+        date: storeTrip.date
     }
 }
 
@@ -86,6 +87,7 @@ export const storifyTrip = (trip: ITrip): IStoreTrip => {
         people,
         payments,
         transfers,
-        settlingUp: storifySettlingUp(trip.settlingUp)
+        settlingUp: storifySettlingUp(trip.settlingUp),
+        date: trip.date
     }
 }

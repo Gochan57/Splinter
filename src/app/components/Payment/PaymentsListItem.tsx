@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Text} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
+import {dateToString} from '../../utils/utils';
 
 /**
  * tripId Идентификатор путешествия.
@@ -14,7 +15,7 @@ interface IProps {
     tripId: string,
     id: string,
     name: string,
-    date: string,
+    date: Date,
     sum: number,
     onPress?: () => void,
 }
@@ -30,7 +31,7 @@ export default class PaymentsListItem extends Component<IProps, null> {
                 key={id}
                 centerElement={{
                     primaryText: name,
-                    secondaryText: date
+                    secondaryText: dateToString(date)
                 }}
                 rightElement={<Text>{sum}</Text>}
                 onPress={onPress}

@@ -49,9 +49,9 @@ function populateDB(tx) {
     tx.executeSql('DROP TABLE IF EXISTS Trip;')
     tx.executeSql('DROP TABLE IF EXISTS Person;')
     tx.executeSql('DROP TABLE IF EXISTS Payment;')
-    tx.executeSql('DROP TABLE IF EXISTS Person_Pay;')
-    tx.executeSql('DROP TABLE IF EXISTS Calculation;')
-    tx.executeSql('DROP TABLE IF EXISTS Calc_Person;')
+    tx.executeSql('DROP TABLE IF EXISTS PersonPay;')
+    tx.executeSql('DROP TABLE IF EXISTS Transfer;')
+    tx.executeSql('DROP TABLE IF EXISTS Trade;')
 
     console.log('Create tables...')
     tx.executeSql('CREATE TABLE IF NOT EXISTS Params(' +
@@ -61,17 +61,52 @@ function populateDB(tx) {
     })
 
     tx.executeSql('CREATE TABLE IF NOT EXISTS Trip(' +
-        'id INTEGER PRIMARY KEY NOT NULL, ' +
-        'name VARCHAR(50)); ').catch((error) => {
+        'id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT, ' +
+        'name VARCHAR(50), ' +
+        'date DATE);').catch((error) => {
         throw new Error(error)
     })
 
     tx.executeSql('CREATE TABLE IF NOT EXISTS Person(' +
         'id INTEGER PRIMARY KEY NOT NULL, ' +
         'name VARCHAR(50), ' +
-        'trip_id INTEGER NOT NULL); ').catch((error) => {
+        'tripId INTEGER NOT NULL); ').catch((error) => {
         throw new Error(error)
     })
 
-    //TODO Payment, Person_Pay, Calculation, Calc_Person
+    tx.executeSql('CREATE TABLE IF NOT EXISTS Payment(' +
+        'id INTEGER PRIMARY KEY NOT NULL, ' +
+        'name VARCHAR(50), ' +
+        'tripId INTEGER NOT NULL, ' +
+        'date DATE, ' +
+        'spentEqually BOOLEAN, ' +
+        'paidOne BOOLEAN, ' +
+        'sum DOUBLE);').catch((error) => {
+        throw new Error(error)
+    })
+
+    tx.executeSql('CREATE TABLE IF NOT EXISTS PaymentPay(' +
+        'paymentId INTEGER NOT NULL, ' +
+        'personId INTEGER NOT NULL, ' +
+        'spent DOUBLE, ' +
+        'paid DOUBLE, ' +
+        'paidForAll BOOLEAN);').catch((error) => {
+        throw new Error(error)
+    })
+
+    tx.executeSql('CREATE TABLE IF NOT EXISTS Transfer(' +
+        'id INTEGER PRIMARY KEY NOT NULL, ' +
+        'tripId INTEGER NOT NULL, ' +
+        'date DATE); ').catch((error) => {
+        throw new Error(error)
+    })
+
+    tx.executeSql('CREATE TABLE IF NOT EXISTS Trade(' +
+        'id INTEGER PRIMARY KEY NOT NULL, ' +
+        'transferId INTEGER NOT NULL, ' +
+        'fromPerson INTEGER, ' +
+        'toPerson INTEGER, ' +
+        'count DOUBLE); ').catch((error) => {
+        throw new Error(error)
+    })
 }
