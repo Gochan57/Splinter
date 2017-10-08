@@ -5,6 +5,10 @@ import {
     ITrade,
     ITransfer
 } from '../models/transfers';
+import {forEachComment} from "tslint";
+
+import * as _ from 'lodash'
+import {min} from "moment";
 
 /**
  * Переводит объект в массив, добавляя в каждый элемент массива поле со значением ключа в объекте
@@ -27,7 +31,7 @@ import {
  * @param propName = 'id' Наименование поля, которое добавляется в каждый элемент массива,
  * и значением которого будет значение ключа в объекте
  */
-export function toArrayWithKeys<T> (o, propName: string = 'id'): T[] {
+export function toArrayWithKeys<T>(o, propName: string = 'id'): T[] {
     if (typeof o !== 'object') {
         logError('Income param is not an object:', o)
         return
@@ -55,7 +59,7 @@ export function toArrayWithKeys<T> (o, propName: string = 'id'): T[] {
  * @param arr Массив.
  * @param propName Имя поля, значение которого станут ключами в новом объекте.
  */
-export function toObjectWithPropName (arr: object[], propName: string = 'id') {
+export function toObjectWithPropName(arr: object[], propName: string = 'id') {
     let res = {}
     if (!arr) logError('toObjectWithPropName >>> массив не существует')
     arr.forEach((elem: object) => {
@@ -75,7 +79,7 @@ export function toObjectWithPropName (arr: object[], propName: string = 'id') {
  * @param arr Массив.
  * @param keysArr Массив ключей в новом объекте.
  */
-export function toObjectWithKeysArray (arr: any[], keysArr: string[]) {
+export function toObjectWithKeysArray(arr: any[], keysArr: string[]) {
     let res = {}
     if (!arr) logError('toObjectWithKeysArray >>> массив не передан')
     if (!keysArr) logError('toObjectWithKeysArray >>> массив ключей не передан')
@@ -96,7 +100,7 @@ export function toObjectWithKeysArray (arr: any[], keysArr: string[]) {
  *  2: {name: 'Julia'}
  * }
  */
-export function getMaxId (o) {
+export function getMaxId(o) {
     return Math.max.apply(Math, Object.keys(o))
 }
 
@@ -104,7 +108,7 @@ export function getMaxId (o) {
  * Преобразует строку в число.
  * @param value Строка.
  */
-export function toNumber (value: string): number {
+export function toNumber(value: string): number {
     if (!value) return 0
     if (typeof value === 'string') {
         value = value.replace(',', '.')
@@ -115,7 +119,7 @@ export function toNumber (value: string): number {
 /**
  * null -> 0
  */
-export function zeroIfNull (value: number): number {
+export function zeroIfNull(value: number): number {
     return value ? value : 0
 }
 
@@ -124,7 +128,7 @@ export function zeroIfNull (value: number): number {
  * но если был передан null или undefined, вернет null или undefinde.
  * @param value Строка.
  */
-export function toNumberNullable (value: string): number {
+export function toNumberNullable(value: string): number {
     if (value === null || value === undefined) {
         return null
     }
@@ -137,7 +141,7 @@ export function toNumberNullable (value: string): number {
  * @param value Число.
  * @param n Количсетво знаков.
  */
-export function round (value, n: number): number {
+export function round(value, n: number): number {
     n = n || 0
     return Math.round(toNumber(value) * Math.pow(10, n)) / Math.pow(10, n)
 }
@@ -147,15 +151,33 @@ export function round (value, n: number): number {
  *
  * @param params Все выведется в консоль.
  */
-export function logError (...params) {
+export function logError(...params) {
     console.log(params)
 }
 
-export function settleUp (balances: IPersonBalance[]): ITrade[] {
+function getArrays(balances: IPersonBalance[], count: number): IPersonBalance[][] {
+    let temp: IPersonBalance[]
+    let result: IPersonBalance[][]
+
+    if (count > 1) {
+        balances.forEach(b => {
+            getArrays(balances.filter(x => x != b), count - 1).forEach(array => {
+                    temp = [...array, b]
+                }
+            )
+        })
+    }
+    else {
+        balances.forEach(b => result.push([b]))
+    }
+    return result;
+}
+
+
+export function settleUp(balances: IPersonBalance[]): ITrade[] {
     let result: ITrade[]
     let plus: IPersonBalance[]
     let minus: IPersonBalance[]
-    let i, j: number
 
     const person1 = {
         personId: '1',
@@ -179,7 +201,24 @@ export function settleUp (balances: IPersonBalance[]): ITrade[] {
         }
     })
 
-    for (i = 1; i < plus.length; i++) {
+    plus.sort((x, y) =>
+        x.balance - y.balance
+    )
+
+    minus.sort((x, y) =>
+        x.balance - y.balance
+    )
+
+    for (let i = 0; i < plus.length; i++) {
+        const plusArrays: IPersonBalance[][] = getArrays(plus, i)
+        plusArrays.forEach(p => {
+            for (let j = 0; j < minus.length; j++) {
+                const minusArrays: IPersonBalance[][] = getArrays(plus, i)
+                minusArrays.forEach( m =>{
+
+                })
+            }
+        })
     }
 
     return [
