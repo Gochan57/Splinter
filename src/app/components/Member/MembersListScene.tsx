@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {ListView, View, StyleSheet, Text, TouchableHighlight} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {filter, forEach} from 'lodash'
+import * as _ from 'lodash'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 
@@ -76,7 +76,7 @@ export default class MembersListScene extends Component<IProps, IState> {
 
     onFinish = () => {
         const {selectedMembers} = this.state
-        const onlySelectedMembers: string[] = filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
+        const onlySelectedMembers: string[] = _.filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
         this.props.onFinish(onlySelectedMembers)
     }
 

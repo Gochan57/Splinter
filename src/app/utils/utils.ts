@@ -1,4 +1,4 @@
-import {omit} from 'lodash'
+import * as _ from 'lodash'
 import {IStorable} from 'app/models/common'
 import {
     IPersonBalance,
@@ -63,7 +63,7 @@ export function toObjectWithPropName (arr: object[], propName: string = 'id') {
         if (!key) {
             logError('toObjectWithKeys >>> element', elem, `has no property ${propName}`)
         }
-        res[key] = omit(elem, key)
+        res[key] = _.omit(elem, key)
     })
     return res
 }

@@ -19,7 +19,7 @@ import {
 import {
     IPayloadUpdatePayment
 } from '../models/payments'
-import {cloneDeep, omit} from 'lodash'
+import * as _ from 'lodash'
 import {IPayloadAddTransfer} from '../models/transfers';
 
 const defaultTrips: IStorable<IStoreTrip> = {

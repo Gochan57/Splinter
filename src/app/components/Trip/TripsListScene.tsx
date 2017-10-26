@@ -5,7 +5,6 @@ import {
     NavigatorStatic
 } from 'react-native'
 import {connect} from 'react-redux'
-import {toArrayWithKeys} from 'app/utils/utils'
 
 import WideButton from 'app/components/Common/WideButton'
 import NavigatorBar from 'app/components/Common/Navigator/NavigatorBar'
@@ -22,6 +21,8 @@ import {
     IStore
 } from 'app/models/common'
 import {objectifyTrip} from '../../utils/objectify';
+
+import * as _ from 'lodash'
 
 interface IProps {
     navigator: NavigatorStatic
@@ -77,7 +78,7 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
 }
 
 const mapStateToProps = (state: IStore): IStateProps => {
-    const storeTrips = toArrayWithKeys<IStoreTrip>(state.trips, 'tripId')
+    const storeTrips = _.values<IStoreTrip>(state.trips)
     return {trips: storeTrips.map(storeTrip => objectifyTrip(state, storeTrip))}
 }
 

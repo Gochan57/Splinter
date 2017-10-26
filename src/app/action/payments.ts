@@ -41,7 +41,7 @@ import {
     IMember,
     IPayment,
 } from 'app/models/payments'
-import {find, map, reduce} from 'lodash'
+import * as _ from 'lodash'
 
 export const paymentActions = {
     startCreatingNewPayment,
@@ -262,7 +262,7 @@ export function changePaidToPayForAll(personId?: string) {
         const sumSpent: number = reduce(members, (sum: number, member: IMember) => sum + zeroIfNull(member.spent), 0)
         // если personId не передан, можно вычислить его из метки paidForAll у участника счета
         if (!personId) {
-            const memberPaidForAll: IMember = find(members, (member: IMember) => member.paidForAll)
+            const memberPaidForAll: IMember = _.find(members, (member: IMember) => member.paidForAll)
             if (memberPaidForAll) {
                 personId = memberPaidForAll.personId
             }

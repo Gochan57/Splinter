@@ -8,7 +8,6 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
 import moment from 'moment'
-import {filter, some} from 'lodash'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
@@ -29,6 +28,8 @@ import PaymentSettleUpItem from './PaymentSettleUpItem'
 import SettleUpScene from '../Transfer/SettleUpScene'
 import TripScene from '../Trip/TripScene'
 import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
+
+import * as _ from 'lodash'
 
 const styles =  appStyles.commonStyles
 

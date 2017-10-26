@@ -12,7 +12,6 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {filter, find, forEach, pickBy, pick, reduce, some} from 'lodash'
 
 import {
     paymentActions,
@@ -39,6 +38,8 @@ import {
 } from 'app/models/common'
 import {IPerson} from 'app/models/people'
 import ModalWindow from '../Common/ModalWindow';
+
+import * as _ from 'lodash'
 
 const commonStyles = appStyles.commonStyles
 
@@ -125,7 +126,7 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
     endEditingAllInputs = () => {
         const {members} = this.props
         this.totalRow.blur()
-        forEach(members, member => {
+        _.forEach(members, member => {
             // приходится обращаться ко второму refs через литерал, так как по какой-то причине в тайпингах поле refs возвращает ReactInstance
             this.refs.list.refs[this.refFor(member.key)].blur()
         })
@@ -217,7 +218,7 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
         // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
         const members: IMemberItem[] = this.props.tripMembers.map(member => ({
                 ...member,
-                selected: some(this.props.members, {personId: member.personId})
+                selected: _.some(this.props.members, {personId: member.personId})
             })
         )
         const onChosenMembers = (personIdList) => {
@@ -304,7 +305,7 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
     })
     const tripMembers: IPerson[] = state.trips[tripId].people.map((personId: string) => state.people[personId])
     // Вычислим строку Итого
-    const totalPaid: number = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
+    const totalPaid: number = _.reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
     const remainsToPay: number = totalPaid - payment.sum
     const totalRow: ITotalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: 'totalRow'}
 
