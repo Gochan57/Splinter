@@ -54,7 +54,7 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
 
     _renderTripItem = (rowData: ITrip) => {
         return (
-            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.tripId)}/>
+            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.id)}/>
         )
     }
 

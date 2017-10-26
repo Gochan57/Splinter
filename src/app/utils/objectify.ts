@@ -41,7 +41,7 @@ export const objectifyTrip = (state: IStore, storeTrip: IStoreTrip): ITrip => {
     const payments = storeTrip.payments ? storeTrip.payments.map(id => state.payments[id]) : null
     const transfers = storeTrip.transfers ? storeTrip.transfers.map(id => state.transfers[id]) : null
     return {
-        tripId: storeTrip.tripId,
+        id: storeTrip.id,
         name: storeTrip.name,
         people,
         payments,
@@ -82,7 +82,7 @@ export const storifyTrip = (trip: ITrip): IStoreTrip => {
     const payments = trip.payments ? trip.payments.map(payment => payment.id) : null
     const transfers = trip.transfers ? trip.transfers.map(transfer => transfer.id) : null
     return {
-        tripId: trip.tripId,
+        id: trip.id,
         name: trip.name,
         people,
         payments,

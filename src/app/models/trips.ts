@@ -8,13 +8,13 @@ import {IPayment} from './payments';
 
 export interface ITripActions {
     addTrip: (name: string, people: string[]) => void,
-    settleUp: (tripId: string) => void
+    settleUp: (id: string) => void
 }
 
 /**
  * Путешествие.
  *
- * tripId Идентификатор путешествия из БД.
+ * id Идентификатор путешествия из БД.
  * name Наименование.
  * people Участники путешествия.
  * payments Счета (массив идентификаторов).
@@ -22,7 +22,7 @@ export interface ITripActions {
  * settlingUp - расчет путешествия.
  */
 export interface ITrip {
-    tripId: string,
+    id: string,
     name?: string,
     people: IPerson[],
     payments: IPayment[],
@@ -34,7 +34,7 @@ export interface ITrip {
 /**
  * Путешествие (для стора).
  *
- * tripId Идентификатор путешествия из БД.
+ * id Идентификатор путешествия из БД.
  * name Наименование.
  * people Участники путешествия.
  * payments Счета (массив идентификаторов).
@@ -42,7 +42,7 @@ export interface ITrip {
  * settlingUp - расчет путешествия.
  */
 export interface IStoreTrip {
-    tripId: string,
+    id: string,
     name?: string,
     people: string[],
     payments: string[],

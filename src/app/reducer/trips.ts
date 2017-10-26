@@ -24,7 +24,7 @@ import {IPayloadAddTransfer} from '../models/transfers';
 
 const defaultTrips: IStorable<IStoreTrip> = {
     '1': {
-        tripId: '1',
+        id: '1',
         name: 'Sri Lanka',
         people: ['1', '2', '3'],
         payments: ['1', '2', '3'],
@@ -39,7 +39,7 @@ const defaultTrips: IStorable<IStoreTrip> = {
         date: new Date(2017, 9, 21)
     },
     '2': {
-        tripId: '2',
+        id: '2',
         name: 'Kazan',
         people: ['4', '5', '6'],
         payments: [],
@@ -47,7 +47,7 @@ const defaultTrips: IStorable<IStoreTrip> = {
         date: new Date(2016, 6, 16)
     },
     '3': {
-        tripId: '3',
+        id: '3',
         name: 'Morocco',
         people: ['7', '8', '9'],
         payments: [],
@@ -69,7 +69,7 @@ export default (state = defaultTrips, action: IAction<any>) => {
 const reducer: {[key: string]: any} = {
     [ADD_TRIP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadAddTrip): IStorable<IStoreTrip> {
         const {trip} = payload
-        return {...trips, [trip.tripId]: trip}
+        return {...trips, [trip.id]: trip}
     },
     [SETTLE_UP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadSettleUpTrip): IStorable<IStoreTrip> {
         const {tripId, settlingUp} = payload
