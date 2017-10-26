@@ -79,7 +79,7 @@ export const storifyTrip = (trip: ITrip): IStoreTrip => {
         return null
     }
     const people = trip.people ? trip.people.map(person => person.id) : null
-    const payments = trip.payments ? trip.payments.map(payment => payment.paymentId) : null
+    const payments = trip.payments ? trip.payments.map(payment => payment.id) : null
     const transfers = trip.transfers ? trip.transfers.map(transfer => transfer.id) : null
     return {
         tripId: trip.tripId,

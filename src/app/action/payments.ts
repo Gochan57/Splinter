@@ -333,11 +333,11 @@ export function updatePayment(tripId: string) {
     return (dispatch, getState: () => IStorable<IPayment>) => {
         const payment: IPayment = getState().payments[TEMPORARY_ID]
         // FIXME сохранять счет в базу
-        const paymentId: string = payment.paymentId || '4'
-        tempPromise(paymentId).then((id: string) => {
+        const paymentId: string = payment.id || '4'
+        tempPromise(paymentId).then((paymentId: string) => {
             const action: IAction<IPayloadUpdatePayment> = {
                 type: UPDATE_PAYMENT,
-                payload: {tripId, paymentId: id, payment}
+                payload: {tripId, paymentId, payment}
             }
             dispatch(action)
         })

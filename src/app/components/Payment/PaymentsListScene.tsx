@@ -75,7 +75,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
      */
     _toPaymentScene = (payment?: IPayment) => {
         const {tripId} = this.props
-        const paymentId: string = payment && payment.paymentId
+        const paymentId: string = payment && payment.id
         const passProps = {tripId, paymentId}
         this.props.navigator.push({component: PaymentScene, passProps})
     }
@@ -145,12 +145,12 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
             .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI').diff(moment(p1.date, 'DD.MM.YYYY HH:MI'), 'seconds'))
 
         const paymentsList = _payments.map(payment => {
-            const {paymentId, name, date, sum} = payment
+            const {id, name, date, sum} = payment
             return (
                 <PaymentsListItem
-                    key={paymentId}
+                    key={id}
                     tripId={this.props.tripId}
-                    id={paymentId}
+                    id={id}
                     name={name}
                     date={date}
                     sum={sum}

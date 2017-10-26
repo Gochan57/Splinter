@@ -42,7 +42,7 @@ import * as _ from 'lodash'
 
 const defaultPayments: IStorable<IPayment> = {
     '1': {
-        paymentId: '1',
+        id: '1',
         name: 'Супермаркет',
         date: new Date(2017, 2, 1, 17, 1, 24),
         members: [
@@ -54,7 +54,7 @@ const defaultPayments: IStorable<IPayment> = {
         sum: 200
     },
     '2': {
-        paymentId: '2',
+        id: '2',
         name: 'Обучение у Сусы',
         date: new Date(2017, 2, 1, 10, 34, 12),
         members: [
@@ -67,7 +67,7 @@ const defaultPayments: IStorable<IPayment> = {
         sum: 150
     },
     '3': {
-        paymentId: '3',
+        id: '3',
         name: 'Такси',
         date: new Date(2017, 2, 2, 12, 56, 1),
         members: [
@@ -81,7 +81,7 @@ const defaultPayments: IStorable<IPayment> = {
 }
 
 const defaultNewPayment: IPayment = {
-    paymentId: undefined,
+    id: undefined,
     members: [],
     spentEqually: false,
     paidOne: false,
@@ -113,7 +113,7 @@ const reducer: {[key: string]: any} = {
         if (paymentId) {
             // Если редактируется существующий счет
             updatingPayment = _.cloneDeep(payments[paymentId])
-            updatingPayment.paymentId = paymentId
+            updatingPayment.id = paymentId
         }
         else {
             // Если создается новый счет

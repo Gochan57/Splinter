@@ -19,7 +19,7 @@ export interface IMember {
 /**
  * Счет.
  *
- * paymentId Идентификатор счета.
+ * id Идентификатор счета.
  * name Наименование счета.
  * date Дата и время создания счета (в формате ISO-8601).
  * members Участники счета.
@@ -28,7 +28,7 @@ export interface IMember {
  * sum Общая сумма счета.
  */
 export interface IPayment {
-    paymentId?: string,
+    id?: string,
     name?: string,
     date?: Date,
     members: IMember[],

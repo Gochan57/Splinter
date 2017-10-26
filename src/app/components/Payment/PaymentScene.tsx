@@ -310,8 +310,8 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
     const remainsToPay: number = totalPaid - payment.sum
     const totalRow: ITotalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: 'totalRow'}
 
-    const {paymentId, name, spentEqually, paidOne, sum} = payment
-    return {tripMembers, paymentId, loading: false, name, spentEqually, paidOne, sum, members, totalRow}
+    const {id, name, spentEqually, paidOne, sum} = payment
+    return {tripMembers, paymentId: id, loading: false, name, spentEqually, paidOne, sum, members, totalRow}
 }
 
 const mapDispatchToProps = (dispatch) => {
