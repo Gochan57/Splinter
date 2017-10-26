@@ -14,39 +14,39 @@ import {
 
 const defaultPeople: IStorable<IPerson> = {
     '1': {
-        personId: '1',
+        id: '1',
         name: 'Юля'
     },
     '2': {
-        personId: '2',
+        id: '2',
         name: 'Гоша'
     },
     '3': {
-        personId: '3',
+        id: '3',
         name: 'Вова'
     },
     '4': {
-        personId: '4',
+        id: '4',
         name: 'Юля'
     },
     '5': {
-        personId: '5',
+        id: '5',
         name: 'Надя'
     },
     '6': {
-        personId: '6',
+        id: '6',
         name: 'Костя'
     },
     '7': {
-        personId: '7',
+        id: '7',
         name: 'Саня'
     },
     '8': {
-        personId: '8',
+        id: '8',
         name: 'Мегги'
     },
     '9': {
-        personId: '9',
+        id: '9',
         name: 'Гоша'
     },
 }
@@ -64,11 +64,11 @@ export default (state = defaultPeople, action: IAction<any>) => {
 const reducer: {[key: string]: any} = {
     [ADD_PERSON]: function(people: IStorable<IPerson>, payload: IPayloadAddPerson): IStorable<IPerson> {
         const {person} = payload
-        return {...people, [person.personId]: person}
+        return {...people, [person.id]: person}
     },
     [UPDATE_PERSON]: function(people: IStorable<IPerson>, payload: IPayloadUpdatePerson): IStorable<IPerson> {
         const {person} = payload
-        return {...people, [person.personId]: person}
+        return {...people, [person.id]: person}
     }
 }
 

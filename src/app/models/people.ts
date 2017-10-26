@@ -5,7 +5,7 @@
  * name Имя путешественника.
  */
 export interface IPerson {
-    personId: string,
+    id: string,
     name: string
 }
 

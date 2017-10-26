@@ -46,8 +46,8 @@ const defaultPayments: IStorable<IPayment> = {
         name: 'Супермаркет',
         date: new Date(2017, 2, 1, 17, 1, 24),
         members: [
-            {personId: '1', spent: 100, paid: 0},
-            {personId: '2', spent: 100, paid: 200, paidForAll: true},
+            {id: '1', spent: 100, paid: 0},
+            {id: '2', spent: 100, paid: 200, paidForAll: true},
         ],
         spentEqually: true,
         paidOne: true,
@@ -58,9 +58,9 @@ const defaultPayments: IStorable<IPayment> = {
         name: 'Обучение у Сусы',
         date: new Date(2017, 2, 1, 10, 34, 12),
         members: [
-            {personId: '1', spent: 50, paid: 0},
-            {personId: '2', spent: 50, paid: 150, paidForAll: true},
-            {personId: '3', spent: 50, paid: 0},
+            {id: '1', spent: 50, paid: 0},
+            {id: '2', spent: 50, paid: 150, paidForAll: true},
+            {id: '3', spent: 50, paid: 0},
         ],
         spentEqually: true,
         paidOne: true,
@@ -71,8 +71,8 @@ const defaultPayments: IStorable<IPayment> = {
         name: 'Такси',
         date: new Date(2017, 2, 2, 12, 56, 1),
         members: [
-            {personId: '1', spent: 200, paid: 400, paidForAll: true},
-            {personId: '3', spent: 200, paid: 0},
+            {id: '1', spent: 200, paid: 400, paidForAll: true},
+            {id: '3', spent: 200, paid: 0},
         ],
         spentEqually: true,
         paidOne: true,
@@ -138,9 +138,9 @@ const reducer: {[key: string]: any} = {
         const {personIdList} = payload
         let updatingPayment: IPayment = _.cloneDeep(payments[TEMPORARY_ID])
         // Для уже существующих участников счета оставим данные как есть,
-        // по остальным добавим в список участником объект {personId}
+        // по остальным добавим в список участником объект {id}
         updatingPayment.members = personIdList.map(personId => {
-            return _.find(updatingPayment.members, {personId: personId}) || {personId}
+            return _.find(updatingPayment.members, {id: personId}) || {id: personId}
         })
         return {
             ...payments,
@@ -150,7 +150,7 @@ const reducer: {[key: string]: any} = {
     [REMOVE_MEMBER_FROM_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadRemoveMemberFromPayment): IStorable<IPayment> {
         const {personId} = payload
         let updatingPayment: IPayment = _.cloneDeep(payments[TEMPORARY_ID])
-        _.remove(updatingPayment.members, (member: IMember) => member.personId === personId)
+        _.remove(updatingPayment.members, (member: IMember) => member.id === personId)
         return {
             ...payments,
             [TEMPORARY_ID]: updatingPayment
@@ -208,7 +208,7 @@ const reducer: {[key: string]: any} = {
         const {personId} = payload
         let updatingPayment: IPayment = _.cloneDeep(payments[TEMPORARY_ID])
         _.forEach(updatingPayment.members, (member: IMember) => {
-            member.paidForAll = member.personId === personId
+            member.paidForAll = member.id === personId
         })
         return {
             ...payments,
@@ -218,10 +218,10 @@ const reducer: {[key: string]: any} = {
     [CHANGE_PAID_TO_PAY_FOR_ALL]: function(payments: IStorable<IPayment>, payload: IPayloadChangePaidToPayForAll): IStorable<IPayment> {
         const {sumSpent, personId} = payload
         let updatingPayment: IPayment = _.cloneDeep(payments[TEMPORARY_ID])
-        let updatingMember: IMember = _.find(updatingPayment.members, (member: IMember) => member.personId === personId)
+        let updatingMember: IMember = _.find(updatingPayment.members, (member: IMember) => member.id === personId)
         updatingMember.paid = sumSpent
         _.forEach(updatingPayment.members, (member: IMember) => {
-            member.paid = (member.personId === personId ? sumSpent : 0)
+            member.paid = (member.id === personId ? sumSpent : 0)
         })
         return {
             ...payments,
@@ -232,7 +232,7 @@ const reducer: {[key: string]: any} = {
         const {personId, spent, sum} = payload
         let updatingPayment: IPayment = _.cloneDeep(payments[TEMPORARY_ID])
         updatingPayment.sum = sum
-        let updatingMember: IMember = _.find(updatingPayment.members, (member: IMember) => member.personId === personId)
+        let updatingMember: IMember = _.find(updatingPayment.members, (member: IMember) => member.id === personId)
         updatingMember.spent = spent
         return {
             ...payments,
@@ -242,7 +242,7 @@ const reducer: {[key: string]: any} = {
     [CHANGE_MEMBER_PAID_ON_PAYMENT]: function(payments: IStorable<IPayment>, payload: IPayloadChangeMemberPaidOnPayment): IStorable<IPayment> {
         const {personId, paid} = payload
         const updatingPayment: IPayment = _.cloneDeep(payments[TEMPORARY_ID])
-        let updatingMember: IMember = _.find(updatingPayment.members, (member: IMember) => member.personId === personId)
+        let updatingMember: IMember = _.find(updatingPayment.members, (member: IMember) => member.id === personId)
         updatingMember.paid = paid
         return {
             ...payments,

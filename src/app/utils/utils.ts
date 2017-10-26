@@ -178,15 +178,15 @@ export function settleUp (balances: IPersonBalance[]): ITrade[] {
     let i, j: number
 
     const person1 = {
-        personId: '1',
+        id: '1',
         name: 'Юля1'
     }
     const person2 = {
-        personId: '2',
+        id: '2',
         name: 'Юля2'
     }
     const person3 = {
-        personId: '3',
+        id: '3',
         name: 'Юля3'
     }
 

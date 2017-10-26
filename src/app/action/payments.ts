@@ -71,7 +71,7 @@ export function startCreatingNewPayment(tripId: string) {
     return (dispatch, getState: () => IStore) => {
         // Составляем массив всех участников путешествия
         const people: string[] = getState().trips[tripId].people
-        const members: IMember[] = people && people.map((personId: string) => ({personId}))
+        const members: IMember[] = people && people.map((personId: string) => ({id: personId}))
         const action: IAction<IPayloadStartUpdatingPayment> = {
             type: START_UPDATING_PAYMENT,
             payload: {members}
@@ -259,12 +259,12 @@ export function changePaidToPayForAll(personId?: string) {
     return (dispatch, getState: () => IStore) => {
         // считаем сумму потраченных денег
         const members: IMember[] = getState().payments[TEMPORARY_ID].members
-        const sumSpent: number = reduce(members, (sum: number, member: IMember) => sum + zeroIfNull(member.spent), 0)
+        const sumSpent: number = _.reduce(members, (sum: number, member: IMember) => sum + zeroIfNull(member.spent), 0)
         // если personId не передан, можно вычислить его из метки paidForAll у участника счета
         if (!personId) {
             const memberPaidForAll: IMember = _.find(members, (member: IMember) => member.paidForAll)
             if (memberPaidForAll) {
-                personId = memberPaidForAll.personId
+                personId = memberPaidForAll.id
             }
         }
         if (personId) {
@@ -291,8 +291,8 @@ export function changeMemberSpentOnPayment(personId: string, value: number) {
     return (dispatch, getState: () => IStore) => {
         // считаем сумму редактируемого счета
         const payment: IPayment = getState().payments[TEMPORARY_ID]
-        const sum: number = reduce(payment.members, (paymentSum: number, member: IMember) => {
-            const memberSpent: number = (member.personId === personId ? value : member.spent)
+        const sum: number = _.reduce(payment.members, (paymentSum: number, member: IMember) => {
+            const memberSpent: number = (member.id === personId ? value : member.spent)
             return paymentSum + memberSpent
         }, 0)
         const action: IAction<IPayloadChangeMemberSpentOnPayment> = {

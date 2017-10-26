@@ -84,7 +84,7 @@ class TripScene extends Component<IProps & IStateProps, IState> {
     _addMember = () => {
         const {people, inputMember} = this.state
         const newPerson: IPerson = {
-            personId: 'NEW_PERSON',
+            id: 'NEW_PERSON',
             name: inputMember
         }
         this.setState({

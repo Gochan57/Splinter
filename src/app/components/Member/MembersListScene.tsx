@@ -16,12 +16,12 @@ interface IProps {
 }
 
 /**
- * personId Идентификатор участника счета.
+ * id Идентификатор участника счета.
  * name Имя, отображаемое в строке с участником счета.
  * selected Участвует ли в счете.
  */
 export interface IMemberItem {
-    personId: string,
+    id: string,
     name: string,
     selected: boolean
 }
@@ -34,7 +34,7 @@ interface IState {
 }
 
 interface ISelectedMembers {
-    [personId: string]: boolean
+    [id: string]: boolean
 }
 
 /**
@@ -44,7 +44,7 @@ export default class MembersListScene extends Component<IProps, IState> {
     /**
      * selectedMembers объект с полями id участников и булевскими значениями, выбран участник или нет
      *  {
-     *      [personId: string || number]: bool
+     *      [id: string || number]: bool
      *  }
      */
     constructor (props: IProps) {
@@ -53,7 +53,7 @@ export default class MembersListScene extends Component<IProps, IState> {
         // Храним выбранных участников в стейте в selectedMembers
         let selectedMembers: ISelectedMembers = {}
         props.members.forEach(member => {
-            selectedMembers[member.personId] = member.selected
+            selectedMembers[member.id] = member.selected
         })
         this.state = {
             selectedMembers
@@ -99,10 +99,10 @@ export default class MembersListScene extends Component<IProps, IState> {
      * @param rowData Один элемент в массиве props.members.
      */
     renderRow = (rowData) => {
-        const {personId, name} = rowData
-        const selected: boolean = this.state.selectedMembers[personId]
+        const {id, name} = rowData
+        const selected: boolean = this.state.selectedMembers[id]
         const onPress = () => {
-            this.selectPerson(personId, !selected)
+            this.selectPerson(id, !selected)
         }
         const color = selected ? '#3333ff' : '#e6e6e6'
         const check = (

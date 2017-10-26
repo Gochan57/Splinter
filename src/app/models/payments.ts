@@ -9,7 +9,7 @@ import {IPerson} from './people';
  * paidForAll Платил за всех.
  */
 export interface IMember {
-    personId: string,
+    id: string,
     name?: string,
     spent?: number,
     paid?: number,

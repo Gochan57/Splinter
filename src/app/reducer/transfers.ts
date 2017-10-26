@@ -15,11 +15,11 @@ const defaultTransfers: IStorable<ITransfer> = {
             {
                 id: '1',
                 fromPerson: {
-                    personId: '1',
+                    id: '1',
                     name: 'Гоша Чмутин'
                 },
                 toPerson: {
-                    personId: '2',
+                    id: '2',
                     name: 'Юля Оглуздина'
                 },
                 count: 400
@@ -27,11 +27,11 @@ const defaultTransfers: IStorable<ITransfer> = {
             {
                 id: '2',
                 fromPerson: {
-                    personId: '2',
+                    id: '2',
                     name: 'Юля'
                 },
                 toPerson: {
-                    personId: '3',
+                    id: '3',
                     name: 'Саня'
                 },
                 count: 300
@@ -39,11 +39,11 @@ const defaultTransfers: IStorable<ITransfer> = {
             {
                 id: '3',
                 fromPerson: {
-                    personId: '2',
+                    id: '2',
                     name: 'Юля'
                 },
                 toPerson: {
-                    personId: '3',
+                    id: '3',
                     name: 'Саня'
                 },
                 count: 300
@@ -51,11 +51,11 @@ const defaultTransfers: IStorable<ITransfer> = {
             {
                 id: '4',
                 fromPerson: {
-                    personId: '2',
+                    id: '2',
                     name: 'Юля'
                 },
                 toPerson: {
-                    personId: '3',
+                    id: '3',
                     name: 'Саня'
                 },
                 count: 300
@@ -63,11 +63,11 @@ const defaultTransfers: IStorable<ITransfer> = {
             {
                 id: '5',
                 fromPerson: {
-                    personId: '2',
+                    id: '2',
                     name: 'Юля'
                 },
                 toPerson: {
-                    personId: '3',
+                    id: '3',
                     name: 'Саня'
                 },
                 count: 300

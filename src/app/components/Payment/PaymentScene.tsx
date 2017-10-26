@@ -218,7 +218,7 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
         // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
         const members: IMemberItem[] = this.props.tripMembers.map(member => ({
                 ...member,
-                selected: _.some(this.props.members, {personId: member.personId})
+                selected: _.some(this.props.members, {id: member.id})
             })
         )
         const onChosenMembers = (personIdList) => {
@@ -299,9 +299,10 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
     }
     // Добавим к каждому member поле key (этого требует элемент RemovableListView) и name
     const members: (IMember & IKey)[] = payment.members as (IMember & IKey)[]
-    members.forEach(member => {
-        member.key = member.personId
-        member.name = state.people[member.personId].name
+    console.warn('mapStateToProps PaymentScene:', state)
+    _.forEach(members, (member: IMember & IKey) => {
+        member.key = member.id
+        member.name = state.people[member.id].name
     })
     const tripMembers: IPerson[] = state.trips[tripId].people.map((personId: string) => state.people[personId])
     // Вычислим строку Итого

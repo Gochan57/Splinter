@@ -57,8 +57,8 @@ export const storifyTrade = (trade: ITrade): IStoreTrade => {
     }
     return {
         id: trade.id,
-        fromPerson: trade.fromPerson.personId,
-        toPerson: trade.toPerson.personId,
+        fromPerson: trade.fromPerson.id,
+        toPerson: trade.toPerson.id,
         count: trade.count
     }
 }
@@ -78,7 +78,7 @@ export const storifyTrip = (trip: ITrip): IStoreTrip => {
     if (!trip) {
         return null
     }
-    const people = trip.people ? trip.people.map(person => person.personId) : null
+    const people = trip.people ? trip.people.map(person => person.id) : null
     const payments = trip.payments ? trip.payments.map(payment => payment.paymentId) : null
     const transfers = trip.transfers ? trip.transfers.map(transfer => transfer.id) : null
     return {

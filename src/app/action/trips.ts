@@ -78,12 +78,12 @@ export function updateTrip(trip: ITrip) {
     return (dispatch, getState: () => IStore) => {
         // Записываем людей в базу
         let promises = trip.people.map((person: IPerson, index: number) => {
-            if(person.personId === 'NEW_PERSON') {
+            if(person.id === 'NEW_PERSON') {
                 // Записываем в базу нового человека
                 return new Promise((resolve, reject) => {
                     tempPromise((10 + index).toString()).then((personId: string) => {
                         // Добавляем новых людей в хранилище.
-                        person.personId = personId
+                        person.id = personId
                         dispatch({
                             type: ADD_PERSON,
                             payload: {
@@ -100,7 +100,7 @@ export function updateTrip(trip: ITrip) {
             else {
                 // Редактируем существующего человека
                 return new Promise((resolve, reject) => {
-                    tempPromise(person.personId).then((personId: string) => {
+                    tempPromise(person.id).then((personId: string) => {
                         // Обновляем данные о человеке в хранилище.
                         dispatch({
                             type: UPDATE_PERSON,
