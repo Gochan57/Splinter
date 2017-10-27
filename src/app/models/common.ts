@@ -18,11 +18,17 @@ export interface IAction<T> {
     payload?: T
 }
 
+export interface IStoreCurrent {
+    trip: IStoreTrip,
+    payment: IStorePayment
+}
+
 export interface IStore {
     people: IStorable<IPerson>,
     trips: IStorable<IStoreTrip>,
     payments: IStorable<IStorePayment>,
-    transfers: IStorable<ITransfer>
+    transfers: IStorable<ITransfer>,
+    current: IStoreCurrent,
 }
 
 export interface IKey {

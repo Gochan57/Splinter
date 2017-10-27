@@ -14,15 +14,21 @@ import TripScene from './TripScene'
 import TripsListItem from './TripsListItem'
 import {
     IStoreTrip,
-    ITrip
+    ITrip,
+    ITripActions
 } from 'app/models/trips'
 import {
     IStorable,
     IStore
 } from 'app/models/common'
-import {objectifyTrip} from '../../utils/objectify';
+import {
+    objectifyTrip,
+    storifyTrip
+} from '../../utils/objectify';
 
 import * as _ from 'lodash'
+import {bindActionCreators} from 'redux';
+import {tripActions} from '../../action/trips';
 
 interface IProps {
     navigator: NavigatorStatic
@@ -32,14 +38,17 @@ interface IStateProps {
     trips: ITrip[],
 }
 
+interface IDispatchProps extends ITripActions {}
+
 /**
  * Экран со списком путешествий.
  */
-class TripsListScene extends Component<IProps & IStateProps, null> {
-    _toPaymentsListScene = (tripId: string) => {
+class TripsListScene extends Component<IProps & IStateProps & IDispatchProps, null> {
+    _toPaymentsListScene = (trip: ITrip) => {
         const {navigator} = this.props
         return () => {
-            navigator.push({component: PaymentsListScene, passProps: {tripId}})
+            this.props.setCurrentTrip(storifyTrip(trip))
+            navigator.push({component: PaymentsListScene, passProps: {tripId: trip.id}})
         }
     }
 
@@ -54,7 +63,7 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
 
     _renderTripItem = (rowData: ITrip) => {
         return (
-            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.id)}/>
+            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData)}/>
         )
     }
 
@@ -82,4 +91,8 @@ const mapStateToProps = (state: IStore): IStateProps => {
     return {trips: storeTrips.map(storeTrip => objectifyTrip(state, storeTrip))}
 }
 
-export default connect(mapStateToProps)(TripsListScene)
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(tripActions, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TripsListScene)

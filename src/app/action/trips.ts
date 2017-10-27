@@ -1,6 +1,7 @@
 import {
     ADD_PERSON,
     ADD_TRIP,
+    SET_CURRENT_TRIP,
     SETTLE_UP,
     UPDATE_PERSON
 } from 'app/constants'
@@ -11,9 +12,11 @@ import {
 } from 'app/models/common'
 import {
     IPayloadAddTrip,
+    IPayloadSetCurrentTrip,
     IPayloadSettleUpTrip,
     IStoreTrip,
-    ITrip
+    ITrip,
+    ITripActions
 } from 'app/models/trips'
 import {extendConfigurationFile} from 'tslint/lib/configuration';
 import {ITransfer} from '../models/transfers';
@@ -21,6 +24,7 @@ import {IPerson} from '../models/people';
 import {storifyTrip} from '../utils/objectify';
 
 export const tripActions = {
+    setCurrentTrip,
     addTrip,
     settleUp,
 }
@@ -64,6 +68,21 @@ export function addTrip(name: string, people: string[]) {
             })
         })
 
+    }
+}
+
+/**
+ * Задать текущее путешествие.
+ *
+ * @param trip - Путешествие.
+ */
+export function setCurrentTrip(trip: IStoreTrip) {
+    return (dispatch, getState: () => IStore) => {
+        const action: IAction<IPayloadSetCurrentTrip> = {
+            type: SET_CURRENT_TRIP,
+            payload: {trip}
+        }
+        dispatch(action)
     }
 }
 

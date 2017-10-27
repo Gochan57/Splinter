@@ -14,7 +14,7 @@ import {
     CHANGE_MEMBER_PAID_ON_PAYMENT,
     UPDATE_PAYMENT,
     CANCEL_UPDATING_PAYMENT,
-    TEMPORARY_ID,
+    SET_CURRENT_PAYMENT,
 } from '../constants'
 import {
     zeroIfNull
@@ -25,7 +25,6 @@ import {
     IStore
 } from 'app/models/common'
 import {
-    IPayloadStartUpdatingPayment,
     IPayloadChangePaymentName,
     IPayloadSetMembersOfPayment,
     IPayloadRemoveMemberFromPayment,
@@ -38,10 +37,12 @@ import {
     IPayloadChangeMemberSpentOnPayment,
     IPayloadChangeMemberPaidOnPayment,
     IPayloadUpdatePayment,
-    IMember,
     IPayment,
     IStoreMember,
     IStorePayment,
+    IPayloadSetCurrentPayment,
+    defaultPayment,
+    IPaymentActions,
 } from 'app/models/payments'
 import * as _ from 'lodash'
 import {ITrip} from '../models/trips';
@@ -49,6 +50,7 @@ import {IPerson} from '../models/people';
 
 export const paymentActions = {
     startCreatingNewPayment,
+    setCurrentPayment,
     startUpdatingPayment,
     changePaymentName,
     setMembersOfPayment,
@@ -69,15 +71,27 @@ export const paymentActions = {
 /**
  * Начало создания нового счета.
  *
- * @param tripId - Идентификатор путешествия.
+ * @param trip - Путешествия.
  */
 export function startCreatingNewPayment(trip: ITrip) {
     return (dispatch, getState: () => IStore) => {
         // Составляем массив всех участников путешествия
         const members: IStoreMember[] = _.map(trip.people, (person: IPerson) => ({personId: person.id}))
-        const action: IAction<IPayloadStartUpdatingPayment> = {
-            type: START_UPDATING_PAYMENT,
-            payload: {members}
+        const payment: IStorePayment = {...defaultPayment, members}
+        dispatch(setCurrentPayment(payment))
+    }
+}
+
+/**
+ * Задаем текущий счет.
+ *
+ * @param payment - Счет.
+ */
+export function setCurrentPayment(payment: IStorePayment) {
+    return (dispatch, getState: () => IStore) => {
+        const action: IAction<IPayloadSetCurrentPayment> = {
+            type: SET_CURRENT_PAYMENT,
+            payload: {payment}
         }
         dispatch(action)
     }
@@ -90,11 +104,8 @@ export function startCreatingNewPayment(trip: ITrip) {
  */
 export function startUpdatingPayment(paymentId: string) {
     return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadStartUpdatingPayment> = {
-            type: START_UPDATING_PAYMENT,
-            payload: {paymentId}
-        }
-        dispatch(action)
+        const payment: IStorePayment = _.cloneDeep(getState().payments[paymentId])
+        dispatch(setCurrentPayment(payment))
     }
 }
 
@@ -121,7 +132,7 @@ export function changePaymentName(name: string) {
 export function setMembersOfPayment(personIdList: string[]) {
     return (dispatch, getState: () => IStore) => {
         // FIXME переделать на получение из трипа
-        const payment: IStorePayment = getState().payments[TEMPORARY_ID]
+        const payment: IStorePayment = getState().current.payment
         const members: IStoreMember[] = _.filter(payment.members, member => _.some(personIdList, member.personId))
         const action: IAction<IPayloadSetMembersOfPayment> = {
             type: SET_MEMBERS_OF_PAYMENT,
@@ -129,7 +140,7 @@ export function setMembersOfPayment(personIdList: string[]) {
         }
         dispatch(action)
         // Если выбрано "Платили поровну", то разделим счет на участников счета.
-        if (getState().payments[TEMPORARY_ID].spentEqually) {
+        if (getState().current.payment.spentEqually) {
             dispatch(splitSumByMembers())
         }
     }
@@ -148,7 +159,7 @@ export function removeMemberFromPayment(personId: string) {
         }
         dispatch(action)
         // Если выбрано "Платили поровну", то разделим счет на оставшихся.
-        if (getState().payments[TEMPORARY_ID].spentEqually) {
+        if (getState().current.payment.spentEqually) {
             dispatch(splitSumByMembers())
         }
     }
@@ -227,7 +238,7 @@ export function changeSumOnPayment(sum: number) {
  */
 export function splitSumByMembers(sum?: number) {
     return (dispatch, getState: () => IStore) => {
-        const payment: IStorePayment = getState().payments[TEMPORARY_ID]
+        const payment: IStorePayment = getState().current.payment
         if (payment.members && payment.members.length > 0) {
             const _sum: number = sum || payment.sum
             const spentEach: number = _sum / payment.members.length
@@ -264,7 +275,7 @@ export function paidForAllChecked(personId: string) {
 export function changePaidToPayForAll(personId?: string) {
     return (dispatch, getState: () => IStore) => {
         // считаем сумму потраченных денег
-        const members: IStoreMember[] = getState().payments[TEMPORARY_ID].members
+        const members: IStoreMember[] = getState().current.payment.members
         const sumSpent: number = _.reduce(members, (sum: number, member: IStoreMember) => sum + zeroIfNull(member.spent), 0)
         // если personId не передан, можно вычислить его из метки paidForAll у участника счета
         if (!personId) {
@@ -296,7 +307,7 @@ export function changeMemberSpentOnPayment(personId: string, value: number) {
     const spent: number = value
     return (dispatch, getState: () => IStore) => {
         // считаем сумму редактируемого счета
-        const payment: IStorePayment = getState().payments[TEMPORARY_ID]
+        const payment: IStorePayment = getState().current.payment
         const sum: number = _.reduce(payment.members, (paymentSum: number, member: IStoreMember) => {
             const memberSpent: number = (member.personId === personId ? value : member.spent)
             return paymentSum + memberSpent
@@ -336,8 +347,8 @@ export function changeMemberPaidOnPayment(personId: string, value: number) {
  * @param tripId - Идентификатор путешествия.
  */
 export function updatePayment(tripId: string) {
-    return (dispatch, getState: () => IStorable<IPayment>) => {
-        const payment: IStorePayment = getState().payments[TEMPORARY_ID]
+    return (dispatch, getState: () => IStore) => {
+        const payment: IStorePayment = getState().current.payment
         // FIXME сохранять счет в базу
         const paymentId: string = payment.id || '4'
         tempPromise(paymentId).then((paymentId: string) => {

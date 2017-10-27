@@ -75,13 +75,14 @@ export interface IStorePayment {
 
 export interface IPaymentActions {
     startCreatingNewPayment: (trip: ITrip) => void,
+    setCurrentPayment: (payment: IStorePayment) => void,
     startUpdatingPayment: (paymentId: string) => void,
     changePaymentName: (name: string) => void,
     setMembersOfPayment: (personIdList: string[]) => void,
     removeMemberFromPayment: (personId: string) => void,
     spentEquallySwitched: (spentEqually: boolean) => void,
     paidOneSwitched: (paidOne: boolean) => void,
-    resetPaidForAll: () => IAction<null>,
+    resetPaidForAll: () => void,
     changeSumOnPayment: (sum: number) => void,
     splitSumByMembers: (sum?: number) => void,
     paidForAllChecked: (personId: string) => void,
@@ -89,18 +90,24 @@ export interface IPaymentActions {
     changeMemberSpentOnPayment: (personId: string, value: number) => void,
     changeMemberPaidOnPayment: (personId: string, value: number) => void,
     updatePayment: (tripId: string) => void,
-    cancelUpdatingPayment: () => IAction<null>,
+    cancelUpdatingPayment: () => void,
+}
+
+export const defaultPayment: IStorePayment = {
+    id: null,
+    members: [],
+    spentEqually: false,
+    paidOne: false,
+    sum: 0
 }
 
 /**
- * Пэйлоад на создание/редактированияе счета.
+ * Пэйлоад на задать текущий счет.
  *
- * paymentId Идентификатор (при редактировании счета).
- * members Участники путешествия (при создании нового счета по умолчанию участники счета - все участники путешествия)
+ * payment
  */
-export interface IPayloadStartUpdatingPayment {
-    paymentId?: string,
-    members?: IStoreMember[]
+export interface IPayloadSetCurrentPayment {
+    payment: IStorePayment
 }
 
 /**

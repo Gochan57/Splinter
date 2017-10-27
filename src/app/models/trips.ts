@@ -7,6 +7,7 @@ import {IPerson} from './people';
 import {IPayment} from './payments';
 
 export interface ITripActions {
+    setCurrentTrip: (trip: IStoreTrip) => void,
     addTrip: (name: string, people: string[]) => void,
     settleUp: (id: string) => void
 }
@@ -49,6 +50,23 @@ export interface IStoreTrip {
     transfers: string[],
     settlingUp?: IStoreSettlingUp,
     date: Date
+}
+
+export const defaultTrip: IStoreTrip = {
+    id: null,
+    people: [],
+    payments: [],
+    transfers: [],
+    date: null,
+}
+
+/**
+ * Пэйлоад на задание текущего путешествия.
+ *
+ * trip - Путешествие.
+ */
+export interface IPayloadSetCurrentTrip {
+    trip: IStoreTrip
 }
 
 /**

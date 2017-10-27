@@ -17,7 +17,6 @@ import {
     paymentActions,
 } from 'app/action/payments'
 import {toNumber, toNumberNullable} from 'app/utils/utils'
-import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
@@ -137,8 +136,7 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
     }
 
     componentWillMount () {
-        // Вызовем action начала редактирования/создания нового счета,
-        // чтобы перевести редактируемый счет под поле [TEMPORARY_ID] в сторе.
+        // Вызовем action начала редактирования/создания нового счета
         const {trip, paymentId} = this.props
         if (paymentId) {
             this.props.startUpdatingPayment(paymentId)
@@ -290,7 +288,7 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
     const {tripId} = ownProps
     const trip = objectifyTrip(state, state.trips[tripId])
     // Из списка всех счетов выберем редактируемый счет.
-    const payment: IPayment = objectifyPayment(state, state.payments[TEMPORARY_ID])
+    const payment: IPayment = objectifyPayment(state, state.current.payment)
     if (!payment) {
         return {loading: true}
     }
