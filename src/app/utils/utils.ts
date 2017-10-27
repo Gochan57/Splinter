@@ -104,12 +104,13 @@ export function getMaxId (o) {
  * Преобразует строку в число.
  * @param value Строка.
  */
-export function toNumber (value: string): number {
+export function toNumber (value: string | number): number {
     if (!value) return 0
     if (typeof value === 'string') {
         value = value.replace(',', '.')
+        return parseFloat(value || '0')
     }
-    return parseFloat(value || '0')
+    return value
 }
 
 /**
@@ -124,7 +125,7 @@ export function zeroIfNull (value: number): number {
  * но если был передан null или undefined, вернет null или undefinde.
  * @param value Строка.
  */
-export function toNumberNullable (value: string): number {
+export function toNumberNullable (value: string | number): number {
     if (value === null || value === undefined) {
         return null
     }

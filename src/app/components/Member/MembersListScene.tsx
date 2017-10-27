@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as _ from 'lodash'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
+import {IPerson} from '../../models/people';
 
 /**
  * members Список участников.
@@ -21,8 +22,7 @@ interface IProps {
  * selected Участвует ли в счете.
  */
 export interface IMemberItem {
-    id: string,
-    name: string,
+    person: IPerson,
     selected: boolean
 }
 
@@ -52,8 +52,8 @@ export default class MembersListScene extends Component<IProps, IState> {
 
         // Храним выбранных участников в стейте в selectedMembers
         let selectedMembers: ISelectedMembers = {}
-        props.members.forEach(member => {
-            selectedMembers[member.id] = member.selected
+        props.members.forEach((member: IMemberItem) => {
+            selectedMembers[member.person.id] = member.selected
         })
         this.state = {
             selectedMembers
@@ -98,11 +98,11 @@ export default class MembersListScene extends Component<IProps, IState> {
      * Рендерим одну строку в списке участников.
      * @param rowData Один элемент в массиве props.members.
      */
-    renderRow = (rowData) => {
-        const {id, name} = rowData
-        const selected: boolean = this.state.selectedMembers[id]
+    renderRow = (rowData: IMemberItem) => {
+        const {person} = rowData
+        const selected: boolean = this.state.selectedMembers[person.id]
         const onPress = () => {
-            this.selectPerson(id, !selected)
+            this.selectPerson(person.id, !selected)
         }
         const color = selected ? '#3333ff' : '#e6e6e6'
         const check = (
@@ -115,7 +115,7 @@ export default class MembersListScene extends Component<IProps, IState> {
                 <View>
                     <ListItem
                         divider={true}
-                        centerElement={name}
+                        centerElement={person.name}
                         rightElement={check}/>
                 </View>
             </TouchableHighlight>

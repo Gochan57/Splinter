@@ -82,14 +82,14 @@ const reducer: {[key: string]: any} = {
         }
     },
     [UPDATE_PAYMENT]: function(trips: IStorable<IStoreTrip>, payload: IPayloadUpdatePayment): IStorable<IStoreTrip> {
-        const {tripId, paymentId} = payload
+        const {tripId, payment} = payload
         return {
             ...trips,
             [tripId]: {
                 ...trips[tripId],
                 payments: [
                     ...trips[tripId].payments,
-                    paymentId
+                    payment.id
                 ]
             }
         }

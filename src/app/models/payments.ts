@@ -1,16 +1,31 @@
 import {IAction} from './common'
 import {IPerson} from './people';
+import {ITrip} from './trips';
 /**
  * Участник счета.
+ *
+ * person Идентификатор путешественника.
+ * spent Потратил.
+ * paid Оплатил.
+ * paidForAll Платил за всех.
+ */
+export interface IMember {
+    person: IPerson,
+    spent?: number,
+    paid?: number,
+    paidForAll?: boolean
+}
+
+/**
+ * Участник счета (формат для стора).
  *
  * personId Идентификатор путешественника.
  * spent Потратил.
  * paid Оплатил.
  * paidForAll Платил за всех.
  */
-export interface IMember {
-    id: string,
-    name?: string,
+export interface IStoreMember {
+    personId: string,
     spent?: number,
     paid?: number,
     paidForAll?: boolean
@@ -37,8 +52,29 @@ export interface IPayment {
     sum?: number
 }
 
+/**
+ * Счет.
+ *
+ * id Идентификатор счета.
+ * name Наименование счета.
+ * date Дата и время создания счета (в формате ISO-8601).
+ * members Участники счета.
+ * spentEqually Все потратили поровну.
+ * paidOne Платил один.
+ * sum Общая сумма счета.
+ */
+export interface IStorePayment {
+    id?: string,
+    name?: string,
+    date?: Date,
+    members: IStoreMember[],
+    spentEqually?: boolean,
+    paidOne?: boolean,
+    sum?: number
+}
+
 export interface IPaymentActions {
-    startCreatingNewPayment: (tripId: string) => void,
+    startCreatingNewPayment: (trip: ITrip) => void,
     startUpdatingPayment: (paymentId: string) => void,
     changePaymentName: (name: string) => void,
     setMembersOfPayment: (personIdList: string[]) => void,
@@ -64,7 +100,7 @@ export interface IPaymentActions {
  */
 export interface IPayloadStartUpdatingPayment {
     paymentId?: string,
-    members?: IMember[]
+    members?: IStoreMember[]
 }
 
 /**
@@ -82,7 +118,7 @@ export interface IPayloadChangePaymentName {
  * personIdList Массив id людей, участвующих в счете.
  */
 export interface IPayloadSetMembersOfPayment {
-    personIdList: string[]
+    members: IStoreMember[]
 }
 
 /**
@@ -183,6 +219,5 @@ export interface IPayloadChangeMemberPaidOnPayment {
  */
 export interface IPayloadUpdatePayment {
     tripId: string,
-    paymentId: string,
-    payment: IPayment
+    payment: IStorePayment
 }

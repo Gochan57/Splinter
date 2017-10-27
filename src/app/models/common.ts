@@ -2,7 +2,10 @@ import {
     IStoreTrip,
     ITrip
 } from './trips'
-import {IPayment} from './payments'
+import {
+    IPayment,
+    IStorePayment
+} from './payments'
 import {IPerson} from './people'
 import {ITransfer} from './transfers'
 
@@ -18,7 +21,7 @@ export interface IAction<T> {
 export interface IStore {
     people: IStorable<IPerson>,
     trips: IStorable<IStoreTrip>,
-    payments: IStorable<IPayment>,
+    payments: IStorable<IStorePayment>,
     transfers: IStorable<ITransfer>
 }
 

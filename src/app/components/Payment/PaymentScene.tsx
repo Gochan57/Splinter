@@ -40,6 +40,11 @@ import {IPerson} from 'app/models/people'
 import ModalWindow from '../Common/ModalWindow';
 
 import * as _ from 'lodash'
+import {ITrip} from '../../models/trips';
+import {
+    objectifyPayment,
+    objectifyTrip
+} from '../../utils/objectify';
 
 const commonStyles = appStyles.commonStyles
 
@@ -54,16 +59,6 @@ export interface IPaymentSceneProps {
 }
 
 /**
- * Строка Итого.
- */
-interface ITotalRow {
-    name: string,
-    spent: number,
-    paid: number,
-    key: string
-}
-
-/**
  * paymentId Идентификатор счета.
  * loading Страница загружается.
  * name Название счета.
@@ -75,6 +70,7 @@ interface ITotalRow {
  * totalRow Строка итого.
  */
 interface IStateProps {
+    trip?: ITrip,
     tripMembers?: IPerson[],
     paymentId?: string,
     loading?: boolean,
@@ -83,7 +79,7 @@ interface IStateProps {
     paidOne?: boolean,
     sum?: number,
     members?: (IMember & IKey)[],
-    totalRow?: ITotalRow,
+    totalRow?: IMember & IKey,
 }
 
 interface IDispatchProps extends IPaymentActions {}
@@ -143,12 +139,12 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
     componentWillMount () {
         // Вызовем action начала редактирования/создания нового счета,
         // чтобы перевести редактируемый счет под поле [TEMPORARY_ID] в сторе.
-        const {tripId, paymentId} = this.props
+        const {trip, paymentId} = this.props
         if (paymentId) {
             this.props.startUpdatingPayment(paymentId)
         }
         else {
-            this.props.startCreatingNewPayment(tripId)
+            this.props.startCreatingNewPayment(trip)
         }
     }
 
@@ -173,12 +169,12 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
         )
     }
 
-    renderMemberRow = (rowData) => {
+    renderMemberRow = (rowData: IMember & IKey) => {
         if (rowData.key === 'totalRow') {
             // Верхняя строка с общим счетом "Итого"
             return (
                 <PaymentMember
-                    name={rowData.name}
+                    name={rowData.person.name}
                     spent={toNumberNullable(rowData.spent)}
                     paid={toNumberNullable(rowData.paid)}
                     spentEditable={this.props.spentEqually}
@@ -196,15 +192,15 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
         }
         return (
             <PaymentMember
-                name={rowData.name}
+                name={rowData.person.name}
                 spent={toNumberNullable(rowData.spent)}
                 paid={toNumberNullable(rowData.paid)}
                 spentEditable={!this.props.spentEqually}
                 paidEditable={!this.props.paidOne}
-                onSpentChanged={value => {this.props.changeMemberSpentOnPayment(rowData.personId, value)}}
-                onPaidChanged={value => {this.props.changeMemberPaidOnPayment(rowData.personId, value)}}
+                onSpentChanged={value => {this.props.changeMemberSpentOnPayment(rowData.person.id, value)}}
+                onPaidChanged={value => {this.props.changeMemberPaidOnPayment(rowData.person.id, value)}}
                 showPaidForAllCheck={this.props.paidOne}
-                onPaidForAllChecked={() => this.props.paidForAllChecked(rowData.personId)}
+                onPaidForAllChecked={() => this.props.paidForAllChecked(rowData.person.id)}
                 paidForAll={rowData.paidForAll}
                 key={rowData.key}
                 ref={this.refFor(rowData.key)}/>
@@ -216,9 +212,9 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
      */
     renderChooseMembersModal = () => {
         // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
-        const members: IMemberItem[] = this.props.tripMembers.map(member => ({
-                ...member,
-                selected: _.some(this.props.members, {id: member.id})
+        const members: IMemberItem[] = this.props.tripMembers.map((person: IPerson) => ({
+                person,
+                selected: _.some(this.props.members, (member: IMember) => member.person.id == person.id)
             })
         )
         const onChosenMembers = (personIdList) => {
@@ -292,8 +288,9 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
 
 const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStateProps => {
     const {tripId} = ownProps
+    const trip = objectifyTrip(state, state.trips[tripId])
     // Из списка всех счетов выберем редактируемый счет.
-    const payment: IPayment = state.payments[TEMPORARY_ID]
+    const payment: IPayment = objectifyPayment(state, state.payments[TEMPORARY_ID])
     if (!payment) {
         return {loading: true}
     }
@@ -301,17 +298,16 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
     const members: (IMember & IKey)[] = payment.members as (IMember & IKey)[]
     console.warn('mapStateToProps PaymentScene:', state)
     _.forEach(members, (member: IMember & IKey) => {
-        member.key = member.id
-        member.name = state.people[member.id].name
+        member.key = member.person.id
     })
-    const tripMembers: IPerson[] = state.trips[tripId].people.map((personId: string) => state.people[personId])
+    const tripMembers: IPerson[] = trip.people
     // Вычислим строку Итого
     const totalPaid: number = _.reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
     const remainsToPay: number = totalPaid - payment.sum
-    const totalRow: ITotalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: 'totalRow'}
+    const totalRow: IMember & IKey = {person: {id: '', name: 'Общий счет'}, spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: 'totalRow'}
 
     const {id, name, spentEqually, paidOne, sum} = payment
-    return {tripMembers, paymentId: id, loading: false, name, spentEqually, paidOne, sum, members, totalRow}
+    return {trip, tripMembers, paymentId: id, loading: false, name, spentEqually, paidOne, sum, members, totalRow}
 }
 
 const mapDispatchToProps = (dispatch) => {

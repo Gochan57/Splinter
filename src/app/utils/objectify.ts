@@ -9,6 +9,39 @@ import {
     IStoreTrade,
     ITrade,
 } from 'app/models/transfers'
+import {
+    IMember,
+    IPayment,
+    IStoreMember,
+    IStorePayment
+} from '../models/payments';
+
+export const objectifyMember = (state: IStore, storeMember: IStoreMember): IMember => {
+    if (!storeMember) {
+        return null
+    }
+    return {
+        person: state.people[storeMember.personId],
+        spent: storeMember.spent,
+        paid: storeMember.paid,
+        paidForAll: storeMember.paidForAll
+    }
+}
+
+export const objectifyPayment = (state: IStore, storePayment: IStorePayment): IPayment => {
+    if (!storePayment) {
+        return null
+    }
+    return {
+        id: storePayment.id,
+        name: storePayment.name,
+        date: storePayment.date,
+        members: storePayment.members.map(member => objectifyMember(state, member)),
+        spentEqually: storePayment.spentEqually,
+        paidOne: storePayment.paidOne,
+        sum: storePayment.sum,
+    }
+}
 
 export const objectifyTrade = (state: IStore, storeTrade: IStoreTrade): ITrade => {
     if (!storeTrade) {
@@ -38,7 +71,7 @@ export const objectifyTrip = (state: IStore, storeTrip: IStoreTrip): ITrip => {
         return null
     }
     const people = storeTrip.people ? storeTrip.people.map(id => state.people[id]) : null
-    const payments = storeTrip.payments ? storeTrip.payments.map(id => state.payments[id]) : null
+    const payments = storeTrip.payments ? storeTrip.payments.map(id => objectifyPayment(state, state.payments[id])) : null
     const transfers = storeTrip.transfers ? storeTrip.transfers.map(id => state.transfers[id]) : null
     return {
         id: storeTrip.id,
@@ -48,6 +81,33 @@ export const objectifyTrip = (state: IStore, storeTrip: IStoreTrip): ITrip => {
         transfers,
         settlingUp: objectifySettlingUp(state, storeTrip.settlingUp),
         date: storeTrip.date
+    }
+}
+
+export const storifyMember = (member: IMember): IStoreMember => {
+    if (!member) {
+        return null
+    }
+    return {
+        personId: member.person.id,
+        spent: member.spent,
+        paid: member.paid,
+        paidForAll: member.paidForAll,
+    }
+}
+
+export const storifyPayment = (payment: IPayment): IStorePayment => {
+    if (!payment) {
+        return null
+    }
+    return {
+        id: payment.id,
+        name: payment.name,
+        date: payment.date,
+        members: payment.members.map(member => storifyMember(member)),
+        spentEqually: payment.spentEqually,
+        paidOne: payment.paidOne,
+        sum: payment.sum,
     }
 }
 

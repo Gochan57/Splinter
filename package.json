@@ -12,6 +12,7 @@
     "lint": "tslint src/**/*.ts"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.80",
     "@types/react-native": "^0.44.19",
     "babel-plugin-module-alias": "^1.6.0",
     "lodash": "^4.17.4",
