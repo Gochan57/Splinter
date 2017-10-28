@@ -5,7 +5,6 @@ import {
     NavigatorStatic
 } from 'react-native'
 import {connect} from 'react-redux'
-import {toArrayWithKeys} from 'app/utils/utils'
 
 import WideButton from 'app/components/Common/WideButton'
 import NavigatorBar from 'app/components/Common/Navigator/NavigatorBar'
@@ -15,13 +14,20 @@ import TripScene from './TripScene'
 import TripsListItem from './TripsListItem'
 import {
     IStoreTrip,
-    ITrip
+    ITrip,
 } from 'app/models/trips'
 import {
-    IStorable,
     IStore
 } from 'app/models/common'
-import {objectifyTrip} from '../../utils/objectify';
+import {
+    objectify,
+    storify
+} from 'app/utils/objectify';
+
+import * as _ from 'lodash'
+import {bindActionCreators} from 'redux';
+import * as tripThunks from 'app/redux/thunk/trips';
+import {ITripThunks} from 'app/redux/thunk/trips';
 
 interface IProps {
     navigator: NavigatorStatic
@@ -31,14 +37,17 @@ interface IStateProps {
     trips: ITrip[],
 }
 
+interface IDispatchProps extends ITripThunks {}
+
 /**
  * Экран со списком путешествий.
  */
-class TripsListScene extends Component<IProps & IStateProps, null> {
-    _toPaymentsListScene = (tripId: string) => {
+class TripsListScene extends Component<IProps & IStateProps & IDispatchProps, null> {
+    _toPaymentsListScene = (trip: ITrip) => {
         const {navigator} = this.props
         return () => {
-            navigator.push({component: PaymentsListScene, passProps: {tripId}})
+            this.props.setCurrentTrip(storify.trip(trip))
+            navigator.push({component: PaymentsListScene, passProps: {tripId: trip.id}})
         }
     }
 
@@ -53,7 +62,7 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
 
     _renderTripItem = (rowData: ITrip) => {
         return (
-            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData.tripId)}/>
+            <TripsListItem name={rowData.name} onPress={this._toPaymentsListScene(rowData)}/>
         )
     }
 
@@ -77,8 +86,12 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
 }
 
 const mapStateToProps = (state: IStore): IStateProps => {
-    const storeTrips = toArrayWithKeys<IStoreTrip>(state.trips, 'tripId')
-    return {trips: storeTrips.map(storeTrip => objectifyTrip(state, storeTrip))}
+    const storeTrips = _.values<IStoreTrip>(state.trips.items)
+    return {trips: storeTrips.map(storeTrip => objectify.trip(state, storeTrip))}
 }
 
-export default connect(mapStateToProps)(TripsListScene)
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({...tripThunks}, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TripsListScene)

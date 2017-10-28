@@ -1,4 +1,4 @@
-import {omit} from 'lodash'
+import * as _ from 'lodash'
 import {IStorable} from 'app/models/common'
 import {
     IPersonBalance,
@@ -63,7 +63,7 @@ export function toObjectWithPropName (arr: object[], propName: string = 'id') {
         if (!key) {
             logError('toObjectWithKeys >>> element', elem, `has no property ${propName}`)
         }
-        res[key] = omit(elem, key)
+        res[key] = _.omit(elem, key)
     })
     return res
 }
@@ -104,12 +104,13 @@ export function getMaxId (o) {
  * Преобразует строку в число.
  * @param value Строка.
  */
-export function toNumber (value: string): number {
+export function toNumber (value: string | number): number {
     if (!value) return 0
     if (typeof value === 'string') {
         value = value.replace(',', '.')
+        return parseFloat(value || '0')
     }
-    return parseFloat(value || '0')
+    return value
 }
 
 /**
@@ -124,7 +125,7 @@ export function zeroIfNull (value: number): number {
  * но если был передан null или undefined, вернет null или undefinde.
  * @param value Строка.
  */
-export function toNumberNullable (value: string): number {
+export function toNumberNullable (value: string | number): number {
     if (value === null || value === undefined) {
         return null
     }
@@ -178,15 +179,15 @@ export function settleUp (balances: IPersonBalance[]): ITrade[] {
     let i, j: number
 
     const person1 = {
-        personId: '1',
+        id: '1',
         name: 'Юля1'
     }
     const person2 = {
-        personId: '2',
+        id: '2',
         name: 'Юля2'
     }
     const person3 = {
-        personId: '3',
+        id: '3',
         name: 'Юля3'
     }
 

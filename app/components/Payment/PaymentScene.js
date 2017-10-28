@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react'
 import {ActivityIndicator, Modal, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {filter, find, forEach, pickBy, reduce, some} from 'lodash'
 
 import {
     startCreatingNewPayment,
@@ -19,7 +18,7 @@ import {
     updatePayment,
     cancelUpdatingPayment,
 } from 'app/action/payments'
-import {toArrayWithKeys, toNumber, toNumberNullable, round} from 'app/utils/utils'
+import {toNumber, toNumberNullable} from 'app/utils/utils'
 import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
@@ -31,6 +30,8 @@ import RemovableListView from 'app/components/Common/RemovableListView'
 
 import PaymentMember from './PaymentMember'
 import MembersListScene from '../Member/MembersListScene'
+
+import * as _ from 'lodash'
 
 const commonStyles = appStyles.commonStyles
 
@@ -99,7 +100,7 @@ class PaymentScene extends Component {
     endEditingAllInputs = () => {
         const {members} = this.props
         this.refs.list.refs[this.refFor(TOTAL_ROW_REF)].blur()
-        forEach(members, member => {
+        _.forEach(members, member => {
             this.refs.list.refs[this.refFor(member.key)].blur()
         })
     }
@@ -189,7 +190,7 @@ class PaymentScene extends Component {
         // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
         const members = this.props.tripMembers.map(member => ({
                 ...member,
-                selected: some(this.props.members, {personId: member.personId})
+                selected: _.some(this.props.members, {personId: member.personId})
             })
         )
         const onChosenMembers = (personIdList) => {
@@ -270,13 +271,13 @@ const mapStateToProps = (state, ownProps) => {
     // Все участники путешествия
     const people = state.trips[tripId].people
     // Добавим к каждому member поле key (этого требует элемент RemovableListView) и name
-    forEach(payment.members, member => {
+    _.forEach(payment.members, member => {
         member.key = member.personId
         member.name = people[member.personId].name
     })
-    const tripMembers = toArrayWithKeys(people, 'personId')
+    const tripMembers = _.values(people)
     // Вычислим строку Итого
-    const totalPaid = reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
+    const totalPaid = _.reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
     const remainsToPay = totalPaid - payment.sum
     const totalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: TOTAL_ROW_REF}
 

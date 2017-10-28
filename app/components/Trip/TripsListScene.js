@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {View, Text, ListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {toArrayWithKeys} from 'app/utils/utils'
 import {goTo} from 'app/components/Common/Navigator/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
 
@@ -11,6 +10,8 @@ import SNavigatorBar from 'app/components/Common/Navigator/SNavigatorBar'
 import PaymentsListScene from '../Payment/PaymentsListScene'
 import TripsListItem from './TripsListItem'
 import TripScene from './TripScene'
+
+import * as _ from 'lodash'
 
 /**
  * Экран со списком путешествий.
@@ -62,7 +63,7 @@ class TripsListScene extends Component {
         const {items, navigator} = this.props
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-        const rows = toArrayWithKeys(items)
+        const rows = _.values(items)
         const dataSource = ds.cloneWithRows(rows)
 
         return (

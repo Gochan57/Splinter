@@ -1,9 +1,5 @@
 import {IPerson} from './people'
 
-export interface ITransferActions {
-    addTransferChain: (tripId: string, trades: ITrade[]) => void
-}
-
 /**
  * id Идентификатор в БД.
  * fromPerson Кто передал деньги.
@@ -68,15 +64,4 @@ export interface IStoreSettlingUp {
 export interface IPersonBalance {
     person: IPerson,
     balance: number
-}
-
-/**
- * Пэйлоад на добавление новой цепочки трансфера денег.
- *
- * tripId - Идентификатор путешествия
- * transfer - Новая цепочка трансферов.
- */
-export interface IPayloadAddTransfer {
-    tripId: string
-    transfer: ITransfer
 }

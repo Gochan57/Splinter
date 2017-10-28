@@ -2,9 +2,10 @@ import React, {Component} from 'react'
 import {ListView, View, StyleSheet, Text, TouchableHighlight} from 'react-native'
 import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {filter, forEach} from 'lodash'
+import * as _ from 'lodash'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
+import {IPerson} from '../../models/people';
 
 /**
  * members Список участников.
@@ -16,13 +17,12 @@ interface IProps {
 }
 
 /**
- * personId Идентификатор участника счета.
+ * id Идентификатор участника счета.
  * name Имя, отображаемое в строке с участником счета.
  * selected Участвует ли в счете.
  */
 export interface IMemberItem {
-    personId: string,
-    name: string,
+    person: IPerson,
     selected: boolean
 }
 
@@ -34,7 +34,7 @@ interface IState {
 }
 
 interface ISelectedMembers {
-    [personId: string]: boolean
+    [id: string]: boolean
 }
 
 /**
@@ -44,7 +44,7 @@ export default class MembersListScene extends Component<IProps, IState> {
     /**
      * selectedMembers объект с полями id участников и булевскими значениями, выбран участник или нет
      *  {
-     *      [personId: string || number]: bool
+     *      [id: string || number]: bool
      *  }
      */
     constructor (props: IProps) {
@@ -52,8 +52,8 @@ export default class MembersListScene extends Component<IProps, IState> {
 
         // Храним выбранных участников в стейте в selectedMembers
         let selectedMembers: ISelectedMembers = {}
-        props.members.forEach(member => {
-            selectedMembers[member.personId] = member.selected
+        props.members.forEach((member: IMemberItem) => {
+            selectedMembers[member.person.id] = member.selected
         })
         this.state = {
             selectedMembers
@@ -76,7 +76,7 @@ export default class MembersListScene extends Component<IProps, IState> {
 
     onFinish = () => {
         const {selectedMembers} = this.state
-        const onlySelectedMembers: string[] = filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
+        const onlySelectedMembers: string[] = _.filter(Object.keys(selectedMembers), personId => selectedMembers[personId])
         this.props.onFinish(onlySelectedMembers)
     }
 
@@ -98,11 +98,11 @@ export default class MembersListScene extends Component<IProps, IState> {
      * Рендерим одну строку в списке участников.
      * @param rowData Один элемент в массиве props.members.
      */
-    renderRow = (rowData) => {
-        const {personId, name} = rowData
-        const selected: boolean = this.state.selectedMembers[personId]
+    renderRow = (rowData: IMemberItem) => {
+        const {person} = rowData
+        const selected: boolean = this.state.selectedMembers[person.id]
         const onPress = () => {
-            this.selectPerson(personId, !selected)
+            this.selectPerson(person.id, !selected)
         }
         const color = selected ? '#3333ff' : '#e6e6e6'
         const check = (
@@ -115,7 +115,7 @@ export default class MembersListScene extends Component<IProps, IState> {
                 <View>
                     <ListItem
                         divider={true}
-                        centerElement={name}
+                        centerElement={person.name}
                         rightElement={check}/>
                 </View>
             </TouchableHighlight>

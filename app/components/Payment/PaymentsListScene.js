@@ -4,9 +4,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
 import moment from 'moment'
-import {filter, some} from 'lodash'
 
-import {toArrayWithKeys} from 'app/utils/utils'
 import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
 import {goTo} from 'app/components/Common/Navigator/SNavigator'
 import WideButton from 'app/components/Common/WideButton'
@@ -14,6 +12,8 @@ import appStyles from 'app/styles'
 
 import PaymentsListItem from './PaymentsListItem'
 import PaymentScene from './PaymentScene'
+
+import * as _ from 'lodash'
 
 const styles =  appStyles.commonStyles
 
@@ -130,9 +130,9 @@ const mapStateToProps = (state, ownProps) => {
         return {payments: null}
     }
     // Получаем список всех счетов.
-    const allPayments = toArrayWithKeys(state.payments)
+    const allPayments = _.values(state.payments)
     // Выбираем из всех счетов те, которые входят в текущее путешествие.
-    const payments = filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
+    const payments = _.filter(allPayments, payment => paymentIds.indexOf(payment.id) > -1)
     return {tripName, payments}
 }
 
