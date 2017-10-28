@@ -1,4 +1,4 @@
-import {settleUp} from './utils/utils'
+import {Settle} from './utils/sette'
 import {expect} from 'chai'
 import {
     IPersonBalance,
@@ -18,5 +18,6 @@ const result1: ITrade[] = [
     {fromPerson:person2, toPerson:person1, count: 100},
     {fromPerson:person3, toPerson:person1, count: 100},
 ]
+var settle = new Settle(balances1);
 
-expect(result1).to.deep.equal(settleUp(balances1))
+expect(result1).to.deep.equal(settle.settleUp())
