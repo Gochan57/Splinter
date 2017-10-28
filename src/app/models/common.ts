@@ -18,10 +18,6 @@ export interface IAction<T> {
     payload?: T
 }
 
-export interface IStoreCurrent {
-    trip: IStoreTrip,
-}
-
 export interface IStoreItems<T> {
     items: IStorable<T>,
     current: T
@@ -29,10 +25,9 @@ export interface IStoreItems<T> {
 
 export interface IStore {
     people: IStorable<IPerson>,
-    trips: IStorable<IStoreTrip>,
+    trips: IStoreItems<IStoreTrip>,
     payments: IStoreItems<IStorePayment>,
     transfers: IStorable<ITransfer>,
-    current: IStoreCurrent,
 }
 
 export interface IKey {
@@ -41,8 +36,6 @@ export interface IKey {
 
 /**
  * Объект, имеющий поле date.
- *
- * date Дата в формате ISO-8601.
  */
 export interface IDateble {
     date: Date

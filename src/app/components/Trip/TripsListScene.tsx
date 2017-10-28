@@ -88,7 +88,7 @@ class TripsListScene extends Component<IProps & IStateProps & IDispatchProps, nu
 }
 
 const mapStateToProps = (state: IStore): IStateProps => {
-    const storeTrips = _.values<IStoreTrip>(state.trips)
+    const storeTrips = _.values<IStoreTrip>(state.trips.items)
     return {trips: storeTrips.map(storeTrip => objectify.trip(state, storeTrip))}
 }
 

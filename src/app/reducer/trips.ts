@@ -1,6 +1,7 @@
 import {handleActions} from 'redux-actions'
 import {
     IStorable,
+    IStoreItems,
 } from 'app/models/common'
 import {
     IStoreTrip,
@@ -10,51 +11,54 @@ import {ITripAction} from '../action/trips';
 import {ITransferAction} from '../action/transfers';
 import {IPaymentAction} from '../action/payments';
 
-const defaultTrips: IStorable<IStoreTrip> = {
-    '1': {
-        id: '1',
-        name: 'Sri Lanka',
-        people: ['1', '2', '3'],
-        payments: ['1', '2', '3'],
-        transfers: ['1'],
-        settlingUp: {
-            trades: [
-                {
-                    id: '1',
-                    fromPerson: '2',
-                    toPerson: '1',
-                    count: 100
-                },
-                {
-                    id: '2',
-                    fromPerson: '3',
-                    toPerson: '1',
-                    count: 100
-                },
-            ],
-            date: new Date(2017, 9, 1, 15, 47, 0)
+const defaultTrips: IStoreItems<IStoreTrip> = {
+    items: {
+        '1': {
+            id: '1',
+            name: 'Sri Lanka',
+            people: ['1', '2', '3'],
+            payments: ['1', '2', '3'],
+            transfers: ['1'],
+            settlingUp: {
+                trades: [
+                    {
+                        id: '1',
+                        fromPerson: '2',
+                        toPerson: '1',
+                        count: 100
+                    },
+                    {
+                        id: '2',
+                        fromPerson: '3',
+                        toPerson: '1',
+                        count: 100
+                    },
+                ],
+                date: new Date(2017, 9, 1, 15, 47, 0)
+            },
+            date: new Date(2017, 9, 21)
         },
-        date: new Date(2017, 9, 21)
+        '2': {
+            id: '2',
+            name: 'Kazan',
+            people: ['4', '5', '6'],
+            payments: [],
+            transfers: [],
+            date: new Date(2016, 6, 16)
+        },
+        '3': {
+            id: '3',
+            name: 'Morocco',
+            people: ['7', '8', '9'],
+            payments: [],
+            transfers: [],
+            date: new Date(2015, 1, 1)
+        }
     },
-    '2': {
-        id: '2',
-        name: 'Kazan',
-        people: ['4', '5', '6'],
-        payments: [],
-        transfers: [],
-        date: new Date(2016, 6, 16)
-    },
-    '3': {
-        id: '3',
-        name: 'Morocco',
-        people: ['7', '8', '9'],
-        payments: [],
-        transfers: [],
-        date: new Date(2015, 1, 1)
-    }
+    current: null
 }
 
-export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction | ITransferAction | IPaymentAction): IStorable<IStoreTrip> => {
+export default (trips: IStoreItems<IStoreTrip> = defaultTrips, action: ITripAction | ITransferAction | IPaymentAction): IStoreItems<IStoreTrip> => {
     if (!action) return trips
 
     switch (action.type) {
@@ -62,16 +66,22 @@ export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction
             const {trip} = action.payload
             return {
                 ...trips,
-                [trip.id]: trip
+                items: {
+                    ...trips.items,
+                    [trip.id]: trip
+                }
             }
         }
         case 'SETTLE_UP': {
             const {tripId, settlingUp} = action.payload
             return {
                 ...trips,
-                [tripId]: {
-                    ...trips[tripId],
-                    settlingUp
+                items: {
+                    ...trips.items,
+                    [tripId]: {
+                        ...trips.items[tripId],
+                        settlingUp
+                    }
                 }
             }
         }
@@ -79,12 +89,15 @@ export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction
             const {tripId, payment} = action.payload
             return {
                 ...trips,
-                [tripId]: {
-                    ...trips[tripId],
-                    payments: [
-                        ...trips[tripId].payments,
-                        payment.id
-                    ]
+                items: {
+                    ...trips.items,
+                    [tripId]: {
+                        ...trips.items[tripId],
+                        payments: [
+                            ...trips.items[tripId].payments,
+                            payment.id
+                        ]
+                    }
                 }
             }
         }
@@ -92,18 +105,24 @@ export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction
             const {tripId, transfer} = action.payload
             return {
                 ...trips,
-                [tripId]: {
-                    ...trips[tripId],
-                    transfers: [
-                        ...trips[tripId].transfers,
-                        transfer.id
-                    ]
+                items: {
+                    ...trips.items,
+                    [tripId]: {
+                        ...trips.items[tripId],
+                        transfers: [
+                            ...trips.items[tripId].transfers,
+                            transfer.id
+                        ]
+                    }
                 }
             }
         }
         case 'SET_CURRENT_TRIP': {
-            // FIXME
-            return trips
+            const {trip} = action.payload
+            return {
+                ...trips,
+                current: trip
+            }
         }
         default: {
             return trips

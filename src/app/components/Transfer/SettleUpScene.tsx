@@ -179,7 +179,7 @@ class SettleUpScene extends Component<IProps & IStateProps & IDispatchProps, ISt
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
-    const trip = objectify.trip(state, state.trips[ownProps.tripId])
+    const trip = objectify.trip(state, state.trips.items[ownProps.tripId])
 
     return {
         tripName: trip.name,

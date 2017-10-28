@@ -190,7 +190,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
-    return {trip: objectify.trip(state, state.trips[ownProps.tripId])}
+    return {trip: objectify.trip(state, state.trips.items[ownProps.tripId])}
 }
 
 const mapDispatchToProps = (dispatch) => {

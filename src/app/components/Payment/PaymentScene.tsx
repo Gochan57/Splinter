@@ -281,7 +281,7 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
 
 const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStateProps => {
     const {tripId} = ownProps
-    const trip = objectify.trip(state, state.trips[tripId])
+    const trip = objectify.trip(state, state.trips.items[tripId])
     // Из списка всех счетов выберем редактируемый счет.
     const payment: IPayment = objectify.payment(state, state.payments.current)
     if (!payment) {
