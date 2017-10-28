@@ -1,4 +1,4 @@
-import { handleActions } from 'redux-actions'
+import {handleActions} from 'redux-actions'
 import {
     ADD_TRIP,
     SETTLE_UP,
@@ -18,8 +18,9 @@ import {
 import {
     IPayloadUpdatePayment
 } from '../models/payments'
-import {ADD_TRANSFER_CHAIN_PAYLOAD} from "app/action/transfers";
 import * as _ from 'lodash'
+import {ITripAction} from '../action/trips';
+import {ITransferAction} from '../action/transfers';
 
 const defaultTrips: IStorable<IStoreTrip> = {
     '1': {
@@ -30,9 +31,19 @@ const defaultTrips: IStorable<IStoreTrip> = {
         transfers: ['1'],
         settlingUp: {
             trades: [
-                    {id: '1', fromPerson: '2', toPerson: '1', count:  100},
-                    {id: '2', fromPerson: '3', toPerson: '1', count:  100},
-                ],
+                {
+                    id: '1',
+                    fromPerson: '2',
+                    toPerson: '1',
+                    count: 100
+                },
+                {
+                    id: '2',
+                    fromPerson: '3',
+                    toPerson: '1',
+                    count: 100
+                },
+            ],
             date: new Date(2017, 9, 1, 15, 47, 0)
         },
         date: new Date(2017, 9, 21)
@@ -55,55 +66,55 @@ const defaultTrips: IStorable<IStoreTrip> = {
     }
 }
 
-export default (state = defaultTrips, action: IAction<any>) => {
-    if (action && action.type && reducer[action.type]) {
-        return reducer[action.type](state, action.payload)
-    }
-    return state
-}
+export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction | ITransferAction): IStorable<IStoreTrip> => {
+    if (!action) return trips
 
-// Указанный тип у reducer - небольшой хак, чтобы обмануть typescript насчет нисходящего приведения типов.
-// По-хорошему, ни здесь ни сверху в типе action не должно быть указано any.
-// Однако в таком виде ts не ругается, и для каждого действия задана типизация payload, к чему и стремились.
-const reducer: {[key: string]: any} = {
-    [ADD_TRIP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadAddTrip): IStorable<IStoreTrip> {
-        const {trip} = payload
-        return {...trips, [trip.id]: trip}
-    },
-    [SETTLE_UP]: function(trips: IStorable<IStoreTrip>, payload: IPayloadSettleUpTrip): IStorable<IStoreTrip> {
-        const {tripId, settlingUp} = payload
-        return {
-            ...trips,
-            [tripId]: {
-                ...trips[tripId],
-                settlingUp
+    switch (action.type) {
+        case 'ADD_TRIP': {
+            const {trip} = action.payload
+            return {
+                ...trips,
+                [trip.id]: trip
             }
         }
-    },
-    [UPDATE_PAYMENT]: function(trips: IStorable<IStoreTrip>, payload: IPayloadUpdatePayment): IStorable<IStoreTrip> {
-        const {tripId, payment} = payload
-        return {
-            ...trips,
-            [tripId]: {
-                ...trips[tripId],
-                payments: [
-                    ...trips[tripId].payments,
-                    payment.id
-                ]
+        case 'SETTLE_UP': {
+            const {tripId, settlingUp} = action.payload
+            return {
+                ...trips,
+                [tripId]: {
+                    ...trips[tripId],
+                    settlingUp
+                }
             }
         }
-    },
-    ['ADD_TRANSFER_CHAIN']: function(trips: IStorable<IStoreTrip>, payload: ADD_TRANSFER_CHAIN_PAYLOAD): IStorable<IStoreTrip> {
-        const {tripId, transfer} = payload
-        return {
-            ...trips,
-            [tripId]: {
-                ...trips[tripId],
-                transfers: [
-                    ...trips[tripId].transfers,
-                    transfer.id
-                ]
+        case 'UPDATE_PAYMENT': {
+            const {tripId, payment} = action.payload
+            return {
+                ...trips,
+                [tripId]: {
+                    ...trips[tripId],
+                    payments: [
+                        ...trips[tripId].payments,
+                        payment.id
+                    ]
+                }
             }
+        }
+        case 'ADD_TRANSFER_CHAIN': {
+            const {tripId, transfer} = action.payload
+            return {
+                ...trips,
+                [tripId]: {
+                    ...trips[tripId],
+                    transfers: [
+                        ...trips[tripId].transfers,
+                        transfer.id
+                    ]
+                }
+            }
+        }
+        default: {
+            return trips
         }
     }
 }

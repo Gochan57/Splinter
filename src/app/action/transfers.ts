@@ -3,7 +3,6 @@ import {
     ITransfer
 } from 'app/models/transfers'
 
-export type ADD_TRANSFER_CHAIN_PAYLOAD = {tripId: string, transfer: ITransfer}
 export function addTransferChain (tripId: string, transfer: ITransfer): ITransferAction {
     return {
         type: 'ADD_TRANSFER_CHAIN',

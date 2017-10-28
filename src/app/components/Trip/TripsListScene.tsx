@@ -28,7 +28,8 @@ import {
 
 import * as _ from 'lodash'
 import {bindActionCreators} from 'redux';
-import * as tripActions from 'app/action/trips';
+import * as tripThunks from 'app/thunk/trips';
+import {ITripThunks} from 'app/thunk/trips';
 
 interface IProps {
     navigator: NavigatorStatic
@@ -38,7 +39,7 @@ interface IStateProps {
     trips: ITrip[],
 }
 
-interface IDispatchProps extends ITripActions {}
+interface IDispatchProps extends ITripThunks {}
 
 /**
  * Экран со списком путешествий.
@@ -92,7 +93,7 @@ const mapStateToProps = (state: IStore): IStateProps => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({...tripActions}, dispatch)
+    return bindActionCreators({...tripThunks}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TripsListScene)

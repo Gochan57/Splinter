@@ -8,7 +8,7 @@ import {connect} from 'react-redux'
 import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
-import { addTrip, updateTrip } from 'app/action/trips'
+import * as tripThunks from 'app/thunk/trips'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 
@@ -16,6 +16,8 @@ import TripsListScene from './TripsListScene'
 import {ITrip} from '../../models/trips';
 import {IPerson} from '../../models/people';
 import {formatValue} from '../../utils/utils';
+import {bindActionCreators} from 'redux';
+import {ITripThunks} from '../../thunk/trips';
 
 const styles = appStyles.createNewTripStyles
 const commonStyles = appStyles.commonStyles
@@ -33,10 +35,9 @@ interface IProps {
  * addTrip Функция создания путешествия.
  * updateTrip Обновить путешествие.
  */
-interface IStateProps {
-    addTrip: (name: string, people: string[]) => void,
-    updateTrip: (trip: ITrip) => void
-}
+interface IStateProps {}
+
+interface IDispatchProps extends ITripThunks {}
 
 /**
  * name Наименование путешествия.
@@ -55,9 +56,9 @@ interface IState {
 /**
  * Экран для просмотра/добавления/редактирования путешествия.
  */
-class TripScene extends Component<IProps & IStateProps, IState> {
+class TripScene extends Component<IProps & IStateProps & IDispatchProps, IState> {
 
-    constructor(props: IProps & IStateProps) {
+    constructor(props: IProps & IStateProps & IDispatchProps) {
         super(props)
         const {trip} = this.props
         this.state = {
@@ -156,4 +157,8 @@ class TripScene extends Component<IProps & IStateProps, IState> {
     }
 }
 
-export default connect(null, {addTrip, updateTrip})(TripScene)
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({...tripThunks}, dispatch)
+}
+
+export default connect(null, mapDispatchToProps)(TripScene)
