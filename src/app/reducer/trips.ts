@@ -1,15 +1,13 @@
 import {handleActions} from 'redux-actions'
 import {
-    IStorable,
     IStoreItems,
 } from 'app/models/common'
 import {
     IStoreTrip,
 } from 'app/models/trips'
+import {IAction} from '../action/index';
+
 import * as _ from 'lodash'
-import {ITripAction} from '../action/trips';
-import {ITransferAction} from '../action/transfers';
-import {IPaymentAction} from '../action/payments';
 
 const defaultTrips: IStoreItems<IStoreTrip> = {
     items: {
@@ -58,7 +56,7 @@ const defaultTrips: IStoreItems<IStoreTrip> = {
     current: null
 }
 
-export default (trips: IStoreItems<IStoreTrip> = defaultTrips, action: ITripAction | ITransferAction | IPaymentAction): IStoreItems<IStoreTrip> => {
+export default (trips: IStoreItems<IStoreTrip> = defaultTrips, action: IAction): IStoreItems<IStoreTrip> => {
     if (!action) return trips
 
     switch (action.type) {

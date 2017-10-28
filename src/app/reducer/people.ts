@@ -4,7 +4,7 @@ import {
 import {
     IStorable,
 } from 'app/models/common'
-import {ITripAction} from '../action/trips';
+import {IAction} from '../action/index';
 
 const defaultPeople: IStorable<IPerson> = {
     '1': {
@@ -45,7 +45,7 @@ const defaultPeople: IStorable<IPerson> = {
     },
 }
 
-export default (people: IStorable<IPerson> = defaultPeople, action: ITripAction): IStorable<IPerson> => {
+export default (people: IStorable<IPerson> = defaultPeople, action: IAction): IStorable<IPerson> => {
     if (!action) {
         return people
     }

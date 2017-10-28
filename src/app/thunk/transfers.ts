@@ -3,7 +3,6 @@ import {
     ITransfer
 } from 'app/models/transfers'
 import {
-    IAction,
     IStore
 } from 'app/models/common'
 import * as transferActions from 'app/action/transfers'

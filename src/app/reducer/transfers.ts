@@ -1,12 +1,10 @@
 import {
-    IAction,
-    IStorable,
     IStoreItems,
 } from 'app/models/common'
 import {
     ITransfer
 } from 'app/models/transfers'
-import {ITransferAction} from '../action/transfers';
+import {IAction} from '../action/index';
 
 const defaultTransfers: IStoreItems<ITransfer> = {
     items: {
@@ -81,7 +79,7 @@ const defaultTransfers: IStoreItems<ITransfer> = {
     current: null
 }
 
-export default (state: IStoreItems<ITransfer> = defaultTransfers, action: ITransferAction): IStoreItems<ITransfer> => {
+export default (state: IStoreItems<ITransfer> = defaultTransfers, action: IAction): IStoreItems<ITransfer> => {
     if (!action) {
         return state
     }

@@ -1,4 +1,3 @@
-import {IAction} from './common'
 import {IPerson} from './people';
 import {ITrip} from './trips';
 /**

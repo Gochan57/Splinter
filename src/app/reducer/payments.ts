@@ -1,6 +1,4 @@
 import {
-    IAction,
-    IStorable,
     IStoreItems
 } from 'app/models/common'
 import {
@@ -8,6 +6,8 @@ import {
     IStoreMember,
 } from 'app/models/payments'
 import { handleActions } from 'redux-actions'
+import {IAction} from '../action/index';
+
 import * as _ from 'lodash'
 
 const defaultPayments: IStoreItems<IStorePayment> = {
@@ -84,7 +84,7 @@ const defaultPayments: IStoreItems<IStorePayment> = {
     current: null
 }
 
-export default (state: IStoreItems<IStorePayment> = defaultPayments, action: IAction<any>): IStoreItems<IStorePayment> => {
+export default (state: IStoreItems<IStorePayment> = defaultPayments, action: IAction): IStoreItems<IStorePayment> => {
     if (!action) return state
 
     switch (action.type) {
