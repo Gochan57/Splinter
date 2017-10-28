@@ -1,30 +1,13 @@
 import {
-    ADD_PERSON,
-    ADD_TRIP,
-    SETTLE_UP,
-    UPDATE_PERSON
-} from 'app/constants'
-import {
-    IAction,
-    IStorable,
     IStore
 } from 'app/models/common'
 import {
-    IPayloadAddTrip,
-    IPayloadSettleUpTrip,
     IStoreTrip,
-    ITrip
+    ITrip,
 } from 'app/models/trips'
-import {extendConfigurationFile} from 'tslint/lib/configuration';
-import {ITransfer} from '../models/transfers';
-import {IPerson} from '../models/people';
-import {storifyTrip} from '../utils/objectify';
-
-export const tripActions = {
-    addTrip,
-    settleUp,
-}
-
+import {IPerson} from '../../models/people';
+import {storify} from '../../utils/objectify';
+import * as tripActions from 'app/redux/action/trips'
 
 // TODO Переделать на асинхронные экшны
 /**
@@ -33,7 +16,7 @@ export const tripActions = {
  * @param {string} name - Название.
  * @param {string[]} people - Участники путешествия.
  */
-export function addTrip(name: string, people: string[]) {
+export function addTrip (name: string, people: string[]) {
     return (dispatch, getState: () => IStore) => {
         // Записываем путешествие в базу
         tempPromise('4').then((tripId: string) => {
@@ -42,28 +25,39 @@ export function addTrip(name: string, people: string[]) {
                 return new Promise((resolve, reject) => {
                     tempPromise((10 + index).toString()).then((personId: string) => {
                         // Добавляем новых людей в хранилище.
-                        dispatch({
-                            type: ADD_PERSON,
-                            payload: {person: {
-                                personId,
-                                name: personName
-                            }}
-                        })
+                        dispatch(tripActions.addPerson({
+                            id: personId,
+                            name: personName
+                        }))
                         resolve(personId)
                     })
                 })
             })
             Promise.all(promises).then((personIds: string[]) => {
                 // Добавляем новое путешествие в хранилище.
-                const trip: IStoreTrip = {tripId, name, people: personIds, payments: [], transfers: [], date: new Date()}
-                const action: IAction<IPayloadAddTrip> = {
-                    type: ADD_TRIP,
-                    payload: {trip}
+                const trip: IStoreTrip = {
+                    id: tripId,
+                    name,
+                    people: personIds,
+                    payments: [],
+                    transfers: [],
+                    date: new Date()
                 }
-                dispatch(action)
+                dispatch(tripActions.addTrip(trip))
             })
         })
 
+    }
+}
+
+/**
+ * Задать текущее путешествие.
+ *
+ * @param trip - Путешествие.
+ */
+export function setCurrentTrip (trip: IStoreTrip) {
+    return (dispatch, getState: () => IStore) => {
+        dispatch(tripActions.setCurrentTrip(trip))
     }
 }
 
@@ -74,25 +68,20 @@ export function addTrip(name: string, people: string[]) {
  * @param {string} name - Название.
  * @param {IPerson[]} people - Участники путешествия.
  */
-export function updateTrip(trip: ITrip) {
+export function updateTrip (trip: ITrip) {
     return (dispatch, getState: () => IStore) => {
         // Записываем людей в базу
         let promises = trip.people.map((person: IPerson, index: number) => {
-            if(person.personId === 'NEW_PERSON') {
+            if (person.id === 'NEW_PERSON') {
                 // Записываем в базу нового человека
                 return new Promise((resolve, reject) => {
                     tempPromise((10 + index).toString()).then((personId: string) => {
                         // Добавляем новых людей в хранилище.
-                        person.personId = personId
-                        dispatch({
-                            type: ADD_PERSON,
-                            payload: {
-                                person: {
-                                    personId,
-                                    name: person.name
-                                }
-                            }
-                        })
+                        person.id = personId
+                        dispatch(tripActions.addPerson({
+                            id: personId,
+                            name: person.name
+                        }))
                         resolve(personId)
                     })
                 })
@@ -100,17 +89,12 @@ export function updateTrip(trip: ITrip) {
             else {
                 // Редактируем существующего человека
                 return new Promise((resolve, reject) => {
-                    tempPromise(person.personId).then((personId: string) => {
+                    tempPromise(person.id).then((personId: string) => {
                         // Обновляем данные о человеке в хранилище.
-                        dispatch({
-                            type: UPDATE_PERSON,
-                            payload: {
-                                person: {
-                                    personId,
-                                    name: person.name
-                                }
-                            }
-                        })
+                        dispatch(tripActions.updatePerson({
+                            id: personId,
+                            name: person.name
+                        }))
                         resolve(personId)
                     })
                 })
@@ -118,11 +102,7 @@ export function updateTrip(trip: ITrip) {
         })
         Promise.all(promises).then((personIds: string[]) => {
             // Добавляем новое путешествие в хранилище.
-            const action: IAction<IPayloadAddTrip> = {
-                type: ADD_TRIP,
-                payload: {trip: storifyTrip(trip)}
-            }
-            dispatch(action)
+            dispatch(tripActions.addTrip(storify.trip(trip)))
         })
     }
 }
@@ -132,11 +112,10 @@ export function updateTrip(trip: ITrip) {
  *
  * @param tripId - Идентификатор путешествия.
  */
-export function settleUp(tripId: string) {
+export function settleUp (tripId: string) {
     // FIXME
     return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadSettleUpTrip> = {type: SETTLE_UP, payload: {tripId, settlingUp: null}}
-        dispatch(action)
+        dispatch(tripActions.settleUp(tripId, null))
     }
 }
 
@@ -148,10 +127,17 @@ export function settleUp(tripId: string) {
  *
  * @param data - Данные, которые вернулись бы из реального вызова метода.
  */
-function tempPromise(data: any) {
+function tempPromise (data: any) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(data)
         }, 500)
     })
+}
+
+export interface ITripThunks {
+    addTrip: typeof addTrip,
+    setCurrentTrip: typeof setCurrentTrip,
+    updateTrip: typeof updateTrip,
+    settleUp: typeof settleUp,
 }

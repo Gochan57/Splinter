@@ -8,5 +8,5 @@ export default combineReducers({
     people,
     trips,
     payments,
-    transfers
+    transfers,
 })

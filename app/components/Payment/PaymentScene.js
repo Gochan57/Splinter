@@ -1,123 +1,106 @@
-import React, {
-    Component,
-} from 'react'
-import {
-    ActivityIndicator,
-    Modal,
-    StyleSheet,
-    View,
-    TouchableHighlight,
-    NavigatorStatic,
-    TextInput
-} from 'react-native'
+import React, {Component, PropTypes} from 'react'
+import {ActivityIndicator, Modal, StyleSheet, View, Text, TextInput, TouchableHighlight, SwipeableListView} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
-import * as paymentActions from 'app/redux/thunk/payments'
+import {
+    startCreatingNewPayment,
+    startUpdatingPayment,
+    changePaymentName,
+    spentEquallySwitched,
+    paidOneSwitched,
+    changeSumOnPayment,
+    paidForAllChecked,
+    setMembersOfPayment,
+    removeMemberFromPayment,
+    changeMemberSpentOnPayment,
+    changeMemberPaidOnPayment,
+    updatePayment,
+    cancelUpdatingPayment,
+} from 'app/action/payments'
 import {toNumber, toNumberNullable} from 'app/utils/utils'
+import {TEMPORARY_ID} from 'app/constants'
 import appStyles from 'app/styles'
 
-import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
+import SNavigatorBar, {IconTypes, button} from 'app/components/Common/Navigator/SNavigatorBar'
+import WideInput from 'app/components/Common/WideInput'
 import WideButton from 'app/components/Common/WideButton'
 import Switcher from 'app/components/Common/Switcher'
 import RemovableListView from 'app/components/Common/RemovableListView'
 
 import PaymentMember from './PaymentMember'
-import MembersListScene, {IMemberItem} from 'app/components/Member/MembersListScene'
-import {
-    IMember,
-    IPayment,
-    IPaymentActions
-} from 'app/models/payments'
-import {
-    IKey,
-    IStore
-} from 'app/models/common'
-import {IPerson} from 'app/models/people'
-import ModalWindow from '../Common/ModalWindow';
+import MembersListScene from '../Member/MembersListScene'
 
 import * as _ from 'lodash'
-import {ITrip} from '../../models/trips';
-import {objectify} from '../../utils/objectify';
 
 const commonStyles = appStyles.commonStyles
 
-/**
- * navigator Навигатор для перехода на другие экраны.
- * tripId Идентификатор путешествия.
- */
-export interface IPaymentSceneProps {
-    navigator: NavigatorStatic,
-    tripId: string,
-    paymentId?: string
-}
-
-/**
- * paymentId Идентификатор счета.
- * loading Страница загружается.
- * name Название счета.
- * spentEqually Потратили одинаково?
- * paidOne Платил один?
- * sum Общая сумма счета.
- * members Участника счета.
- * tripMembers Участники путешествия.
- * totalRow Строка итого.
- */
-interface IStateProps {
-    trip?: ITrip,
-    tripMembers?: IPerson[],
-    paymentId?: string,
-    loading?: boolean,
-    name?: string,
-    spentEqually?: boolean,
-    paidOne?: boolean,
-    sum?: number,
-    members?: (IMember & IKey)[],
-    totalRow?: IMember & IKey,
-}
-
-interface IDispatchProps extends IPaymentActions {}
-
-/**
- * chooseMembersModalVisible Отображать модальное окно с выбором участников счета.
- */
-interface IState {
-    chooseMembersModalVisible: boolean
-}
+const TOTAL_ROW_REF = 'totalRow'
 
 /**
  * Экран просмотра/добавления/редактирования счета.
  */
-class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatchProps, IState> {
-    static defaultProps: Partial<IStateProps> = {
+class PaymentScene extends Component {
+
+    static defaultProps: {
         loading: false,
         name: '',
         spentEqually: false,
         paidOne: false,
         sum: null,
-        members: [],
+        data: [],
     }
-
-    state: IState = {
-        chooseMembersModalVisible: false
-    }
-
-    // Хак против ts. Без переопределения refs с any нет возможности вызвать blur.
-    refs: {[key: string]: any}
 
     /**
-     * Строка "Итого"
+     * tripId Идентификатор путешествия.
+     * paymentId Идентификатор счета.
+     * loading Страница загружается.
+     * name Название счета.
+     * spentEqually Потратили одинаково?
+     * paidOne Платил один?
+     * sum Общая сумма счета.
+     * members Участника счета.
+     * tripMembers Участники путешествия.
+     * navigator Навигатор для перехода на другие экраны.
      */
-    private totalRow: PaymentMember = null
+    static propTypes = {
+        tripId: PropTypes.string.isRequired,
+        paymentId: PropTypes.string,
+        loading: PropTypes.bool,
+        name: PropTypes.string,
+        spentEqually: PropTypes.bool,
+        paidOne: PropTypes.bool,
+        sum: PropTypes.number,
+        members: PropTypes.array,
+        tripMembers: PropTypes.array,
+        navigator: PropTypes.object,
+    }
+
+    /**
+     * chooseMembersModalVisible Отображать модальное окно с выбором участников счета.
+     */
+    constructor (props) {
+        super(props)
+        this.state = {
+            chooseMembersModalVisible: false
+        }
+    }
+
+    /**
+     * Генератор ref по key для строк с участниками счета.
+     * @param key
+     */
+    refFor(key) {
+        return `ref_${key}`
+    }
 
     /**
      * Снять фокус со всех инпутов.
      */
     endEditingAllInputs = () => {
         const {members} = this.props
-        this.totalRow.blur()
+        this.refs.list.refs[this.refFor(TOTAL_ROW_REF)].blur()
         _.forEach(members, member => {
-            // приходится обращаться ко второму refs через литерал, так как по какой-то причине в тайпингах поле refs возвращает ReactInstance
             this.refs.list.refs[this.refFor(member.key)].blur()
         })
     }
@@ -131,13 +114,12 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
     }
 
     componentWillMount () {
-        // Вызовем action начала редактирования/создания нового счета
-        const {trip, paymentId} = this.props
+        const {tripId, paymentId} = this.props
         if (paymentId) {
-            this.props.startUpdatingPayment(paymentId)
+            this.props.startUpdatingPayment(tripId, paymentId)
         }
         else {
-            this.props.startCreatingNewPayment(trip)
+            this.props.startCreatingNewPayment(tripId)
         }
     }
 
@@ -147,14 +129,14 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
 
     renderNavigatorBar = () => {
         const {tripId, name, navigator} = this.props
-        const leftButton = button(IconType.BACK, () => {navigator.pop()})
+        const leftButton = button(IconTypes.back, () => {navigator.pop()})
         const title = name || 'Новый счет'
-        const rightButton = button(IconType.OK, () => {
+        const rightButton = button(IconTypes.OK, () => {
             this.props.updatePayment(tripId)
             this.props.navigator.pop()
         })
         return (
-            <NavigatorBar
+            <SNavigatorBar
                 LeftButton={leftButton}
                 Title={title}
                 RightButton={rightButton}
@@ -162,17 +144,18 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
         )
     }
 
-    renderMemberRow = (rowData: IMember & IKey) => {
-        if (rowData.key === 'totalRow') {
-            // Верхняя строка с общим счетом "Итого"
+    renderMemberRow = (rowData) => {
+        if (rowData.key === TOTAL_ROW_REF) {
+            // Верхняя строка с общим счетом
             return (
                 <PaymentMember
-                    name={rowData.person.name}
+                    name={rowData.name}
                     spent={toNumberNullable(rowData.spent)}
                     paid={toNumberNullable(rowData.paid)}
                     spentEditable={this.props.spentEqually}
                     paidEditable={false}
                     onSpentChanged={this.props.changeSumOnPayment}
+                    onPaidChanged={() => {}}
                     spentPlaceholder={null}
                     paidPlaceholder={null}
                     style={styles.totalRowStyle}
@@ -180,20 +163,20 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
                     customSpentStyle={styles.totalRowSpentStyle}
                     customPaidStyle={styles.totalRowPaidStyle}
                     key={rowData.key}
-                    ref={(ref) => {this.totalRow = ref}}/>
+                    ref={this.refFor(rowData.key)}/>
             )
         }
         return (
             <PaymentMember
-                name={rowData.person.name}
+                name={rowData.name}
                 spent={toNumberNullable(rowData.spent)}
                 paid={toNumberNullable(rowData.paid)}
                 spentEditable={!this.props.spentEqually}
                 paidEditable={!this.props.paidOne}
-                onSpentChanged={value => {this.props.changeMemberSpentOnPayment(rowData.person.id, value)}}
-                onPaidChanged={value => {this.props.changeMemberPaidOnPayment(rowData.person.id, value)}}
+                onSpentChanged={value => {this.props.changeMemberSpentOnPayment(rowData.personId, value)}}
+                onPaidChanged={value => {this.props.changeMemberPaidOnPayment(rowData.personId, value)}}
                 showPaidForAllCheck={this.props.paidOne}
-                onPaidForAllChecked={() => this.props.paidForAllChecked(rowData.person.id)}
+                onPaidForAllChecked={() => this.props.paidForAllChecked(rowData.personId)}
                 paidForAll={rowData.paidForAll}
                 key={rowData.key}
                 ref={this.refFor(rowData.key)}/>
@@ -205,9 +188,9 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
      */
     renderChooseMembersModal = () => {
         // Добавляем к каждому участнику путешествия флаг selected - выбран ли он участником этого счета
-        const members: IMemberItem[] = this.props.tripMembers.map((person: IPerson) => ({
-                person,
-                selected: _.some(this.props.members, (member: IMember) => member.person.id == person.id)
+        const members = this.props.tripMembers.map(member => ({
+                ...member,
+                selected: _.some(this.props.members, {personId: member.personId})
             })
         )
         const onChosenMembers = (personIdList) => {
@@ -215,19 +198,25 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
             this.setChooseMembersModalVisible(false)
         }
         return (
-            <ModalWindow
-                isOpened={this.state.chooseMembersModalVisible}
-                closeModal={() => {this.setChooseMembersModalVisible(false)}}
-            >
-                <View>
-                    <MembersListScene members={members} onFinish={onChosenMembers}/>
-                </View>
-            </ModalWindow>
+            <Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={this.state.chooseMembersModalVisible}
+                onRequestClose={() => {}}
+                onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                <TouchableHighlight
+                    style={[commonStyles.flex, commonStyles.centerContainer]}
+                    onPress={() => {this.setChooseMembersModalVisible(false)}}>
+                    <View style={styles.chooseMembersModalStyle}>
+                        <MembersListScene members={members} onFinish={onChosenMembers}/>
+                    </View>
+                </TouchableHighlight>
+            </Modal>
         )
     }
 
     render() {
-        const {loading, name, spentEqually, paidOne, totalRow, members} = this.props
+        const {tripId, paymentId, loading, name, spentEqually, paidOne, sum, totalRow, members} = this.props
 
         if (loading) {
             return <ActivityIndicator />
@@ -236,18 +225,17 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
         return (
             <View style={commonStyles.flex} ref={'mainView'}>
                 {this.renderNavigatorBar()}
-                <TextInput
+                <WideInput
                     placeholder='Название'
                     onChangeText={text => {this.props.changePaymentName(text)}}
                     value={name}
-                    style={commonStyles.wideInput}
                 />
                 <Switcher
                     label={'Потратили поровну'}
                     onValueChange={(value) => {
                         this.endEditingAllInputs()
                         this.props.spentEquallySwitched(value)
-                        this.totalRow.spentFocus()
+                        this.refs.list.refs[this.refFor(TOTAL_ROW_REF)].spentFocus()
                     }}
                     value={spentEqually} />
                 <Switcher
@@ -261,7 +249,7 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
                     ref={'list'}
                     data={data}
                     renderRow={this.renderMemberRow}
-                    removeRow={(personId) => this.props.removeMemberFromPayment(personId)} />
+                    removeRow={(personId) => this.props.removeMemberFromPayment(tripId, paymentId, personId)} />
                 <View style={[commonStyles.flex, commonStyles.bottomContainer]}>
                     <WideButton
                         text={'Изменить участников'}
@@ -271,40 +259,48 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
             </View>
         )
     }
-
-    /**
-     * Генератор ref по key для строк с участникам§и счета.
-     * @param key
-     */
-    private refFor = (key) => `ref_${key}`
 }
 
-const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStateProps => {
+const mapStateToProps = (state, ownProps) => {
     const {tripId} = ownProps
-    const trip = objectify.trip(state, state.trips.items[tripId])
     // Из списка всех счетов выберем редактируемый счет.
-    const payment: IPayment = objectify.payment(state, state.payments.current)
-    if (!payment) {
+    let payment = state.payments[TEMPORARY_ID]
+    if(!payment) {
         return {loading: true}
     }
+    // Все участники путешествия
+    const people = state.trips[tripId].people
     // Добавим к каждому member поле key (этого требует элемент RemovableListView) и name
-    const members: (IMember & IKey)[] = payment.members as (IMember & IKey)[]
-    console.warn('mapStateToProps PaymentScene:', state)
-    _.forEach(members, (member: IMember & IKey) => {
-        member.key = member.person.id
+    _.forEach(payment.members, member => {
+        member.key = member.personId
+        member.name = people[member.personId].name
     })
-    const tripMembers: IPerson[] = trip.people
+    const tripMembers = _.values(people)
     // Вычислим строку Итого
-    const totalPaid: number = _.reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
-    const remainsToPay: number = totalPaid - payment.sum
-    const totalRow: IMember & IKey = {person: {id: '', name: 'Общий счет'}, spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: 'totalRow'}
+    const totalPaid = _.reduce(payment.members, (sum, member) => sum + toNumber(member.paid), 0) // общее число потраченных денег
+    const remainsToPay = totalPaid - payment.sum
+    const totalRow = {name: 'Общий счет', spent: payment.sum, paid: remainsToPay ? remainsToPay : undefined, key: TOTAL_ROW_REF}
 
-    const {id, name, spentEqually, paidOne, sum} = payment
-    return {trip, tripMembers, paymentId: id, loading: false, name, spentEqually, paidOne, sum, members, totalRow}
+    const {paymentId, name, spentEqually, paidOne, sum, members} = payment
+    return {loading: false, tripId, paymentId, name, spentEqually, paidOne, sum: toNumberNullable(sum), totalRow, members, tripMembers}
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({...paymentActions}, dispatch)
+    return bindActionCreators({
+        startCreatingNewPayment,
+        startUpdatingPayment,
+        changePaymentName,
+        spentEquallySwitched,
+        paidOneSwitched,
+        changeSumOnPayment,
+        paidForAllChecked,
+        setMembersOfPayment,
+        removeMemberFromPayment,
+        changeMemberSpentOnPayment,
+        changeMemberPaidOnPayment,
+        updatePayment,
+        cancelUpdatingPayment,
+    }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaymentScene)

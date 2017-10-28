@@ -8,13 +8,12 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
 import moment from 'moment'
-import {filter, some} from 'lodash'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
-import {tripActions} from 'app/action/trips';
-import {objectifyTrip} from 'app/utils/objectify';
+import * as tripActions from 'app/redux/action/trips';
+import {objectify} from 'app/utils/objectify';
 import {IPayment} from 'app/models/payments'
 import {IStore} from 'app/models/common'
 import {
@@ -29,6 +28,8 @@ import PaymentSettleUpItem from './PaymentSettleUpItem'
 import SettleUpScene from '../Transfer/SettleUpScene'
 import TripScene from '../Trip/TripScene'
 import ModalMenu, {IModalMenuButton} from '../Common/ModalMenu'
+
+import * as _ from 'lodash'
 
 const styles =  appStyles.commonStyles
 
@@ -74,7 +75,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
      */
     _toPaymentScene = (payment?: IPayment) => {
         const {tripId} = this.props
-        const paymentId: string = payment && payment.paymentId
+        const paymentId: string = payment && payment.id
         const passProps = {tripId, paymentId}
         this.props.navigator.push({component: PaymentScene, passProps})
     }
@@ -144,12 +145,12 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
             .sort((p1, p2) => moment(p2.date, 'DD.MM.YYYY HH:MI').diff(moment(p1.date, 'DD.MM.YYYY HH:MI'), 'seconds'))
 
         const paymentsList = _payments.map(payment => {
-            const {paymentId, name, date, sum} = payment
+            const {id, name, date, sum} = payment
             return (
                 <PaymentsListItem
-                    key={paymentId}
+                    key={id}
                     tripId={this.props.tripId}
-                    id={paymentId}
+                    id={id}
                     name={name}
                     date={date}
                     sum={sum}
@@ -189,11 +190,11 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
-    return {trip: objectifyTrip(state, state.trips[ownProps.tripId])}
+    return {trip: objectify.trip(state, state.trips.items[ownProps.tripId])}
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators(tripActions, dispatch)
+    return bindActionCreators({...tripActions}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaymentsListScene)

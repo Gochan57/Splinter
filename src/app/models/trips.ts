@@ -7,14 +7,15 @@ import {IPerson} from './people';
 import {IPayment} from './payments';
 
 export interface ITripActions {
+    setCurrentTrip: (trip: IStoreTrip) => void,
     addTrip: (name: string, people: string[]) => void,
-    settleUp: (tripId: string) => void
+    settleUp: (id: string) => void
 }
 
 /**
  * Путешествие.
  *
- * tripId Идентификатор путешествия из БД.
+ * id Идентификатор путешествия из БД.
  * name Наименование.
  * people Участники путешествия.
  * payments Счета (массив идентификаторов).
@@ -22,7 +23,7 @@ export interface ITripActions {
  * settlingUp - расчет путешествия.
  */
 export interface ITrip {
-    tripId: string,
+    id: string,
     name?: string,
     people: IPerson[],
     payments: IPayment[],
@@ -34,7 +35,7 @@ export interface ITrip {
 /**
  * Путешествие (для стора).
  *
- * tripId Идентификатор путешествия из БД.
+ * id Идентификатор путешествия из БД.
  * name Наименование.
  * people Участники путешествия.
  * payments Счета (массив идентификаторов).
@@ -42,7 +43,7 @@ export interface ITrip {
  * settlingUp - расчет путешествия.
  */
 export interface IStoreTrip {
-    tripId: string,
+    id: string,
     name?: string,
     people: string[],
     payments: string[],
@@ -51,22 +52,10 @@ export interface IStoreTrip {
     date: Date
 }
 
-/**
- * Пэйлоад на создание нового путешествия.
- *
- * trip - Новое путешествие.
- */
-export interface IPayloadAddTrip {
-    trip: IStoreTrip
-}
-
-/**
- * Пэйлоад на расчет путешествия.
- *
- * tripId - Идентификатор путешествия.
- * settlingUp - Расчет путешествия.
- */
-export interface IPayloadSettleUpTrip {
-    tripId: string,
-    settlingUp: IStoreSettlingUp
+export const defaultTrip: IStoreTrip = {
+    id: null,
+    people: [],
+    payments: [],
+    transfers: [],
+    date: null,
 }
