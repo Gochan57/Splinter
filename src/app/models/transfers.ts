@@ -1,5 +1,9 @@
 import {IPerson} from './people'
 
+export interface ITransferActions {
+    addTransferChain: (tripId: string, trades: ITrade[]) => void
+}
+
 /**
  * id Идентификатор в БД.
  * fromPerson Кто передал деньги.
@@ -14,6 +18,19 @@ export interface ITrade {
 }
 
 /**
+ * id Идентификатор в БД.
+ * fromPerson Идентификатор, кто передал деньги.
+ * toPerson Идентификатор, кому передал деньги.
+ * count Количество денег.
+ */
+export interface IStoreTrade {
+    id?: string,
+    fromPerson: string,
+    toPerson: string,
+    count: number
+}
+
+/**
  * Несколько передач денег, совершенных одновременно.
  *
  * id Идентификатор в БД.
@@ -23,7 +40,29 @@ export interface ITrade {
 export interface ITransfer {
     id: string,
     trades: ITrade[],
-    date: string
+    date: Date
+}
+
+/**
+ * Расчет путешествия
+ *
+ * trades - кто, кому и сколько должен выплатить.
+ * date - дата расчета.
+ */
+export interface ISettlingUp {
+    trades: ITrade[],
+    date: Date
+}
+
+/**
+ * Расчет путешествия (для стора)
+ *
+ * trades - кто, кому и сколько должен выплатить.
+ * date - дата расчета.
+ */
+export interface IStoreSettlingUp {
+    trades: IStoreTrade[],
+    date: Date
 }
 
 export interface IPersonBalance {
@@ -34,8 +73,10 @@ export interface IPersonBalance {
 /**
  * Пэйлоад на добавление новой цепочки трансфера денег.
  *
+ * tripId - Идентификатор путешествия
  * transfer - Новая цепочка трансферов.
  */
 export interface IPayloadAddTransfer {
+    tripId: string
     transfer: ITransfer
 }

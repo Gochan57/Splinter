@@ -1,12 +1,16 @@
 import {
     IPayloadAddPerson,
+    IPayloadUpdatePerson,
     IPerson
 } from 'app/models/people'
 import {
     IAction,
     IStorable,
 } from 'app/models/common'
-import {ADD_PERSON} from '../constants';
+import {
+    ADD_PERSON,
+    UPDATE_PERSON
+} from '../constants';
 
 const defaultPeople: IStorable<IPerson> = {
     '1': {
@@ -61,5 +65,10 @@ const reducer: {[key: string]: any} = {
     [ADD_PERSON]: function(people: IStorable<IPerson>, payload: IPayloadAddPerson): IStorable<IPerson> {
         const {person} = payload
         return {...people, [person.personId]: person}
+    },
+    [UPDATE_PERSON]: function(people: IStorable<IPerson>, payload: IPayloadUpdatePerson): IStorable<IPerson> {
+        const {person} = payload
+        return {...people, [person.personId]: person}
     }
 }
+

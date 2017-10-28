@@ -74,7 +74,7 @@ const defaultTransfers: IStorable<ITransfer> = {
             },
 
         ],
-        date: '10.02.2017 14:55'
+        date: new Date(2017, 2, 10, 14, 55, 0)
     },
 }
 

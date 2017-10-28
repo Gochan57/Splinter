@@ -1,4 +1,16 @@
-import {ITransfer} from './transfers';
+import {
+    ISettlingUp,
+    IStoreSettlingUp,
+    ITransfer,
+} from './transfers';
+import {IPerson} from './people';
+import {IPayment} from './payments';
+
+export interface ITripActions {
+    addTrip: (name: string, people: string[]) => void,
+    settleUp: (tripId: string) => void
+}
+
 /**
  * Путешествие.
  *
@@ -7,13 +19,36 @@ import {ITransfer} from './transfers';
  * people Участники путешествия.
  * payments Счета (массив идентификаторов).
  * transfers Расчёты (массив идентификаторов)
+ * settlingUp - расчет путешествия.
  */
 export interface ITrip {
     tripId: string,
     name?: string,
+    people: IPerson[],
+    payments: IPayment[],
+    transfers: ITransfer[],
+    settlingUp?: ISettlingUp,
+    date: Date
+}
+
+/**
+ * Путешествие (для стора).
+ *
+ * tripId Идентификатор путешествия из БД.
+ * name Наименование.
+ * people Участники путешествия.
+ * payments Счета (массив идентификаторов).
+ * transfers Расчёты (массив идентификаторов)
+ * settlingUp - расчет путешествия.
+ */
+export interface IStoreTrip {
+    tripId: string,
+    name?: string,
     people: string[],
     payments: string[],
-    transfers: string[]
+    transfers: string[],
+    settlingUp?: IStoreSettlingUp,
+    date: Date
 }
 
 /**
@@ -22,5 +57,16 @@ export interface ITrip {
  * trip - Новое путешествие.
  */
 export interface IPayloadAddTrip {
-    trip: ITrip
+    trip: IStoreTrip
+}
+
+/**
+ * Пэйлоад на расчет путешествия.
+ *
+ * tripId - Идентификатор путешествия.
+ * settlingUp - Расчет путешествия.
+ */
+export interface IPayloadSettleUpTrip {
+    tripId: string,
+    settlingUp: IStoreSettlingUp
 }

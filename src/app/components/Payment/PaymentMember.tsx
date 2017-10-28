@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
 import {
+    formatValue,
     round,
     toNumberNullable
 } from 'app/utils/utils'
@@ -79,19 +80,11 @@ export default class PaymentMember extends Component<IProps, IState> {
     constructor (props: IProps) {
         super(props)
         this.state = {
-            spentValue: this.formatValue(props.spent),
-            paidValue: this.formatValue(props.paid),
+            spentValue: formatValue(props.spent),
+            paidValue: formatValue(props.paid),
         }
     }
 
-    /**
-     * Форматирование числового значения для отображения в текстовом поле.
-     */
-    formatValue = (value: number): string => {
-        if (value === undefined) return undefined
-        if (value === null) return null
-        return round(value, 2).toString()
-    }
 
     /**
      * Снять фокус со всех инпутов.
@@ -115,8 +108,8 @@ export default class PaymentMember extends Component<IProps, IState> {
     componentWillReceiveProps (nextProps) {
         // Преобразуем числовые значения в отформатированные строковые.
         this.setState({
-            spentValue: this.formatValue(nextProps.spent),
-            paidValue: this.formatValue(nextProps.paid),
+            spentValue: formatValue(nextProps.spent),
+            paidValue: formatValue(nextProps.paid),
         })
     }
 

@@ -1,4 +1,7 @@
-import {ITrip} from './trips'
+import {
+    IStoreTrip,
+    ITrip
+} from './trips'
 import {IPayment} from './payments'
 import {IPerson} from './people'
 import {ITransfer} from './transfers'
@@ -14,7 +17,7 @@ export interface IAction<T> {
 
 export interface IStore {
     people: IStorable<IPerson>,
-    trips: IStorable<ITrip>,
+    trips: IStorable<IStoreTrip>,
     payments: IStorable<IPayment>,
     transfers: IStorable<ITransfer>
 }
@@ -29,5 +32,5 @@ export interface IKey {
  * date Дата в формате ISO-8601.
  */
 export interface IDateble {
-    date: string
+    date: Date
 }

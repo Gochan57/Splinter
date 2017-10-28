@@ -13,18 +13,22 @@ import PaymentsListScene from 'app/components/Payment/PaymentsListScene'
 
 import TripScene from './TripScene'
 import TripsListItem from './TripsListItem'
-import {ITrip} from 'app/models/trips'
+import {
+    IStoreTrip,
+    ITrip
+} from 'app/models/trips'
 import {
     IStorable,
     IStore
 } from 'app/models/common'
+import {objectifyTrip} from '../../utils/objectify';
 
 interface IProps {
     navigator: NavigatorStatic
 }
 
 interface IStateProps {
-    trips: IStorable<ITrip>,
+    trips: ITrip[],
 }
 
 /**
@@ -57,8 +61,7 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
         const {trips} = this.props
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-        const rows: ITrip[] = toArrayWithKeys<ITrip>(trips)
-        const dataSource = ds.cloneWithRows(rows)
+        const dataSource = ds.cloneWithRows(trips)
 
         return (
             <View style={{flex: 1, justifyContent: 'space-between'}}>
@@ -74,7 +77,8 @@ class TripsListScene extends Component<IProps & IStateProps, null> {
 }
 
 const mapStateToProps = (state: IStore): IStateProps => {
-    return {trips: state.trips}
+    const storeTrips = toArrayWithKeys<IStoreTrip>(state.trips, 'tripId')
+    return {trips: storeTrips.map(storeTrip => objectifyTrip(state, storeTrip))}
 }
 
 export default connect(mapStateToProps)(TripsListScene)

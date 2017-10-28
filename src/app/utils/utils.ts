@@ -147,6 +147,26 @@ export function round(value, n: number): number {
 }
 
 /**
+ * Форматирование числового значения для отображения в текстовом поле.
+ */
+export function formatValue (value: number): string {
+    if (value === undefined) return undefined
+    if (value === null) return null
+    return round(value, 2).toString()
+}
+
+/**
+ * Преобразование даты в строку формата DD.MM.YYYY HH:MM
+ * @param d
+ * @returns {string}
+ */
+export function dateToString(d: Date): string {
+    // return `${d.toLocaleDateString()} ${d.getHours()}:${d.getMinutes()}`
+    const t: string = d.toLocaleTimeString()
+    return `${d.toLocaleDateString()} ${t.substr(0, t.length-3)}`
+}
+
+/**
  * Логирует ошибку.
  *
  * @param params Все выведется в консоль.

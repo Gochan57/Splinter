@@ -44,7 +44,7 @@ const defaultPayments: IStorable<IPayment> = {
     '1': {
         paymentId: '1',
         name: 'Супермаркет',
-        date: '01.02.2017 17:01:24',
+        date: new Date(2017, 2, 1, 17, 1, 24),
         members: [
             {personId: '1', spent: 100, paid: 0},
             {personId: '2', spent: 100, paid: 200, paidForAll: true},
@@ -56,7 +56,7 @@ const defaultPayments: IStorable<IPayment> = {
     '2': {
         paymentId: '2',
         name: 'Обучение у Сусы',
-        date: '01.02.2017 10:34:12',
+        date: new Date(2017, 2, 1, 10, 34, 12),
         members: [
             {personId: '1', spent: 50, paid: 0},
             {personId: '2', spent: 50, paid: 150, paidForAll: true},
@@ -69,7 +69,7 @@ const defaultPayments: IStorable<IPayment> = {
     '3': {
         paymentId: '3',
         name: 'Такси',
-        date: '02.02.2017 12:56:01',
+        date: new Date(2017, 2, 2, 12, 56, 1),
         members: [
             {personId: '1', spent: 200, paid: 400, paidForAll: true},
             {personId: '3', spent: 200, paid: 0},
