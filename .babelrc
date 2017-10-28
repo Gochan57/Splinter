@@ -1,4 +1,9 @@
 {
     "sourceMaps": true,
-    "presets": ["react-native"]
+    "presets": ["react-native"],
+    "plugins": [
+        ["module-alias", [
+            { "src": "./artifacts/app", "expose": "app" }
+        ]]
+    ]
 }

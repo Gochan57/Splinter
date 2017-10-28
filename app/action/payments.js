@@ -16,8 +16,8 @@ import {
     CANCEL_UPDATING_PAYMENT,
     TEMPORARY_ID,
 } from '../constants'
-import {toArrayWithKeys, toNumber, logError} from 'app/utils/utils'
-import {find, map, reduce} from 'lodash'
+import {toNumber} from 'app/utils/utils'
+import * as _ from 'lodash'
 
 /**
  * Начало создания нового счета.
@@ -27,9 +27,8 @@ import {find, map, reduce} from 'lodash'
 export function startCreatingNewPayment(tripId) {
     return (dispatch, getState) => {
         // Составляем массив всех участников путешествия
-        //const members = toArrayWithKeys(getState().trips[tripId].people, 'personId')
         const people = getState().trips[tripId].people
-        const members = people && map(Object.keys(people), personId => ({personId}))
+        const members = people && _.map(Object.keys(people), personId => ({personId}))
         dispatch({
             type: START_UPDATING_PAYMENT,
             payload: {tripId, members}
@@ -211,10 +210,10 @@ export function changePaidToPayForAll(personId) {
     return (dispatch, getState) => {
         // считаем сумму потраченных денег
         const members = getState().payments[TEMPORARY_ID].members
-        const sumSpent = reduce(members, (sum, member) => sum + toNumber(member.spent), 0)
+        const sumSpent = _.reduce(members, (sum, member) => sum + toNumber(member.spent), 0)
         // если personId не передан, можно вычислить его из метки paidForAll у участника счета
         if (!personId) {
-            personId = find(members, member => member.paidForAll).personId
+            personId = _.find(members, member => member.paidForAll).personId
         }
         dispatch ({
             type: CHANGE_PAID_TO_PAY_FOR_ALL,
@@ -234,7 +233,7 @@ export function changeMemberSpentOnPayment(personId, value) {
     return (dispatch, getState) => {
         // считаем сумму редактируемого счета
         const payment = getState().payments[TEMPORARY_ID]
-        const sum = reduce(payment.members, (sum, member) => {
+        const sum = _.reduce(payment.members, (sum, member) => {
             const spent = (member.personId == personId ? toNumber(value) : toNumber(member.spent))
             return sum + spent
         }, 0)
