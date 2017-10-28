@@ -74,7 +74,7 @@ export namespace objectify {
         }
         const people = storeTrip.people ? storeTrip.people.map(id => state.people[id]) : null
         const payments = storeTrip.payments ? storeTrip.payments.map(id => objectify.payment(state, state.payments.items[id])) : null
-        const transfers = storeTrip.transfers ? storeTrip.transfers.map(id => state.transfers[id]) : null
+        const transfers = storeTrip.transfers ? storeTrip.transfers.map(id => state.transfers.items[id]) : null
         return {
             id: storeTrip.id,
             name: storeTrip.name,

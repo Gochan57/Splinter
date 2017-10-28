@@ -27,16 +27,9 @@ export interface IStore {
     people: IStorable<IPerson>,
     trips: IStoreItems<IStoreTrip>,
     payments: IStoreItems<IStorePayment>,
-    transfers: IStorable<ITransfer>,
+    transfers: IStoreItems<ITransfer>,
 }
 
 export interface IKey {
     key: string
-}
-
-/**
- * Объект, имеющий поле date.
- */
-export interface IDateble {
-    date: Date
 }
