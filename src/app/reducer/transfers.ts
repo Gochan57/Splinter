@@ -2,11 +2,10 @@ import {
     IAction,
     IStorable,
 } from 'app/models/common'
-import {ADD_TRANSFER_CHAIN} from 'app/constants'
 import {
-    IPayloadAddTransfer,
     ITransfer
 } from 'app/models/transfers'
+import {ITransferAction} from '../action/transfers';
 
 const defaultTransfers: IStorable<ITransfer> = {
     '1': {
@@ -78,19 +77,14 @@ const defaultTransfers: IStorable<ITransfer> = {
     },
 }
 
-export default (state = defaultTransfers, action: IAction<any>) => {
-    if (action && action.type && reducer[action.type]) {
-        return reducer[action.type](state, action.payload)
+export default (state: IStorable<ITransfer> = defaultTransfers, action: ITransferAction): IStorable<ITransfer> => {
+    if (action) {
+        switch (action.type) {
+            case 'ADD_TRANSFER_CHAIN': {
+                const {transfer} = action.payload
+                return {...state, [transfer.id]: transfer}
+            }
+        }
     }
     return state
-}
-
-// Указанный тип у reducer - небольшой хак, чтобы обмануть typescript насчет нисходящего приведения типов.
-// По-хорошему, ни здесь ни сверху в типе action не должно быть указано any.
-// Однако в таком виде ts не ругается, и для каждого действия задана типизация payload, к чему и стремились.
-const reducer: {[key: string]: any} = {
-    [ADD_TRANSFER_CHAIN]: function(transferChains: IStorable<ITransfer>, payload: IPayloadAddTransfer): IStorable<ITransfer> {
-        const {transfer} = payload
-        return {...transferChains, [transfer.id]: transfer}
-    }
 }

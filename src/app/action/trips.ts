@@ -23,13 +23,6 @@ import {ITransfer} from '../models/transfers';
 import {IPerson} from '../models/people';
 import {storify} from '../utils/objectify';
 
-export const tripActions = {
-    setCurrentTrip,
-    addTrip,
-    settleUp,
-}
-
-
 // TODO Переделать на асинхронные экшны
 /**
  * Создание нового путешествие.

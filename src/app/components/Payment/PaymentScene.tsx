@@ -13,9 +13,7 @@ import {
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
-import {
-    paymentActions,
-} from 'app/action/payments'
+import * as paymentActions from 'app/action/payments'
 import {toNumber, toNumberNullable} from 'app/utils/utils'
 import appStyles from 'app/styles'
 
@@ -306,7 +304,7 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators(paymentActions, dispatch)
+    return bindActionCreators({...paymentActions}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PaymentScene)

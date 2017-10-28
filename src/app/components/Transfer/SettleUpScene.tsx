@@ -15,11 +15,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {
     ISettlingUp,
     ITrade,
-    ITransferActions
 } from 'app/models/transfers';
 import {ListItem} from 'react-native-material-ui'
 
-import {tripActions} from 'app/action/trips';
 import {
     formatValue,
     toNumber
@@ -27,7 +25,7 @@ import {
 
 import {IStore} from 'app/models/common';
 import {objectify} from 'app/utils/objectify';
-import * as transferActions from 'app/action/transfers'
+import * as transferThunks from 'app/thunk/transfers'
 
 import {
     button,
@@ -36,6 +34,7 @@ import {
 } from '../Common/Navigator/NavigatorBar';
 
 import * as _ from 'lodash'
+import {ITransferThunks} from 'app/thunk/transfers';
 
 /**
  * navigator - Навигатор для перехода на другие экраны.
@@ -55,7 +54,7 @@ interface IStateProps {
     settlingUp: ISettlingUp,
 }
 
-interface IDispatchProps extends ITransferActions {}
+interface IDispatchProps extends ITransferThunks {}
 
 interface IEditedTrade {
     count: number,
@@ -189,7 +188,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({...transferActions}, dispatch)
+    return bindActionCreators({...transferThunks}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettleUpScene)

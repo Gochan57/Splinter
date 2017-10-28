@@ -1,6 +1,5 @@
 import { handleActions } from 'redux-actions'
 import {
-    ADD_TRANSFER_CHAIN,
     ADD_TRIP,
     SETTLE_UP,
     UPDATE_PAYMENT
@@ -19,8 +18,8 @@ import {
 import {
     IPayloadUpdatePayment
 } from '../models/payments'
+import {ADD_TRANSFER_CHAIN_PAYLOAD} from "app/action/transfers";
 import * as _ from 'lodash'
-import {IPayloadAddTransfer} from '../models/transfers';
 
 const defaultTrips: IStorable<IStoreTrip> = {
     '1': {
@@ -94,7 +93,7 @@ const reducer: {[key: string]: any} = {
             }
         }
     },
-    [ADD_TRANSFER_CHAIN]: function(trips: IStorable<IStoreTrip>, payload: IPayloadAddTransfer): IStorable<IStoreTrip> {
+    ['ADD_TRANSFER_CHAIN']: function(trips: IStorable<IStoreTrip>, payload: ADD_TRANSFER_CHAIN_PAYLOAD): IStorable<IStoreTrip> {
         const {tripId, transfer} = payload
         return {
             ...trips,
@@ -108,5 +107,3 @@ const reducer: {[key: string]: any} = {
         }
     }
 }
-
-

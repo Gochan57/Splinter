@@ -48,31 +48,12 @@ import * as _ from 'lodash'
 import {ITrip} from '../models/trips';
 import {IPerson} from '../models/people';
 
-export const paymentActions = {
-    startCreatingNewPayment,
-    setCurrentPayment,
-    startUpdatingPayment,
-    changePaymentName,
-    setMembersOfPayment,
-    removeMemberFromPayment,
-    spentEquallySwitched,
-    paidOneSwitched,
-    resetPaidForAll,
-    changeSumOnPayment,
-    splitSumByMembers,
-    paidForAllChecked,
-    changePaidToPayForAll,
-    changeMemberSpentOnPayment,
-    changeMemberPaidOnPayment,
-    updatePayment,
-    cancelUpdatingPayment,
-}
-
 /**
  * Начало создания нового счета.
  *
  * @param trip - Путешествия.
  */
+export type startCreatingNewPayment = (trip: ITrip) => void
 export function startCreatingNewPayment(trip: ITrip) {
     return (dispatch, getState: () => IStore) => {
         // Составляем массив всех участников путешествия

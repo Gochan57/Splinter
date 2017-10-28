@@ -24,11 +24,11 @@ import {
 import {
     objectify,
     storify
-} from '../../utils/objectify';
+} from 'app/utils/objectify';
 
 import * as _ from 'lodash'
 import {bindActionCreators} from 'redux';
-import {tripActions} from '../../action/trips';
+import * as tripActions from 'app/action/trips';
 
 interface IProps {
     navigator: NavigatorStatic
@@ -92,7 +92,7 @@ const mapStateToProps = (state: IStore): IStateProps => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators(tripActions, dispatch)
+    return bindActionCreators({...tripActions}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TripsListScene)
