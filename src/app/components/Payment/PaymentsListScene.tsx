@@ -13,7 +13,7 @@ import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/Na
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
 import {tripActions} from 'app/action/trips';
-import {objectifyTrip} from 'app/utils/objectify';
+import {objectify} from 'app/utils/objectify';
 import {IPayment} from 'app/models/payments'
 import {IStore} from 'app/models/common'
 import {
@@ -190,7 +190,7 @@ class PaymentsListScene extends Component<IProps & IStateProps & IDispatchProps,
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
-    return {trip: objectifyTrip(state, state.trips[ownProps.tripId])}
+    return {trip: objectify.trip(state, state.trips[ownProps.tripId])}
 }
 
 const mapDispatchToProps = (dispatch) => {

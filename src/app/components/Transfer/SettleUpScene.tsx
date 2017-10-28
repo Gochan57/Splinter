@@ -26,7 +26,7 @@ import {
 } from 'app/utils/utils';
 
 import {IStore} from 'app/models/common';
-import {objectifyTrip} from 'app/utils/objectify';
+import {objectify} from 'app/utils/objectify';
 import * as transferActions from 'app/action/transfers'
 
 import {
@@ -180,7 +180,7 @@ class SettleUpScene extends Component<IProps & IStateProps & IDispatchProps, ISt
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
-    const trip = objectifyTrip(state, state.trips[ownProps.tripId])
+    const trip = objectify.trip(state, state.trips[ownProps.tripId])
 
     return {
         tripName: trip.name,

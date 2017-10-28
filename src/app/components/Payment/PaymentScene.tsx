@@ -40,10 +40,7 @@ import ModalWindow from '../Common/ModalWindow';
 
 import * as _ from 'lodash'
 import {ITrip} from '../../models/trips';
-import {
-    objectifyPayment,
-    objectifyTrip
-} from '../../utils/objectify';
+import {objectify} from '../../utils/objectify';
 
 const commonStyles = appStyles.commonStyles
 
@@ -286,9 +283,9 @@ class PaymentScene extends Component<IPaymentSceneProps & IStateProps & IDispatc
 
 const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStateProps => {
     const {tripId} = ownProps
-    const trip = objectifyTrip(state, state.trips[tripId])
+    const trip = objectify.trip(state, state.trips[tripId])
     // Из списка всех счетов выберем редактируемый счет.
-    const payment: IPayment = objectifyPayment(state, state.current.payment)
+    const payment: IPayment = objectify.payment(state, state.current.payment)
     if (!payment) {
         return {loading: true}
     }

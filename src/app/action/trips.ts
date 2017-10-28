@@ -21,7 +21,7 @@ import {
 import {extendConfigurationFile} from 'tslint/lib/configuration';
 import {ITransfer} from '../models/transfers';
 import {IPerson} from '../models/people';
-import {storifyTrip} from '../utils/objectify';
+import {storify} from '../utils/objectify';
 
 export const tripActions = {
     setCurrentTrip,
@@ -139,7 +139,7 @@ export function updateTrip(trip: ITrip) {
             // Добавляем новое путешествие в хранилище.
             const action: IAction<IPayloadAddTrip> = {
                 type: ADD_TRIP,
-                payload: {trip: storifyTrip(trip)}
+                payload: {trip: storify.trip(trip)}
             }
             dispatch(action)
         })

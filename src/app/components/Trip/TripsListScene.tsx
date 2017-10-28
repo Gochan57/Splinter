@@ -22,8 +22,8 @@ import {
     IStore
 } from 'app/models/common'
 import {
-    objectifyTrip,
-    storifyTrip
+    objectify,
+    storify
 } from '../../utils/objectify';
 
 import * as _ from 'lodash'
@@ -47,7 +47,7 @@ class TripsListScene extends Component<IProps & IStateProps & IDispatchProps, nu
     _toPaymentsListScene = (trip: ITrip) => {
         const {navigator} = this.props
         return () => {
-            this.props.setCurrentTrip(storifyTrip(trip))
+            this.props.setCurrentTrip(storify.trip(trip))
             navigator.push({component: PaymentsListScene, passProps: {tripId: trip.id}})
         }
     }
@@ -88,7 +88,7 @@ class TripsListScene extends Component<IProps & IStateProps & IDispatchProps, nu
 
 const mapStateToProps = (state: IStore): IStateProps => {
     const storeTrips = _.values<IStoreTrip>(state.trips)
-    return {trips: storeTrips.map(storeTrip => objectifyTrip(state, storeTrip))}
+    return {trips: storeTrips.map(storeTrip => objectify.trip(state, storeTrip))}
 }
 
 const mapDispatchToProps = (dispatch) => {
