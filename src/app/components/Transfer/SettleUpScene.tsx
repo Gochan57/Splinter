@@ -25,7 +25,7 @@ import {
 
 import {IStore} from 'app/models/common';
 import {objectify} from 'app/utils/objectify';
-import * as transferThunks from 'app/thunk/transfers'
+import * as transferThunks from 'app/redux/thunk/transfers'
 
 import {
     button,
@@ -34,7 +34,7 @@ import {
 } from '../Common/Navigator/NavigatorBar';
 
 import * as _ from 'lodash'
-import {ITransferThunks} from 'app/thunk/transfers';
+import {ITransferThunks} from 'app/redux/thunk/transfers';
 
 /**
  * navigator - Навигатор для перехода на другие экраны.

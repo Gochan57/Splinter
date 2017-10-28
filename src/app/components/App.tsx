@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
 import { ThemeProvider } from 'react-native-material-ui'
-import store from 'app/store'
+import store from 'app/redux/store'
 import SNavigator from 'app/components/Common/Navigator/SNavigator'
 import TripsListScene from './Trip/TripsListScene'
 

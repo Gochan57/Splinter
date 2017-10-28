@@ -10,9 +10,9 @@ import {
     defaultPayment,
 } from 'app/models/payments'
 import * as _ from 'lodash'
-import {ITrip} from '../models/trips';
-import {IPerson} from '../models/people';
-import * as paymentActions from 'app/action/payments'
+import {ITrip} from '../../models/trips';
+import {IPerson} from '../../models/people';
+import * as paymentActions from 'app/redux/action/payments'
 
 /**
  * Начало создания нового счета.

@@ -5,9 +5,9 @@ import {
     IStoreTrip,
     ITrip,
 } from 'app/models/trips'
-import {IPerson} from '../models/people';
-import {storify} from '../utils/objectify';
-import * as tripActions from 'app/action/trips'
+import {IPerson} from '../../models/people';
+import {storify} from '../../utils/objectify';
+import * as tripActions from 'app/redux/action/trips'
 
 // TODO Переделать на асинхронные экшны
 /**

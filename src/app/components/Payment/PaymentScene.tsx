@@ -13,7 +13,7 @@ import {
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
-import * as paymentActions from 'app/thunk/payments'
+import * as paymentActions from 'app/redux/thunk/payments'
 import {toNumber, toNumberNullable} from 'app/utils/utils'
 import appStyles from 'app/styles'
 

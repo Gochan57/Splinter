@@ -194,22 +194,6 @@ export function cancelUpdatingPayment (): IPaymentAction {
     }
 }
 
-/**
- * Функция для тестирования поведения системы при задержках вызовов.
- * Например, пока нет базы, можно вместо вызова метода сохранения в базу
- * вызвать этот метод, передав в него данные, которые вернулись бы из базы.
- * Метод вернет промис с задержкой в полсекунды.
- *
- * @param data - Данные, которые вернулись бы из реального вызова метода.
- */
-function tempPromise (data: any) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(data)
-        }, 500)
-    })
-}
-
 export type IPaymentAction =
     {
         type: 'SET_CURRENT_PAYMENT',

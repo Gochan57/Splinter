@@ -1,11 +1,11 @@
 import {
     IStoreTrip,
 } from 'app/models/trips'
-import {IPerson} from '../models/people';
+import {IPerson} from '../../models/people';
 import {
     ISettlingUp,
     IStoreSettlingUp
-} from '../models/transfers';
+} from '../../models/transfers';
 
 // TODO Переделать на асинхронные экшны
 /**

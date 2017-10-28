@@ -12,7 +12,7 @@ import moment from 'moment'
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 import WideButton from 'app/components/Common/WideButton'
 import appStyles from 'app/styles'
-import * as tripActions from 'app/action/trips';
+import * as tripActions from 'app/redux/action/trips';
 import {objectify} from 'app/utils/objectify';
 import {IPayment} from 'app/models/payments'
 import {IStore} from 'app/models/common'

@@ -8,7 +8,7 @@ import {connect} from 'react-redux'
 import {ListItem} from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import appStyles from 'app/styles'
-import * as tripThunks from 'app/thunk/trips'
+import * as tripThunks from 'app/redux/thunk/trips'
 
 import NavigatorBar, {IconType, button} from 'app/components/Common/Navigator/NavigatorBar'
 
@@ -17,7 +17,7 @@ import {ITrip} from '../../models/trips';
 import {IPerson} from '../../models/people';
 import {formatValue} from '../../utils/utils';
 import {bindActionCreators} from 'redux';
-import {ITripThunks} from '../../thunk/trips';
+import {ITripThunks} from '../../redux/thunk/trips';
 
 const styles = appStyles.createNewTripStyles
 const commonStyles = appStyles.commonStyles

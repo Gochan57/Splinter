@@ -5,7 +5,7 @@ import {
 import {
     IStore
 } from 'app/models/common'
-import * as transferActions from 'app/action/transfers'
+import * as transferActions from 'app/redux/action/transfers'
 
 type ADD_TRANSFER_CHAIN = (tripId: string, trades: ITrade[]) => (dispatch: Function, getState: () => IStore) => void
 export function addTransferChain(tripId: string, trades: ITrade[]) {

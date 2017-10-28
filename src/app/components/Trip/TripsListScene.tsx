@@ -15,10 +15,8 @@ import TripsListItem from './TripsListItem'
 import {
     IStoreTrip,
     ITrip,
-    ITripActions
 } from 'app/models/trips'
 import {
-    IStorable,
     IStore
 } from 'app/models/common'
 import {
@@ -28,8 +26,8 @@ import {
 
 import * as _ from 'lodash'
 import {bindActionCreators} from 'redux';
-import * as tripThunks from 'app/thunk/trips';
-import {ITripThunks} from 'app/thunk/trips';
+import * as tripThunks from 'app/redux/thunk/trips';
+import {ITripThunks} from 'app/redux/thunk/trips';
 
 interface IProps {
     navigator: NavigatorStatic
