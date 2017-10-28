@@ -77,14 +77,20 @@ const defaultTransfers: IStorable<ITransfer> = {
     },
 }
 
-export default (state: IStorable<ITransfer> = defaultTransfers, action: ITransferAction): IStorable<ITransfer> => {
-    if (action) {
-        switch (action.type) {
-            case 'ADD_TRANSFER_CHAIN': {
-                const {transfer} = action.payload
-                return {...state, [transfer.id]: transfer}
+export default (transfers: IStorable<ITransfer> = defaultTransfers, action: ITransferAction): IStorable<ITransfer> => {
+    if (!action) {
+        return transfers
+    }
+    switch (action.type) {
+        case 'ADD_TRANSFER_CHAIN': {
+            const {transfer} = action.payload
+            return {
+                ...transfers,
+                [transfer.id]: transfer
             }
         }
+        default: {
+            return transfers
+        }
     }
-    return state
 }

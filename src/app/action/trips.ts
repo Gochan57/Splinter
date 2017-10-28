@@ -1,26 +1,11 @@
 import {
-    ADD_PERSON,
-    ADD_TRIP,
-    SET_CURRENT_TRIP,
-    SETTLE_UP,
-    UPDATE_PERSON
-} from 'app/constants'
-import {
-    IAction,
-    IStorable,
-    IStore
-} from 'app/models/common'
-import {
-    IPayloadAddTrip,
-    IPayloadSetCurrentTrip,
-    IPayloadSettleUpTrip,
     IStoreTrip,
-    ITrip,
-    ITripActions
 } from 'app/models/trips'
 import {IPerson} from '../models/people';
-import {storify} from '../utils/objectify';
-import {IStoreSettlingUp} from '../models/transfers';
+import {
+    ISettlingUp,
+    IStoreSettlingUp
+} from '../models/transfers';
 
 // TODO Переделать на асинхронные экшны
 /**
@@ -30,6 +15,18 @@ import {IStoreSettlingUp} from '../models/transfers';
  * @param {string[]} people - Участники путешествия.
  */
 export function addTrip (trip: IStoreTrip): ITripAction {
+    return {
+        type: 'ADD_TRIP',
+        payload: {trip}
+    }
+}
+
+/**
+ * Редактирование существующего путешествия.
+ *
+ * @param trip - Путешествие.
+ */
+export function updateTrip (trip: IStoreTrip): ITripAction {
     return {
         type: 'ADD_TRIP',
         payload: {trip}
@@ -50,6 +47,18 @@ export function addPerson (person: IPerson): ITripAction {
 }
 
 /**
+ * Добавить человека в хранилище.
+ * @param person - Путешественник.
+ */
+export function updatePerson (person: IPerson): ITripAction {
+    return {
+        type: 'UPDATE_PERSON',
+        payload: {
+            person
+        }
+    }
+}
+/**
  * Задать текущее путешествие.
  *
  * @param trip - Путешествие.
@@ -62,26 +71,14 @@ export function setCurrentTrip (trip: IStoreTrip): ITripAction {
 }
 
 /**
- * Редактирование существующего путешествия.
- *
- * @param trip - Путешествие.
- */
-export function updateTrip (trip: IStoreTrip): ITripAction {
-    return {
-        type: ADD_TRIP,
-        payload: {trip}
-    }
-}
-
-/**
  * Расчет путешествия.
  *
  * @param tripId - Идентификатор путешествия.
  */
-export function settleUp (tripId: string): ITripAction {
+export function settleUp (tripId: string, settlingUp: ISettlingUp): ITripAction {
     //FIXME
     return {
-        type: SETTLE_UP,
+        type: 'SETTLE_UP',
         payload: {
             tripId,
             settlingUp: null

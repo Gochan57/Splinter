@@ -1,16 +1,10 @@
 import {
-    IPayloadAddPerson,
-    IPayloadUpdatePerson,
     IPerson
 } from 'app/models/people'
 import {
-    IAction,
     IStorable,
 } from 'app/models/common'
-import {
-    ADD_PERSON,
-    UPDATE_PERSON
-} from '../constants';
+import {ITripAction} from '../action/trips';
 
 const defaultPeople: IStorable<IPerson> = {
     '1': {
@@ -51,24 +45,22 @@ const defaultPeople: IStorable<IPerson> = {
     },
 }
 
-export default (state = defaultPeople, action: IAction<any>) => {
-    if (action && action.type && reducer[action.type]) {
-        return reducer[action.type](state, action.payload)
+export default (people: IStorable<IPerson> = defaultPeople, action: ITripAction): IStorable<IPerson> => {
+    if (!action) {
+        return people
     }
-    return state
-}
 
-// Указанный тип у reducer - небольшой хак, чтобы обмануть typescript насчет нисходящего приведения типов.
-// По-хорошему, ни здесь ни сверху в типе action не должно быть указано any.
-// Однако в таком виде ts не ругается, и для каждого действия задана типизация payload, к чему и стремились.
-const reducer: {[key: string]: any} = {
-    [ADD_PERSON]: function(people: IStorable<IPerson>, payload: IPayloadAddPerson): IStorable<IPerson> {
-        const {person} = payload
-        return {...people, [person.id]: person}
-    },
-    [UPDATE_PERSON]: function(people: IStorable<IPerson>, payload: IPayloadUpdatePerson): IStorable<IPerson> {
-        const {person} = payload
-        return {...people, [person.id]: person}
+    switch (action.type) {
+        case 'ADD_PERSON': {
+            const {person} = action.payload
+            return {...people, [person.id]: person}
+        }
+        case 'UPDATE_PERSON': {
+            const {person} = action.payload
+            return {...people, [person.id]: person}
+        }
+        default: {
+            return people
+        }
     }
 }
-

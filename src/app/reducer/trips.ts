@@ -1,23 +1,10 @@
 import {handleActions} from 'redux-actions'
 import {
-    ADD_TRIP,
-    SETTLE_UP,
-    UPDATE_PAYMENT
-} from 'app/constants'
-import {
-    IAction,
     IStorable,
-    IStore
 } from 'app/models/common'
 import {
-    IPayloadAddTrip,
-    IPayloadSettleUpTrip,
     IStoreTrip,
-    ITrip
 } from 'app/models/trips'
-import {
-    IPayloadUpdatePayment
-} from '../models/payments'
 import * as _ from 'lodash'
 import {ITripAction} from '../action/trips';
 import {ITransferAction} from '../action/transfers';
