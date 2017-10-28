@@ -1,92 +1,18 @@
 import {
-    START_UPDATING_PAYMENT,
-    CHANGE_PAYMENT_NAME,
-    SET_MEMBERS_OF_PAYMENT,
-    REMOVE_MEMBER_FROM_PAYMENT,
-    SPENT_EQUALLY_SWITCHED,
-    PAID_ONE_SWITCHED,
-    RESET_PAID_FOR_ALL,
-    CHANGE_SUM_ON_PAYMENT,
-    SPLIT_SUM_BY_MEMBERS,
-    PAID_FOR_ALL_CHECKED,
-    CHANGE_PAID_TO_PAY_FOR_ALL,
-    CHANGE_MEMBER_SPENT_ON_PAYMENT,
-    CHANGE_MEMBER_PAID_ON_PAYMENT,
-    UPDATE_PAYMENT,
-    CANCEL_UPDATING_PAYMENT,
-    SET_CURRENT_PAYMENT,
-} from '../constants'
-import {
-    zeroIfNull
-} from 'app/utils/utils'
-import {
-    IStorable,
-    IAction,
-    IStore
-} from 'app/models/common'
-import {
-    IPayloadChangePaymentName,
-    IPayloadSetMembersOfPayment,
-    IPayloadRemoveMemberFromPayment,
-    IPayloadSpentEquallySwitched,
-    IPayloadPaidOneSwitched,
-    IPayloadChangeSumOnPayment,
-    IPayloadSplitSumByMembers,
-    IPayloadPaidForAllChecked,
-    IPayloadChangePaidToPayForAll,
-    IPayloadChangeMemberSpentOnPayment,
-    IPayloadChangeMemberPaidOnPayment,
-    IPayloadUpdatePayment,
-    IPayment,
     IStoreMember,
     IStorePayment,
-    IPayloadSetCurrentPayment,
-    defaultPayment,
-    IPaymentActions,
 } from 'app/models/payments'
 import * as _ from 'lodash'
-import {ITrip} from '../models/trips';
-import {IPerson} from '../models/people';
-
-/**
- * Начало создания нового счета.
- *
- * @param trip - Путешествия.
- */
-export type startCreatingNewPayment = (trip: ITrip) => void
-export function startCreatingNewPayment(trip: ITrip) {
-    return (dispatch, getState: () => IStore) => {
-        // Составляем массив всех участников путешествия
-        const members: IStoreMember[] = _.map(trip.people, (person: IPerson) => ({personId: person.id}))
-        const payment: IStorePayment = {...defaultPayment, members}
-        dispatch(setCurrentPayment(payment))
-    }
-}
 
 /**
  * Задаем текущий счет.
  *
  * @param payment - Счет.
  */
-export function setCurrentPayment(payment: IStorePayment) {
-    return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadSetCurrentPayment> = {
-            type: SET_CURRENT_PAYMENT,
-            payload: {payment}
-        }
-        dispatch(action)
-    }
-}
-
-/**
- * Начало редактирования счета.
- *
- * @param paymentId - Идентификатор счета.
- */
-export function startUpdatingPayment(paymentId: string) {
-    return (dispatch, getState: () => IStore) => {
-        const payment: IStorePayment = _.cloneDeep(getState().payments[paymentId])
-        dispatch(setCurrentPayment(payment))
+export function setCurrentPayment (payment: IStorePayment): IPaymentAction {
+    return {
+        type: 'SET_CURRENT_PAYMENT',
+        payload: {payment}
     }
 }
 
@@ -95,13 +21,10 @@ export function startUpdatingPayment(paymentId: string) {
  *
  * @param name - Название счета.
  */
-export function changePaymentName(name: string) {
-    return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadChangePaymentName> = {
-            type: CHANGE_PAYMENT_NAME,
-            payload: {name}
-        }
-        dispatch(action)
+export function changePaymentName (name: string): IPaymentAction {
+    return {
+        type: 'CHANGE_PAYMENT_NAME',
+        payload: {name}
     }
 }
 
@@ -110,20 +33,10 @@ export function changePaymentName(name: string) {
  *
  * @param personIdList Массив id людей, участвующих в счете.
  */
-export function setMembersOfPayment(personIdList: string[]) {
-    return (dispatch, getState: () => IStore) => {
-        // FIXME переделать на получение из трипа
-        const payment: IStorePayment = getState().current.payment
-        const members: IStoreMember[] = _.filter(payment.members, member => _.some(personIdList, member.personId))
-        const action: IAction<IPayloadSetMembersOfPayment> = {
-            type: SET_MEMBERS_OF_PAYMENT,
-            payload: {members}
-        }
-        dispatch(action)
-        // Если выбрано "Платили поровну", то разделим счет на участников счета.
-        if (getState().current.payment.spentEqually) {
-            dispatch(splitSumByMembers())
-        }
+export function setMembersOfPayment (members: IStoreMember[]): IPaymentAction {
+    return {
+        type: 'SET_MEMBERS_OF_PAYMENT',
+        payload: {members}
     }
 }
 
@@ -132,17 +45,10 @@ export function setMembersOfPayment(personIdList: string[]) {
  *
  * @param personId - Идентификатор удаляемого участника.
  */
-export function removeMemberFromPayment(personId: string) {
-    return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadRemoveMemberFromPayment> = {
-            type: REMOVE_MEMBER_FROM_PAYMENT,
-            payload: {personId}
-        }
-        dispatch(action)
-        // Если выбрано "Платили поровну", то разделим счет на оставшихся.
-        if (getState().current.payment.spentEqually) {
-            dispatch(splitSumByMembers())
-        }
+export function removeMemberFromPayment (personId: string): IPaymentAction {
+    return {
+        type: 'REMOVE_MEMBER_FROM_PAYMENT',
+        payload: {personId}
     }
 }
 
@@ -151,20 +57,10 @@ export function removeMemberFromPayment(personId: string) {
  *
  * @param spentEqually - Все потратили поровну?
  */
-export function spentEquallySwitched(spentEqually: boolean) {
-    return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadSpentEquallySwitched> = {
-            type: SPENT_EQUALLY_SWITCHED,
-            payload: {spentEqually}
-        }
-        dispatch(action)
-        if (spentEqually) {
-            // Если переключили на "Потратили поровну", разделим сумму счета по всем участникам
-            // Делаем небольшую задержку на случай, если переключили свитчер, не сняв фокус с инпута потраченных денег
-            // одного из участников счета, чтобы успело обновиться значение его потраченных денег.
-            // setTimeout(() => {dispatch(splitSumByMembers())}, 100)
-            setTimeout(() => {dispatch(splitSumByMembers())}, 100)
-        }
+export function spentEquallySwitched (spentEqually: boolean): IPaymentAction {
+    return {
+        type: 'SPENT_EQUALLY_SWITCHED',
+        payload: {spentEqually}
     }
 }
 
@@ -173,26 +69,19 @@ export function spentEquallySwitched(spentEqually: boolean) {
  *
  * @param paidOne - Платил один?
  */
-export function paidOneSwitched(paidOne: boolean) {
-    return dispatch => {
-        const action: IAction<IPayloadPaidOneSwitched> = {
-            type: PAID_ONE_SWITCHED,
-            payload: {paidOne}
-        }
-        dispatch(action)
-        if (!paidOne) {
-            // Если выключили "Платил один", то снимем галочку с человека, помеченного как платящего за всех.
-            dispatch(resetPaidForAll())
-        }
+export function paidOneSwitched (paidOne: boolean): IPaymentAction {
+    return {
+        type: 'PAID_ONE_SWITCHED',
+        payload: {paidOne}
     }
 }
 
 /**
  * Сбросить всем участникам счета галочку "Платил за всех".
  */
-export function resetPaidForAll(): IAction<null> {
+export function resetPaidForAll (): IPaymentAction {
     return {
-        type: RESET_PAID_FOR_ALL
+        type: 'RESET_PAID_FOR_ALL'
     }
 }
 
@@ -201,14 +90,10 @@ export function resetPaidForAll(): IAction<null> {
  *
  * param sum - Общая сумма счета.
  */
-export function changeSumOnPayment(sum: number) {
-    return (dispatch) => {
-        const action: IAction<IPayloadChangeSumOnPayment> = {
-            type: CHANGE_SUM_ON_PAYMENT,
-            payload: {sum}
-        }
-        dispatch(action)
-        dispatch(splitSumByMembers(sum))
+export function changeSumOnPayment (sum: number): IPaymentAction {
+    return {
+        type: 'CHANGE_SUM_ON_PAYMENT',
+        payload: {sum}
     }
 }
 
@@ -217,18 +102,10 @@ export function changeSumOnPayment(sum: number) {
  *
  * param [sum] Сумма счета.
  */
-export function splitSumByMembers(sum?: number) {
-    return (dispatch, getState: () => IStore) => {
-        const payment: IStorePayment = getState().current.payment
-        if (payment.members && payment.members.length > 0) {
-            const _sum: number = sum || payment.sum
-            const spentEach: number = _sum / payment.members.length
-            const action: IAction<IPayloadSplitSumByMembers> = {
-                type: SPLIT_SUM_BY_MEMBERS,
-                payload: {spentEach}
-            }
-            dispatch(action)
-        }
+export function splitSumByMembers (spentEach?: number): IPaymentAction {
+    return {
+        type: 'SPLIT_SUM_BY_MEMBERS',
+        payload: {spentEach}
     }
 }
 
@@ -237,14 +114,10 @@ export function splitSumByMembers(sum?: number) {
  *
  * @param personId - Человек, который оплатил счет.
  */
-export function paidForAllChecked(personId: string) {
-    return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadPaidForAllChecked> = {
-            type: PAID_FOR_ALL_CHECKED,
-            payload: {personId}
-        }
-        dispatch (action)
-        dispatch(changePaidToPayForAll(personId))
+export function paidForAllChecked (personId: string): IPaymentAction {
+    return {
+        type: 'PAID_FOR_ALL_CHECKED',
+        payload: {personId}
     }
 }
 
@@ -253,27 +126,12 @@ export function paidForAllChecked(personId: string) {
  *
  * @param [personId] - Человек, который оплатил счет.
  */
-export function changePaidToPayForAll(personId?: string) {
-    return (dispatch, getState: () => IStore) => {
-        // считаем сумму потраченных денег
-        const members: IStoreMember[] = getState().current.payment.members
-        const sumSpent: number = _.reduce(members, (sum: number, member: IStoreMember) => sum + zeroIfNull(member.spent), 0)
-        // если personId не передан, можно вычислить его из метки paidForAll у участника счета
-        if (!personId) {
-            const memberPaidForAll: IStoreMember = _.find(members, (member: IStoreMember) => member.paidForAll)
-            if (memberPaidForAll) {
-                personId = memberPaidForAll.personId
-            }
-        }
-        if (personId) {
-            const action: IAction<IPayloadChangePaidToPayForAll> = {
-                type: CHANGE_PAID_TO_PAY_FOR_ALL,
-                payload: {
-                    personId,
-                    sumSpent
-                }
-            }
-            dispatch(action)
+export function changePaidToPayForAll (personId: string, sumSpent: number): IPaymentAction {
+    return {
+        type: 'CHANGE_PAID_TO_PAY_FOR_ALL',
+        payload: {
+            personId,
+            sumSpent
         }
     }
 }
@@ -284,23 +142,13 @@ export function changePaidToPayForAll(personId?: string) {
  * @param personId - Идентификатор участника.
  * @param value - Новое количество потраченных денег.
  */
-export function changeMemberSpentOnPayment(personId: string, value: number) {
-    const spent: number = value
-    return (dispatch, getState: () => IStore) => {
-        // считаем сумму редактируемого счета
-        const payment: IStorePayment = getState().current.payment
-        const sum: number = _.reduce(payment.members, (paymentSum: number, member: IStoreMember) => {
-            const memberSpent: number = (member.personId === personId ? value : member.spent)
-            return paymentSum + memberSpent
-        }, 0)
-        const action: IAction<IPayloadChangeMemberSpentOnPayment> = {
-            type: CHANGE_MEMBER_SPENT_ON_PAYMENT,
-            payload: {personId, spent, sum}
-        }
-        dispatch(action)
-        // если оплачивает один человек, то также изменим ему сумму оплаченных денег
-        if (payment.paidOne) {
-            dispatch(changePaidToPayForAll())
+export function changeMemberSpentOnPayment (personId: string, spent: number, sum: number): IPaymentAction {
+    return {
+        type: 'CHANGE_MEMBER_SPENT_ON_PAYMENT',
+        payload: {
+            personId,
+            spent,
+            sum
         }
     }
 }
@@ -311,14 +159,13 @@ export function changeMemberSpentOnPayment(personId: string, value: number) {
  * @param personId - Идентификатор участника.
  * @param value - Новое количество заплаченных денег.
  */
-export function changeMemberPaidOnPayment(personId: string, value: number) {
-    const paid: number = value
-    return (dispatch, getState: () => IStore) => {
-        const action: IAction<IPayloadChangeMemberPaidOnPayment> = {
-            type: CHANGE_MEMBER_PAID_ON_PAYMENT,
-            payload: {personId, paid}
+export function changeMemberPaidOnPayment (personId: string, paid: number): IPaymentAction {
+    return {
+        type: 'CHANGE_MEMBER_PAID_ON_PAYMENT',
+        payload: {
+            personId,
+            paid
         }
-        dispatch(action)
     }
 }
 
@@ -327,18 +174,13 @@ export function changeMemberPaidOnPayment(personId: string, value: number) {
  *
  * @param tripId - Идентификатор путешествия.
  */
-export function updatePayment(tripId: string) {
-    return (dispatch, getState: () => IStore) => {
-        const payment: IStorePayment = getState().current.payment
-        // FIXME сохранять счет в базу
-        const paymentId: string = payment.id || '4'
-        tempPromise(paymentId).then((paymentId: string) => {
-            const action: IAction<IPayloadUpdatePayment> = {
-                type: UPDATE_PAYMENT,
-                payload: {tripId, payment}
-            }
-            dispatch(action)
-        })
+export function updatePayment (tripId: string, payment: IStorePayment): IPaymentAction {
+    return {
+        type: 'UPDATE_PAYMENT',
+        payload: {
+            tripId,
+            payment
+        }
     }
 }
 
@@ -346,9 +188,9 @@ export function updatePayment(tripId: string) {
  * Отмена редактирования счета.
  *
  */
-export function cancelUpdatingPayment(): IAction<null> {
+export function cancelUpdatingPayment (): IPaymentAction {
     return {
-        type: CANCEL_UPDATING_PAYMENT,
+        type: 'CANCEL_UPDATING_PAYMENT',
     }
 }
 
@@ -360,10 +202,83 @@ export function cancelUpdatingPayment(): IAction<null> {
  *
  * @param data - Данные, которые вернулись бы из реального вызова метода.
  */
-function tempPromise(data: any) {
+function tempPromise (data: any) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(data)
         }, 500)
     })
 }
+
+export type IPaymentAction =
+    {
+        type: 'SET_CURRENT_PAYMENT',
+        payload: { payment: IStorePayment }
+    } |
+    {
+        type: 'CHANGE_PAYMENT_NAME',
+        payload: { name: string }
+    } |
+    {
+        type: 'SET_MEMBERS_OF_PAYMENT',
+        payload: { members: IStoreMember[] }
+    } |
+    {
+        type: 'REMOVE_MEMBER_FROM_PAYMENT',
+        payload: { personId: string }
+    } |
+    {
+        type: 'SPENT_EQUALLY_SWITCHED',
+        payload: { spentEqually: boolean }
+    } |
+    {
+        type: 'PAID_ONE_SWITCHED',
+        payload: { paidOne: boolean }
+    } |
+    {
+        type: 'RESET_PAID_FOR_ALL'
+    } |
+    {
+        type: 'CHANGE_SUM_ON_PAYMENT',
+        payload: { sum: number }
+    } |
+    {
+        type: 'SPLIT_SUM_BY_MEMBERS',
+        payload: { spentEach: number }
+    } |
+    {
+        type: 'PAID_FOR_ALL_CHECKED',
+        payload: { personId: string }
+    } |
+    {
+        type: 'CHANGE_PAID_TO_PAY_FOR_ALL',
+        payload: {
+            personId: string,
+            sumSpent: number
+        }
+    } |
+    {
+        type: 'CHANGE_MEMBER_SPENT_ON_PAYMENT',
+        payload: {
+            personId,
+            spent,
+            sum
+        }
+    } |
+    {
+        type: 'CHANGE_MEMBER_PAID_ON_PAYMENT',
+        payload: {
+            personId,
+            paid
+        }
+    } |
+    {
+        type: 'UPDATE_PAYMENT',
+        payload: {
+            tripId,
+            payment
+        }
+    } |
+    {
+        type: 'CANCEL_UPDATING_PAYMENT',
+    }

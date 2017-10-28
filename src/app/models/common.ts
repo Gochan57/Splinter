@@ -20,13 +20,17 @@ export interface IAction<T> {
 
 export interface IStoreCurrent {
     trip: IStoreTrip,
-    payment: IStorePayment
+}
+
+export interface IStoreItems<T> {
+    items: IStorable<T>,
+    current: T
 }
 
 export interface IStore {
     people: IStorable<IPerson>,
     trips: IStorable<IStoreTrip>,
-    payments: IStorable<IStorePayment>,
+    payments: IStoreItems<IStorePayment>,
     transfers: IStorable<ITransfer>,
     current: IStoreCurrent,
 }

@@ -13,7 +13,7 @@ import {
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
-import * as paymentActions from 'app/action/payments'
+import * as paymentActions from 'app/thunk/payments'
 import {toNumber, toNumberNullable} from 'app/utils/utils'
 import appStyles from 'app/styles'
 
@@ -283,7 +283,7 @@ const mapStateToProps = (state: IStore, ownProps: IPaymentSceneProps): IStatePro
     const {tripId} = ownProps
     const trip = objectify.trip(state, state.trips[tripId])
     // Из списка всех счетов выберем редактируемый счет.
-    const payment: IPayment = objectify.payment(state, state.current.payment)
+    const payment: IPayment = objectify.payment(state, state.payments.current)
     if (!payment) {
         return {loading: true}
     }

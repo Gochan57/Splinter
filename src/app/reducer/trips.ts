@@ -8,6 +8,7 @@ import {
 import * as _ from 'lodash'
 import {ITripAction} from '../action/trips';
 import {ITransferAction} from '../action/transfers';
+import {IPaymentAction} from '../action/payments';
 
 const defaultTrips: IStorable<IStoreTrip> = {
     '1': {
@@ -53,7 +54,7 @@ const defaultTrips: IStorable<IStoreTrip> = {
     }
 }
 
-export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction | ITransferAction): IStorable<IStoreTrip> => {
+export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction | ITransferAction | IPaymentAction): IStorable<IStoreTrip> => {
     if (!action) return trips
 
     switch (action.type) {
@@ -99,6 +100,10 @@ export default (trips: IStorable<IStoreTrip> = defaultTrips, action: ITripAction
                     ]
                 }
             }
+        }
+        case 'SET_CURRENT_TRIP': {
+            // FIXME
+            return trips
         }
         default: {
             return trips

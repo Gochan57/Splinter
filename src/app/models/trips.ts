@@ -59,32 +59,3 @@ export const defaultTrip: IStoreTrip = {
     transfers: [],
     date: null,
 }
-
-/**
- * Пэйлоад на задание текущего путешествия.
- *
- * trip - Путешествие.
- */
-export interface IPayloadSetCurrentTrip {
-    trip: IStoreTrip
-}
-
-/**
- * Пэйлоад на создание нового путешествия.
- *
- * trip - Новое путешествие.
- */
-export interface IPayloadAddTrip {
-    trip: IStoreTrip
-}
-
-/**
- * Пэйлоад на расчет путешествия.
- *
- * tripId - Идентификатор путешествия.
- * settlingUp - Расчет путешествия.
- */
-export interface IPayloadSettleUpTrip {
-    tripId: string,
-    settlingUp: IStoreSettlingUp
-}
