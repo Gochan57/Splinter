@@ -85,7 +85,7 @@ export class Settle {
             }
             minus.resetIndex()
         }
-        this.result.forEach(r => console.log(r.fromPerson.name + " => " + r.toPerson.name + " : " + r.count));
+        // this.result.forEach(r => console.log(r.fromPerson.name + " => " + r.toPerson.name + " : " + r.count));
         return this.result;
     }
 }
