@@ -2,7 +2,7 @@ import {IPerson} from "../models/people";
 import {IPersonBalance, ITrade} from "../models/transfers";
 
 import * as _ from 'lodash'
-import people from "../reducer/people";
+import people from "../redux/reducer/people";
 import {min} from "moment";
 
 export class Settle {

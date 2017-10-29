@@ -1,4 +1,4 @@
-import {Settle} from './utils/sette'
+import {Settle} from './utils/settle'
 import {expect} from 'chai'
 import {
     IPersonBalance,
