@@ -17,7 +17,28 @@ export class Settle {
 
     private result: ITrade[]
 
+    private printArrays(plus: IPersonBalance[], minus: IPersonBalance[]){
+        plus.forEach(b => {
+            console.log(`${b.person.name}, id: ${b.person.id}, balance: ${b.balance}`)
+        })
+        minus.forEach(b => {
+            console.log(`${b.person.name}, id: ${b.person.id}, balance: ${b.balance}`)
+        })
+        console.log('')
+    }
+
     private settleGroup(plus: IPersonBalance[], minus: IPersonBalance[]) {
+        this.printArrays(plus, minus)
+
+        plus.sort(function (a, b) {
+            return a.balance - b.balance
+        })
+        minus.sort(function (a, b) {
+            return b.balance - a.balance
+        })
+
+        this.printArrays(plus, minus)
+
         let i = 0, j: number = 0;
         while (i < plus.length && j < minus.length) {
             if (plus[i].balance > -minus[j].balance) {
@@ -26,19 +47,19 @@ export class Settle {
                     toPerson: plus[i].person,
                     count: -minus[j].balance
                 })
-                plus[i].balance += -minus[j++].balance
+                plus[i].balance += minus[j++].balance
             } else if (plus[i].balance < -minus[j].balance) {
                 this.result.push({
-                    fromPerson: plus[i].person,
-                    toPerson: minus[j].person,
+                    fromPerson: minus[j].person,
+                    toPerson: plus[i].person,
                     count: plus[i].balance
                 })
                 minus[j].balance += plus[i++].balance
             }
             else if (plus[i].balance = -minus[j].balance) {
                 this.result.push({
-                    fromPerson: plus[i].person,
-                    toPerson: minus[j].person,
+                    fromPerson: minus[j].person,
+                    toPerson: plus[i].person,
                     count: plus[i].balance
                 })
                 i++;
@@ -68,7 +89,7 @@ export class Settle {
             }
             minus.resetIndex()
         }
-        this.result.forEach(r => console.log("{\n\tfrom: " + r.fromPerson + "\n\tto: " + r.toPerson + "\n\tamount: " + r.count + "\n}"));
+        this.result.forEach(r => console.log(r.fromPerson.name + " => " + r.toPerson.name + " : " + r.count));
         return this.result;
     }
 }
