@@ -28,16 +28,12 @@ export class Settle {
     }
 
     private settleGroup(plus: IPersonBalance[], minus: IPersonBalance[]) {
-        this.printArrays(plus, minus)
-
         plus.sort(function (a, b) {
             return a.balance - b.balance
         })
         minus.sort(function (a, b) {
             return b.balance - a.balance
         })
-
-        this.printArrays(plus, minus)
 
         let i = 0, j: number = 0;
         while (i < plus.length && j < minus.length) {
