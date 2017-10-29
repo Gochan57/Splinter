@@ -27,7 +27,7 @@ export class Settle {
                     count: -minus[j].balance
                 })
                 plus[i].balance += -minus[j++].balance
-            } else if (plus[i].balance < minus[j].balance) {
+            } else if (plus[i].balance < -minus[j].balance) {
                 this.result.push({
                     fromPerson: plus[i].person,
                     toPerson: minus[j].person,
